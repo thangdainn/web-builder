@@ -18,6 +18,12 @@
         <module>user-service</module>
         <module>discovery-server</module>
         <module>api-gateway</module>
+        <module>agency-service</module>
+        <module>subscription-service</module>
+        <module>pipeline-service</module>
+        <module>funnel-service</module>
+        <module>notification-service</module>
+        <module>subaccount-service</module>
     </modules>
 
     <properties>
