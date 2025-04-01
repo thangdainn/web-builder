@@ -32,5 +32,8 @@ public class SubAccount extends BaseEntity {
     private String agencyId;
 
     @OneToMany(mappedBy = "subAccount")
+    private List<Contact> contacts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "subAccount")
     private List<SubAccountSidebarOption> sidebarOptions = new ArrayList<>();
 }

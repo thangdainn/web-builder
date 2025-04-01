@@ -28,7 +28,5 @@ public class SubAccountSODto extends AbstractDto {
     @NotBlank(message = "Icon is required")
     private String icon;
 
-    @NotNull(message = "Sub account is required")
-    @NotBlank(message = "Sub account is required")
     private String subAccountId;
 }
