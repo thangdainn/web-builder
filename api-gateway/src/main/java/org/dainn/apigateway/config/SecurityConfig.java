@@ -46,19 +46,19 @@ public class SecurityConfig {
 //        return converter;
 //    }
 
-    @Bean
-    public CorsConfigurationSource corsConfiguration() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("*"));
-        corsConfiguration.setAllowedMethods(List.of("*"));
-        corsConfiguration.setAllowedHeaders(List.of("*"));
-        corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setMaxAge(3600L);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-        return source;
-    }
+//    @Bean
+//    public CorsConfigurationSource corsConfiguration() {
+//        CorsConfiguration corsConfiguration = new CorsConfiguration();
+//        corsConfiguration.setAllowedOrigins(List.of("*"));
+//        corsConfiguration.setAllowedMethods(List.of("*"));
+//        corsConfiguration.setAllowedHeaders(List.of("*"));
+//        corsConfiguration.setAllowCredentials(true);
+//        corsConfiguration.setMaxAge(3600L);
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", corsConfiguration);
+//        return source;
+//    }
 
 //    @Bean
 //    public GatewayFilter jwtForwardingFilter() {
