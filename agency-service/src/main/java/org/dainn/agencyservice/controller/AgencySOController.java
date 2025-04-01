@@ -3,7 +3,6 @@ package org.dainn.agencyservice.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.dainn.agencyservice.config.endpoint.Endpoint;
-import org.dainn.agencyservice.dto.AgencySODto;
 import org.dainn.agencyservice.service.IAgencySOService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +16,6 @@ public class AgencySOController {
     @GetMapping(Endpoint.AgencySO.ID)
     public ResponseEntity<?> get(@PathVariable String id) {
         return ResponseEntity.ok(agencySOService.findById(id));
-    }
-
-    @PostMapping
-    public ResponseEntity<?> create(@RequestBody AgencySODto dto) {
-        return ResponseEntity.ok(agencySOService.create(dto));
     }
 
     @DeleteMapping

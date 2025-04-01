@@ -4,7 +4,9 @@ package org.dainn.agencyservice.controller;
 import lombok.RequiredArgsConstructor;
 import org.dainn.agencyservice.config.endpoint.Endpoint;
 import org.dainn.agencyservice.dto.AgencyDto;
+import org.dainn.agencyservice.dto.UpdateGoalDto;
 import org.dainn.agencyservice.service.IAgencyService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +23,17 @@ public class AgencyController {
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody AgencyDto dto) {
-        return ResponseEntity.ok(agencyService.create(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(agencyService.create(dto));
+    }
+
+    @PutMapping(Endpoint.Agency.ID)
+    public ResponseEntity<?> update(@RequestBody AgencyDto dto) {
+        return ResponseEntity.ok(agencyService.update(dto));
+    }
+
+    @PutMapping(Endpoint.Agency.GOAL)
+    public ResponseEntity<?> updateGoal(@PathVariable String id, @RequestBody UpdateGoalDto dto) {
+        return ResponseEntity.ok(agencyService.updateGoal(id, dto));
     }
 
     @DeleteMapping

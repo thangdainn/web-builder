@@ -6,6 +6,7 @@ public class Endpoint {
     public static final class Agency {
         public static final String BASE = API_PREFIX + "/agencies";
         public static final String ID = "/{id}";
+        public static final String GOAL = "/{id}/goals";
     }
 
     public static final class AgencySO {
