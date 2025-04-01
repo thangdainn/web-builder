@@ -1,4 +1,4 @@
-package org.dainn.pipelineservice.dto;
+package org.dainn.pipelineservice.dto.lane;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PipelineDto extends AbstractDto {
-    private String name;
-
-    private String subAccountId;
+public class LaneOrderDto {
+    private String laneId;
+    private Integer order;
 }

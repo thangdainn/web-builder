@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Setter
@@ -24,9 +26,19 @@ public class Ticket extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    //    user id
     private String assignedUserId;
+
+    // contact id
+    private String customerId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lane_id")
     private Lane lane;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "ticket_tags",
+            joinColumns = @JoinColumn(name = "ticket_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private List<Tag> tags = new ArrayList<>();
 }
