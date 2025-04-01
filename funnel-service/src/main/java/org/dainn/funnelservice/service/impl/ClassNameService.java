@@ -6,6 +6,8 @@ import org.dainn.funnelservice.mapper.IClassNameMapper;
 import org.dainn.funnelservice.repository.IClassNameRepository;
 import org.dainn.funnelservice.service.IClassNameService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -13,23 +15,26 @@ public class ClassNameService implements IClassNameService {
     private final IClassNameRepository classNameRepository;
     private final IClassNameMapper classNameMapper;
 
+    @Transactional
     @Override
-    public ClassNameDto create(ClassNameDto dto) {
+    public Mono<ClassNameDto> create(ClassNameDto dto) {
+        return null;
+    }
+
+    @Transactional
+    @Override
+    public Mono<ClassNameDto> update(ClassNameDto dto) {
         return null;
     }
 
     @Override
-    public ClassNameDto findById(String id) {
+    public Mono<ClassNameDto> findById(String id) {
         return null;
     }
 
+    @Transactional
     @Override
-    public ClassNameDto update(ClassNameDto dto) {
+    public Mono<Void> delete(String id) {
         return null;
-    }
-
-    @Override
-    public void delete(String id) {
-
     }
 }

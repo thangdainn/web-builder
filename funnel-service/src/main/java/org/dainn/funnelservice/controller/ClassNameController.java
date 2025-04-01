@@ -26,7 +26,6 @@ public class ClassNameController {
 
     @DeleteMapping
     public ResponseEntity<?> delete(String id) {
-        classNameService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(classNameService.delete(id));
     }
 }

@@ -1,15 +1,12 @@
 package org.dainn.funnelservice.model;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@Entity
 @Setter
 @Getter
 @NoArgsConstructor
@@ -22,15 +19,13 @@ public class FunnelPage extends BaseEntity {
 
     private Integer visits;
 
-    @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "funnel_page_order")
+    @Column("funnel_page_order")
     private Integer order;
 
     private String previewImage;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "funnel_id")
-    private Funnel funnel;
+    @Column("funnel_id")
+    private String funnelId;
 }
