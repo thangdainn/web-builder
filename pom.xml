@@ -24,6 +24,7 @@
         <module>funnel-service</module>
         <module>notification-service</module>
         <module>subaccount-service</module>
+        <module>media-service</module>
     </modules>
 
     <properties>
