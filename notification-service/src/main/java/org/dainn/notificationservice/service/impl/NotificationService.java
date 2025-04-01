@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -22,6 +23,7 @@ public class NotificationService implements INotificationService {
     private final INotificationRepository notificationRepository;
     private final INotificationMapper notificationMapper;
 
+    @Transactional
     @Override
     public Mono<NotificationDto> create(NotificationDto dto) {
         Notification notification = notificationMapper.toEntity(dto);
@@ -33,7 +35,7 @@ public class NotificationService implements INotificationService {
     @Override
     public Mono<Page<NotificationDto>> findByUserAndAgency(NotificationRequest request) {
         Pageable pageable = Paging.getPageable(request);
-        Mono<Page<Notification>> response =notificationRepository.findByUserIdAndAgencyId(request.getUserId(), request.getAgencyId(), pageable)
+        Mono<Page<Notification>> response = notificationRepository.findByUserIdAndAgencyId(request.getUserId(), request.getAgencyId(), pageable)
                 .collectList()
                 .zipWith(notificationRepository.count())
                 .map(n -> new PageImpl<>(n.getT1(), pageable, n.getT2()));
@@ -43,7 +45,7 @@ public class NotificationService implements INotificationService {
     @Override
     public Mono<Page<NotificationDto>> findBySubAccountAndAgency(NotificationRequest request) {
         Pageable pageable = Paging.getPageable(request);
-        Mono<Page<Notification>> response =notificationRepository.findBySubAccountIdAndAgencyId(request.getUserId(), request.getAgencyId(), pageable)
+        Mono<Page<Notification>> response = notificationRepository.findBySubAccountIdAndAgencyId(request.getUserId(), request.getAgencyId(), pageable)
                 .collectList()
                 .zipWith(notificationRepository.count())
                 .map(n -> new PageImpl<>(n.getT1(), pageable, n.getT2()));
