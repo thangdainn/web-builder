@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.dainn.userservice.utils.enums.Role;
+import org.dainn.userservice.util.enums.Role;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -6,11 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.dainn.userservice.utils.enums.InvitationStatus;
-import org.dainn.userservice.utils.enums.Role;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.dainn.userservice.util.enums.InvitationStatus;
+import org.dainn.userservice.util.enums.Role;
 
 @Entity
 @Setter

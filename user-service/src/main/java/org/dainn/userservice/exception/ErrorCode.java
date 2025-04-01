@@ -6,11 +6,14 @@ import org.springframework.http.HttpStatusCode;
 
 @Getter
 public enum ErrorCode {
-    ADDONS_EXISTED("AddOns existed", HttpStatus.BAD_REQUEST),
-    ADDONS_NOT_EXISTED("AddOns not existed", HttpStatus.NOT_FOUND),
+    USER_EXISTED("User existed", HttpStatus.BAD_REQUEST),
+    USER_NOT_EXISTED("User not existed", HttpStatus.NOT_FOUND),
 
-    SUBSCRIPTION_EXISTED("Subscription existed", HttpStatus.BAD_REQUEST),
-    SUBSCRIPTION_NOT_EXISTED("Subscription not existed", HttpStatus.NOT_FOUND);
+    INVITATION_EXISTED("Invitation existed", HttpStatus.BAD_REQUEST),
+    INVITATION_NOT_EXISTED("Invitation not existed", HttpStatus.NOT_FOUND),
+
+    PERMISSION_EXISTED("Permission existed", HttpStatus.BAD_REQUEST),
+    PERMISSION_NOT_EXISTED("Permission not existed", HttpStatus.NOT_FOUND);
 
     ErrorCode(String message, HttpStatusCode statusCode) {
         this.message = message;

@@ -1,4 +1,4 @@
-package org.dainn.userservice.utils.enums;
+package org.dainn.userservice.util.enums;
 
 public enum Role {
     AGENCY_OWNER,

@@ -1,6 +1,5 @@
 package org.dainn.userservice.exception;
 
-import org.dainn.subscriptionservice.exception.AppException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.access.AccessDeniedException;
