@@ -6,6 +6,7 @@ public class Endpoint {
     public static final class Subscription {
         public static final String BASE = API_PREFIX + "/subscriptions";
         public static final String ID = "/{id}";
+        public static final String AGENCY = "/agency/{id}";
     }
 
     public static final class AddOns {

@@ -9,6 +9,8 @@ import org.dainn.subscriptionservice.model.Subscription;
 import org.dainn.subscriptionservice.repository.ISubscriptionRepository;
 import org.dainn.subscriptionservice.service.ISubscriptionService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -17,6 +19,7 @@ public class SubscriptionService implements ISubscriptionService {
     private final ISubscriptionRepository subscriptionRepository;
     private final ISubscriptionMapper subscriptionMapper;
 
+    @Transactional
     @Override
     public Mono<SubscriptionDto> create(SubscriptionDto dto) {
         Subscription subscription = subscriptionMapper.toEntity(dto);
@@ -25,14 +28,15 @@ public class SubscriptionService implements ISubscriptionService {
                 .map(subscriptionMapper::toDto);
     }
 
+    @Transactional
     @Override
     public Mono<SubscriptionDto> update(SubscriptionDto dto) {
         return subscriptionRepository.findById(dto.getId())
                 .switchIfEmpty(Mono.error(new AppException(ErrorCode.SUBSCRIPTION_NOT_EXISTED)))
                 .flatMap(existing -> {
-                    Subscription updated = subscriptionMapper.updateEntity(existing, dto);
-                    updated.markExisting();
-                    return subscriptionRepository.save(updated);
+                    existing = subscriptionMapper.updateEntity(existing, dto);
+                    existing.markExisting();
+                    return subscriptionRepository.save(existing);
                 })
                 .map(subscriptionMapper::toDto);
     }
@@ -45,7 +49,14 @@ public class SubscriptionService implements ISubscriptionService {
     }
 
     @Override
-    public void delete(String id) {
+    public Flux<SubscriptionDto> findByAgencyId(String id) {
+        return subscriptionRepository.findAllByAgencyId(id)
+                .map(subscriptionMapper::toDto);
+    }
 
+    @Transactional
+    @Override
+    public Mono<Void> delete(String id) {
+        return subscriptionRepository.deleteById(id);
     }
 }

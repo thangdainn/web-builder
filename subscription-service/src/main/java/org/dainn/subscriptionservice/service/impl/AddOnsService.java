@@ -9,6 +9,7 @@ import org.dainn.subscriptionservice.model.AddOns;
 import org.dainn.subscriptionservice.repository.IAddOnsRepository;
 import org.dainn.subscriptionservice.service.IAddOnsService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -17,7 +18,7 @@ public class AddOnsService implements IAddOnsService {
     private final IAddOnsRepository addOnsRepository;
     private final IAddOnsMapper addOnsMapper;
 
-
+    @Transactional
     @Override
     public Mono<AddOnsDto> create(AddOnsDto dto) {
         AddOns entity = addOnsMapper.toEntity(dto);
@@ -25,6 +26,7 @@ public class AddOnsService implements IAddOnsService {
         return addOnsRepository.save(entity).map(addOnsMapper::toDto);
     }
 
+    @Transactional
     @Override
     public Mono<AddOnsDto> update(AddOnsDto dto) {
         return addOnsRepository.findById(dto.getId())
@@ -44,8 +46,9 @@ public class AddOnsService implements IAddOnsService {
                 .map(addOnsMapper::toDto);
     }
 
+    @Transactional
     @Override
-    public void delete(String id) {
-
+    public Mono<Void> delete(String id) {
+        return addOnsRepository.deleteById(id);
     }
 }
