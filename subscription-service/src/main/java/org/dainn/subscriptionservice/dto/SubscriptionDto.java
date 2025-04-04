@@ -17,8 +17,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SubscriptionDto extends AbstractDto {
-    @NotNull(message = "Plant is required")
-    private Plan plant;
+    @NotNull(message = "Plan is required")
+    private Plan plan;
 
     @NotNull(message = "Price is required")
     private BigDecimal price;
