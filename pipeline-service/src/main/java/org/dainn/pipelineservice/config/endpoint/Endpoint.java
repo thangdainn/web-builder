@@ -9,7 +9,7 @@ public class Endpoint {
         public static final String LANE = "/{id}/lanes";
         public static final String SA = "/sa/{id}";
         public static final String LANE_ORDER = "/{id}/lane-order";
-        public static final String TICKET_ORDER = "/{id}/ticket-order";
+        public static final String TICKET_ORDER = "/ticket-order";
     }
 
     public static final class Lane {

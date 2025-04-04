@@ -20,7 +20,7 @@ public abstract class AbstractDto {
     private LocalDateTime createdAt;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime modifiedAt;
+    private LocalDateTime updatedAt;
 }
 
 

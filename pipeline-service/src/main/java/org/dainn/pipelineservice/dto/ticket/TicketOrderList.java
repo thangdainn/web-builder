@@ -7,17 +7,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TicketOrderDto {
+public class TicketOrderList {
+    @NotNull(message = "Lane Id is required")
+    @NotBlank(message = "Lane Id is required")
+    private String laneId;
 
-    @NotNull(message = "Ticket Id is required")
-    @NotBlank(message = "Ticket Id is required")
-    private String ticketId;
-
-    @NotNull(message = "Order is required")
-    @NotBlank(message = "Order is required")
-    private Integer order;
+    private List<TicketOrderDto> ticketOrders = new ArrayList<>();
 }

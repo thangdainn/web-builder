@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface ILaneRepository extends JpaRepository<Lane, String> {
     List<Lane> findAllByPipelineId(String pipelineId);
+
+    int countByPipelineId(String pipelineId);
 }

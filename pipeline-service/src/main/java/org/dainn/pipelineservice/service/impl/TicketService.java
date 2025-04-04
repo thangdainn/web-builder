@@ -3,12 +3,14 @@ package org.dainn.pipelineservice.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.dainn.pipelineservice.dto.ticket.TicketDto;
 import org.dainn.pipelineservice.dto.ticket.TicketOrderDto;
+import org.dainn.pipelineservice.dto.ticket.TicketOrderList;
 import org.dainn.pipelineservice.exception.AppException;
 import org.dainn.pipelineservice.exception.ErrorCode;
 import org.dainn.pipelineservice.feignclient.IContactClient;
 import org.dainn.pipelineservice.feignclient.IUserClient;
 import org.dainn.pipelineservice.mapper.ITagMapper;
 import org.dainn.pipelineservice.mapper.ITicketMapper;
+import org.dainn.pipelineservice.model.Lane;
 import org.dainn.pipelineservice.model.Tag;
 import org.dainn.pipelineservice.model.Ticket;
 import org.dainn.pipelineservice.repository.ILaneRepository;
@@ -18,6 +20,7 @@ import org.dainn.pipelineservice.service.ITicketService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,13 +40,14 @@ public class TicketService implements ITicketService {
     @Transactional
     @Override
     public TicketDto create(TicketDto dto) {
+        Lane lane = laneRepository.findById(dto.getLaneId())
+                .orElseThrow(() -> new AppException(ErrorCode.LANE_NOT_EXISTED));
         Ticket ticket = ticketMapper.toEntity(dto);
-        if (ticket.getOrder() == null) {
-            int count = ticketRepository.countByLaneId(ticket.getLane().getId());
-            ticket.setOrder(count);
-        }
+        int count = ticketRepository.countByLaneId(dto.getLaneId());
+        ticket.setOrder(count);
+        ticket.setLane(lane);
         List<Tag> tags = dto.getTags().stream().map((tag) -> tagRepository.findById(tag.getId())
-                .orElseThrow(() -> new AppException(ErrorCode.LANE_NOT_EXISTED))).toList();
+                .orElseThrow(() -> new AppException(ErrorCode.TAG_NOT_EXISTED))).toList();
         ticket.setTags(tags);
         return ticketMapper.toDto(ticketRepository.save(ticket));
     }
@@ -104,18 +108,37 @@ public class TicketService implements ITicketService {
 
     @Transactional
     @Override
-    public void changeOrder(String pipelineId, List<TicketOrderDto> list) {
-        List<Ticket> tickets = ticketRepository.findAllByLane_Pipeline_Id(pipelineId);
+    public void changeOrder(List<TicketOrderList> list) {
+        if (list.isEmpty()) {
+            throw new IllegalArgumentException("TicketOrderList cannot be empty");
+        }
+        List<Ticket> tickets = new ArrayList<>();
+        for (TicketOrderList ticketOrderList : list) {
+            tickets.addAll(updateTicketOrderInLane(ticketOrderList));
+        }
+        ticketRepository.saveAll(tickets);
+    }
+
+    private List<Ticket> updateTicketOrderInLane(TicketOrderList ticketOrderList) {
+        String lainId = ticketOrderList.getLaneId();
+        Lane lane = laneRepository.findById(lainId)
+                .orElseThrow(() -> new AppException(ErrorCode.LANE_NOT_EXISTED));
+        List<Ticket> tickets = ticketRepository.findAllByLaneId(lainId);
         Map<String, Ticket> ticketMap = tickets.stream()
                 .collect(Collectors.toMap(Ticket::getId, ticket -> ticket));
-        for (TicketOrderDto dto : list) {
+        List<TicketOrderDto> ticketOrders = ticketOrderList.getTicketOrders();
+        for (TicketOrderDto dto : ticketOrders) {
             Ticket ticket = ticketMap.get(dto.getTicketId());
             if (ticket != null) {
                 ticket.setOrder(dto.getOrder());
-                ticket.setLane(laneRepository.findById(dto.getLaneId())
-                        .orElseThrow(() -> new AppException(ErrorCode.LANE_NOT_EXISTED)));
+            } else {
+                ticket = ticketRepository.findById(dto.getTicketId())
+                        .orElseThrow(() -> new AppException(ErrorCode.TICKET_NOT_EXISTED));
+                ticket.setOrder(dto.getOrder());
+                ticket.setLane(lane);
+                tickets.add(ticket);
             }
         }
-        ticketRepository.saveAll(tickets);
+        return tickets;
     }
 }

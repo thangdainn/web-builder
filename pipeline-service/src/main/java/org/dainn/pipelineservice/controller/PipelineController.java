@@ -2,11 +2,13 @@ package org.dainn.pipelineservice.controller;
 
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.dainn.pipelineservice.config.endpoint.Endpoint;
 import org.dainn.pipelineservice.dto.lane.LaneOrderDto;
 import org.dainn.pipelineservice.dto.pipeline.PipelineDto;
 import org.dainn.pipelineservice.dto.ticket.TicketOrderDto;
+import org.dainn.pipelineservice.dto.ticket.TicketOrderList;
 import org.dainn.pipelineservice.service.ILaneService;
 import org.dainn.pipelineservice.service.IPipelineService;
 import org.dainn.pipelineservice.service.ITicketService;
@@ -51,8 +53,8 @@ public class PipelineController {
     }
 
     @PutMapping(Endpoint.Pipeline.TICKET_ORDER)
-    public ResponseEntity<?> changeTicketOrder(@PathVariable String id, @RequestBody List<TicketOrderDto> list) {
-        ticketService.changeOrder(id, list);
+    public ResponseEntity<?> changeTicketOrder(@RequestBody @Size(max = 2, message = "List cannot contain more than 2 items") List<TicketOrderList> list) {
+        ticketService.changeOrder(list);
         return ResponseEntity.ok().build();
     }
 

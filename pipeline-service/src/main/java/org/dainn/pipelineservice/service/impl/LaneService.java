@@ -8,7 +8,9 @@ import org.dainn.pipelineservice.exception.AppException;
 import org.dainn.pipelineservice.exception.ErrorCode;
 import org.dainn.pipelineservice.mapper.ILaneMapper;
 import org.dainn.pipelineservice.model.Lane;
+import org.dainn.pipelineservice.model.Pipeline;
 import org.dainn.pipelineservice.repository.ILaneRepository;
+import org.dainn.pipelineservice.repository.IPipelineRepository;
 import org.dainn.pipelineservice.service.ILaneService;
 import org.dainn.pipelineservice.service.IPipelineService;
 import org.dainn.pipelineservice.service.ITicketService;
@@ -25,12 +27,18 @@ public class LaneService implements ILaneService {
     private final ILaneRepository laneRepository;
     private final ILaneMapper laneMapper;
     private final IPipelineService pipelineService;
+    private final IPipelineRepository pipelineRepository;
     private final ITicketService ticketService;
 
     @Transactional
     @Override
     public LaneDto create(LaneDto dto) {
+        Pipeline pipeline = pipelineRepository.findById(dto.getPipelineId())
+                .orElseThrow(() -> new AppException(ErrorCode.PIPELINE_NOT_EXISTED));
         Lane lane = laneMapper.toEntity(dto);
+        int count = laneRepository.countByPipelineId(dto.getPipelineId());
+        lane.setOrder(count);
+        lane.setPipeline(pipeline);
         return laneMapper.toDto(laneRepository.save(lane));
     }
 
