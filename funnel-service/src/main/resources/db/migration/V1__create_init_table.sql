@@ -8,7 +8,7 @@ CREATE TABLE funnels
     subDomainName           VARCHAR(255) UNIQUE,
     favicon                 TEXT,
     sub_account_id          VARCHAR(36),
-    live_products           VARCHAR(255) DEFAULT [],
+    live_products           VARCHAR(255),
     created_at              DATETIME,
     updated_at              DATETIME
 );
@@ -28,7 +28,7 @@ CREATE TABLE funnel_pages
 (
     id                VARCHAR(36) PRIMARY KEY,
     name              VARCHAR(255) NOT NULL,
-    path_name         VARCHAR(255) DEFAULT "",
+    path_name         VARCHAR(255) NOT NULL DEFAULT '',
     visits            INTEGER      DEFAULT 0,
     content           LONGTEXT,
     funnel_page_order INTEGER,
@@ -42,4 +42,4 @@ ALTER TABLE class_names
     ADD CONSTRAINT fk_funnel_id FOREIGN KEY (funnel_id) REFERENCES funnels (id);
 
 ALTER TABLE funnel_pages
-    ADD CONSTRAINT fk_funnel_id FOREIGN KEY (funnel_id) REFERENCES funnels (id);
+    ADD CONSTRAINT fk_funnel_p_id FOREIGN KEY (funnel_id) REFERENCES funnels (id);
