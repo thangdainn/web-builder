@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.dainn.userservice.config.endpoint.Endpoint;
 import org.dainn.userservice.dto.user.UserDetailDto;
 import org.dainn.userservice.dto.user.UserDto;
+import org.dainn.userservice.dto.user.UserOwnerDto;
 import org.dainn.userservice.dto.user.UserReq;
 import org.dainn.userservice.service.IUserService;
 import org.springframework.http.HttpStatus;
@@ -39,9 +40,26 @@ public class UserController {
         return ResponseEntity.ok(userService.findByEmail(email));
     }
 
+    @GetMapping(Endpoint.User.IS_OWNER)
+    public ResponseEntity<Boolean> isOwner(@PathVariable String id) {
+        return ResponseEntity.ok(userService.isOwner(id));
+    }
+
     @PostMapping
     public ResponseEntity<UserDto> create(@Valid @RequestBody UserDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(dto));
+    }
+
+    @PutMapping(Endpoint.User.SET_OWNER)
+    public ResponseEntity<Void> setOwner(@PathVariable String email, @Valid @RequestBody UserOwnerDto dto) {
+        dto.setEmail(email);
+        userService.setOwner(dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(Endpoint.User.EMAIL)
+    public ResponseEntity<UserDto> update(@PathVariable String email, @RequestBody UserDto dto) {
+        return ResponseEntity.ok(userService.update(dto));
     }
 
     @DeleteMapping

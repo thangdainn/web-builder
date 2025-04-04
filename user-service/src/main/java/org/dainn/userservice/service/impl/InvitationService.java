@@ -46,6 +46,7 @@ public class InvitationService implements IInvitationService {
                 .orElseThrow(() -> new AppException(ErrorCode.INVITATION_NOT_EXISTED));
         userInfo = userMapper.toUserInfo(userInfo, invitation);
         userService.create(userInfo);
+        invitationRepository.deleteById(invitation.getId());
     }
 
     @Transactional

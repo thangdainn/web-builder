@@ -7,7 +7,9 @@ public class Endpoint {
         public static final String BASE = API_PREFIX + "/users";
         public static final String ID = "/{id}";
         public static final String DETAIL = "/{id}/detail";
-        public static final String EMAIL = "/{email}";
+        public static final String EMAIL = "/email/{email}";
+        public static final String IS_OWNER = "/{id}/is-owner";
+        public static final String SET_OWNER = "/{email}/owner";
     }
 
     public static final class Permission {
