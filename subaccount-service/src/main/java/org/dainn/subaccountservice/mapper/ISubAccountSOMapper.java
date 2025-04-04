@@ -1,6 +1,6 @@
 package org.dainn.subaccountservice.mapper;
 
-import org.dainn.subaccountservice.dto.SubAccountSODto;
+import org.dainn.subaccountservice.dto.subaccount.SubAccountSODto;
 import org.dainn.subaccountservice.model.SubAccountSidebarOption;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

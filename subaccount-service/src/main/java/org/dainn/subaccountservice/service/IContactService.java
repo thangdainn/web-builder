@@ -1,8 +1,8 @@
 package org.dainn.subaccountservice.service;
 
 
-import org.dainn.subaccountservice.dto.ContactDto;
-import org.dainn.subaccountservice.dto.ContactReq;
+import org.dainn.subaccountservice.dto.contact.ContactDto;
+import org.dainn.subaccountservice.dto.contact.ContactReq;
 import org.springframework.data.domain.Page;
 
 public interface IContactService {

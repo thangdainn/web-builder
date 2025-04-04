@@ -1,22 +1,18 @@
-package org.dainn.subaccountservice.dto;
+package org.dainn.subaccountservice.dto.subaccount;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.dainn.subaccountservice.dto.response.TagDto;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.dainn.subaccountservice.dto.AbstractDto;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SubAccountDto extends AbstractDto{
+public class CreateSubAccount extends AbstractDto {
     private String connectAccountId;
 
     @NotNull(message = "Name is required")
@@ -50,8 +46,6 @@ public class SubAccountDto extends AbstractDto{
     @NotBlank(message = "Agency id is required")
     private String agencyId;
 
-    @Valid
-    private List<SubAccountSODto> options = new ArrayList<>();
-
-    private List<TagDto> tags = new ArrayList<>();
+    @NotNull(message = "User email is required")
+    private String userEmail;
 }

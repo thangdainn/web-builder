@@ -1,8 +1,8 @@
 package org.dainn.subaccountservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.dainn.subaccountservice.dto.ContactDto;
-import org.dainn.subaccountservice.dto.ContactReq;
+import org.dainn.subaccountservice.dto.contact.ContactDto;
+import org.dainn.subaccountservice.dto.contact.ContactReq;
 import org.dainn.subaccountservice.exception.AppException;
 import org.dainn.subaccountservice.exception.ErrorCode;
 import org.dainn.subaccountservice.mapper.IContactMapper;

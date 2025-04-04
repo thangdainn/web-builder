@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(name = "pipeline-service", path = "/api/tags")
+@FeignClient(name = "pipeline-service", path = "/api/tags", contextId = "tagClient")
 public interface ITagClient {
     @GetMapping("/sub-accounts/{id}")
     ResponseEntity<List<TagDto>> getBySubAccount(@PathVariable String id);

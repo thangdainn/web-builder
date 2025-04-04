@@ -1,6 +1,6 @@
 package org.dainn.subaccountservice.feignclient;
 
-import org.dainn.subaccountservice.dto.PermissionDto;
+import org.dainn.subaccountservice.dto.response.PermissionDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

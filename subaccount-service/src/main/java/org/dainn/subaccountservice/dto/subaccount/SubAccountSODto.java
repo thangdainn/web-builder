@@ -1,20 +1,17 @@
-package org.dainn.subaccountservice.dto;
+package org.dainn.subaccountservice.dto.subaccount;
 
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.dainn.subaccountservice.model.SubAccount;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import org.dainn.subaccountservice.dto.AbstractDto;
+import org.dainn.subaccountservice.util.enums.Icon;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@SuperBuilder
 public class SubAccountSODto extends AbstractDto {
     @NotNull(message = "Name is required")
     @NotBlank(message = "Name is required")
@@ -26,7 +23,7 @@ public class SubAccountSODto extends AbstractDto {
 
     @NotNull(message = "Icon is required")
     @NotBlank(message = "Icon is required")
-    private String icon;
+    private Icon icon;
 
     private String subAccountId;
 }

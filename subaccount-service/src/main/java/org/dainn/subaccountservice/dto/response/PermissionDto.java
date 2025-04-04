@@ -1,4 +1,4 @@
-package org.dainn.subaccountservice.dto;
+package org.dainn.subaccountservice.dto.response;
 
 import lombok.*;
 

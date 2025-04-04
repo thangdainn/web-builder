@@ -1,6 +1,7 @@
 package org.dainn.subaccountservice.mapper;
 
-import org.dainn.subaccountservice.dto.SubAccountDto;
+import org.dainn.subaccountservice.dto.subaccount.CreateSubAccount;
+import org.dainn.subaccountservice.dto.subaccount.SubAccountDto;
 import org.dainn.subaccountservice.model.SubAccount;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -10,6 +11,7 @@ import org.mapstruct.MappingTarget;
 public interface ISubAccountMapper {
     SubAccountDto toDto(SubAccount entity);
     SubAccount toEntity(SubAccountDto dto);
+    SubAccount toEntity(CreateSubAccount dto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

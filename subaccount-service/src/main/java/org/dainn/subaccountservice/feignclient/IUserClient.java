@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(name = "user-service", path = "/api/users", contextId = "userClient")
 public interface IUserClient {
-    @GetMapping("/{email}")
+    @GetMapping("/email/{email}")
     ResponseEntity<UserDto> getByEmail(@PathVariable String email);
+
+    @GetMapping("/{id}/is-owner")
+    ResponseEntity<Boolean> isOwner(@PathVariable String id);
 }

@@ -9,7 +9,9 @@ public enum ErrorCode {
     SA_NOT_EXISTED("SubAccount not existed", HttpStatus.NOT_FOUND),
 
     EMAIL_EXISTED("Email existed", HttpStatus.BAD_REQUEST),
-    CONTACT_NOT_EXISTED("Contact not existed", HttpStatus.NOT_FOUND);
+    CONTACT_NOT_EXISTED("Contact not existed", HttpStatus.NOT_FOUND),
+
+    USER_NOT_AGENCY_OWNER("User is not owner or not exists agency", HttpStatus.FORBIDDEN),;
 
 
     ErrorCode(String message, HttpStatusCode statusCode) {
