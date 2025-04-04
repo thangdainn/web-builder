@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatusCode;
 
 @Getter
 public enum ErrorCode {
-    AGENCY_NOT_EXISTED("AddOns not existed", HttpStatus.NOT_FOUND),;
+    AGENCY_NOT_EXISTED("Agency not existed", HttpStatus.NOT_FOUND),;
 
     ErrorCode(String message, HttpStatusCode statusCode) {
         this.message = message;

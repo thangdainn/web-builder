@@ -60,6 +60,5 @@ public class AgencyDto extends AbstractDto{
 
     private Integer goal = 5;
 
-    @Valid
     private List<AgencySODto> options = new ArrayList<>();
 }

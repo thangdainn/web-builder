@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SubscriptionResp {
-    private String plant;
+    private String plan;
 
     private BigDecimal price;
 

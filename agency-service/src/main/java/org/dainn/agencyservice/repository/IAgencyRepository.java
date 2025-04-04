@@ -11,7 +11,7 @@ public interface IAgencyRepository extends JpaRepository<Agency, String> {
     @Modifying
     @Query("""
                 UPDATE Agency a
-                SET a.goal = a.goal
+                SET a.goal = :goal
                 WHERE a.id = :id
             """)
     void updateGoal(String id, Integer goal);

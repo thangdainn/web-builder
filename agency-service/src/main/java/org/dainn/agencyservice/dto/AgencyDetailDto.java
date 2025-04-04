@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -38,5 +39,6 @@ public class AgencyDetailDto extends AbstractDto{
 
     private Integer goal = 5;
 
+    private List<AgencySODto> options = new ArrayList<>();
     private List<SubscriptionResp> subscriptions;
 }
