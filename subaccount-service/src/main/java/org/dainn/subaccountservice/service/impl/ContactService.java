@@ -50,13 +50,13 @@ public class ContactService implements IContactService {
     }
 
     @Override
-    public Page<ContactDto> findBySA(ContactReq request) {
+    public Page<ContactDto> findBySA(String subAccountId, ContactReq request) {
         Pageable pageable = Paging.getPageable(request);
         Page<Contact> result;
         if (StringUtils.hasText(request.getKeyword())) {
-            result = contactRepository.findBySubAccountIdAndEmailContainingIgnoreCase(request.getSubAccountId(), request.getKeyword(), pageable);
+            result = contactRepository.findBySubAccountIdAndEmailContainingIgnoreCase(subAccountId, request.getKeyword(), pageable);
         } else {
-            result = contactRepository.findBySubAccountId(request.getSubAccountId(), pageable);
+            result = contactRepository.findBySubAccountId(subAccountId, pageable);
         }
         return result.map(contactMapper::toDto);
     }

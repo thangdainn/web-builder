@@ -12,5 +12,4 @@ import org.dainn.subaccountservice.dto.PageRequest;
 @AllArgsConstructor
 public class ContactReq extends PageRequest {
     private String keyword;
-    private String subAccountId;
 }

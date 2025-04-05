@@ -19,8 +19,7 @@ public class ContactController {
 
     @GetMapping(Endpoint.Contact.SUB_ACCOUNT)
     public ResponseEntity<?> getAll(@PathVariable String id, @ModelAttribute ContactReq request) {
-        request.setSubAccountId(id);
-        return ResponseEntity.ok(contactService.findBySA(request));
+        return ResponseEntity.ok(contactService.findBySA(id, request));
     }
 
     @GetMapping(Endpoint.Contact.ID)

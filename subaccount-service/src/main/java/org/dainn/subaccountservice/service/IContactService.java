@@ -9,5 +9,5 @@ public interface IContactService {
     ContactDto create(ContactDto dto);
     void deleteById(String id);
     ContactDto findById(String id);
-    Page<ContactDto> findBySA(ContactReq request);
+    Page<ContactDto> findBySA(String subAccountId, ContactReq request);
 }
