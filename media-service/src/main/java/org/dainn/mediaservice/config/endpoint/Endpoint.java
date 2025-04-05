@@ -5,8 +5,8 @@ public class Endpoint {
 
     public static final class Media {
         public static final String BASE = API_PREFIX + "/medias";
-        public static final String UPLOAD = BASE + "/medias/upload";
+        public static final String UPLOAD = "/upload";
         public static final String ID = "/{id}";
-        public static final String SUBACCOUNT = "/sub-account/{id}";
+        public static final String SUB_ACCOUNT = "/sub-account/{id}";
     }
 }

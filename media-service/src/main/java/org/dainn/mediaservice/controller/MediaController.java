@@ -9,6 +9,9 @@ import org.dainn.mediaservice.dto.MediaReq;
 import org.dainn.mediaservice.service.IMediaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping(Endpoint.Media.BASE)
@@ -21,7 +24,7 @@ public class MediaController {
         return ResponseEntity.ok(mediaService.findById(id));
     }
 
-    @GetMapping(Endpoint.Media.SUBACCOUNT)
+    @GetMapping(Endpoint.Media.SUB_ACCOUNT)
     public ResponseEntity<?> getByFilters(@PathVariable String id, @ModelAttribute MediaReq request) {
         request.setSubAccountId(id);
         return ResponseEntity.ok(mediaService.findByFilters(request));
@@ -32,8 +35,14 @@ public class MediaController {
         return ResponseEntity.ok(mediaService.create(dto));
     }
 
+    @PostMapping(Endpoint.Media.UPLOAD)
+    public ResponseEntity<?> upload(@Valid @RequestPart("file") MultipartFile file) throws IOException {
+        return ResponseEntity.ok(mediaService.upload(file));
+    }
+
     @DeleteMapping
     public ResponseEntity<?> delete(String id) {
-        return ResponseEntity.ok(mediaService.delete(id));
+        mediaService.delete(id);
+        return ResponseEntity.ok().build();
     }
 }
