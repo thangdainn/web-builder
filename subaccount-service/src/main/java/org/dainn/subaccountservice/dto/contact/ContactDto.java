@@ -3,13 +3,14 @@ package org.dainn.subaccountservice.dto.contact;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.dainn.subaccountservice.dto.AbstractDto;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 public class ContactDto extends AbstractDto {
     @NotNull(message = "Name is required")
     @NotBlank(message = "Name is required")

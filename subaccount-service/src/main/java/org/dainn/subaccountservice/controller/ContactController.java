@@ -17,8 +17,9 @@ import org.springframework.web.bind.annotation.*;
 public class ContactController {
     private final IContactService contactService;
 
-    @GetMapping
-    public ResponseEntity<?> getAll(@ModelAttribute ContactReq request) {
+    @GetMapping(Endpoint.Contact.SUB_ACCOUNT)
+    public ResponseEntity<?> getAll(@PathVariable String id, @ModelAttribute ContactReq request) {
+        request.setSubAccountId(id);
         return ResponseEntity.ok(contactService.findBySA(request));
     }
 
