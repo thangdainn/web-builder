@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.dainn.mediaservice.dto.FirebaseResponse;
 import org.dainn.mediaservice.dto.MediaDto;
 import org.dainn.mediaservice.dto.MediaReq;
+import org.dainn.mediaservice.event.EventProducer;
+import org.dainn.mediaservice.event.NotificationEvent;
 import org.dainn.mediaservice.exception.AppException;
 import org.dainn.mediaservice.exception.ErrorCode;
 import org.dainn.mediaservice.mapper.IMediaMapper;
@@ -28,6 +30,7 @@ public class MediaService implements IMediaService {
     private final IMediaRepository mediaRepository;
     private final IMediaMapper mediaMapper;
     private final IFirebaseService firebaseService;
+    private final EventProducer eventProducer;
 
     @Transactional
     @Override
@@ -44,8 +47,15 @@ public class MediaService implements IMediaService {
 
     @Transactional
     @Override
-    public void delete(String id) {
-        mediaRepository.deleteById(id);
+    public void delete(String id, String userId) throws Exception {
+        Media media = mediaRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.MEDIA_NOT_EXISTED));
+//        mediaRepository.deleteById(id);
+        eventProducer.sendEvent(NotificationEvent.builder()
+                .notification("Deleted a media file " + media.getName())
+                .subAccountId(media.getSubAccountId())
+                .userId(userId)
+                .build());
     }
 
     @Override
