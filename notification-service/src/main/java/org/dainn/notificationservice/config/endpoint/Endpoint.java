@@ -5,7 +5,6 @@ public class Endpoint {
 
     public static final class Notification {
         public static final String BASE = API_PREFIX + "/notifications";
-        public static final String subAccountId = "/sub-account";
-        public static final String userId = "/user";
+        public static final String AGENCY = "/agency/{id}";
     }
 }

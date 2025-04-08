@@ -3,6 +3,7 @@ package org.dainn.notificationservice.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.dainn.notificationservice.config.endpoint.Endpoint;
+import org.dainn.notificationservice.dto.NotificationDetailDto;
 import org.dainn.notificationservice.dto.NotificationDto;
 import org.dainn.notificationservice.dto.NotificationRequest;
 import org.dainn.notificationservice.service.INotificationService;
@@ -18,18 +19,13 @@ import reactor.core.publisher.Mono;
 public class NotificationController {
     private final INotificationService notificationService;
 
-    @GetMapping(Endpoint.Notification.userId)
-    public ResponseEntity<Mono<Page<NotificationDto>>> getAllByUserAndAgency(@ModelAttribute NotificationRequest request) {
-        return ResponseEntity.ok(notificationService.findByUserAndAgency(request));
+    @GetMapping(Endpoint.Notification.AGENCY)
+    public ResponseEntity<Mono<Page<NotificationDetailDto>>> getAllByAgency(@PathVariable String id, @ModelAttribute NotificationRequest request) {
+        return ResponseEntity.ok(notificationService.findByAgency(id, request));
     }
 
-    @GetMapping(Endpoint.Notification.subAccountId)
-    public ResponseEntity<Mono<Page<NotificationDto>>> getAllBySubAccountAndAgency(@ModelAttribute NotificationRequest request) {
-        return ResponseEntity.ok(notificationService.findBySubAccountAndAgency(request));
-    }
-
-    @PostMapping
-    public ResponseEntity<Mono<NotificationDto>> create(@RequestBody NotificationDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.create(dto));
-    }
+//    @PostMapping
+//    public ResponseEntity<Mono<NotificationDto>> create(@RequestBody NotificationDto dto) {
+//        return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.create(dto));
+//    }
 }

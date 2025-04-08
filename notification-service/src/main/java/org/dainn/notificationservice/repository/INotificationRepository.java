@@ -8,6 +8,6 @@ import reactor.core.publisher.Flux;
 
 @Repository
 public interface INotificationRepository extends R2dbcRepository<Notification, String> {
-    Flux<Notification> findByUserIdAndAgencyId(String userId, String agencyId, Pageable pageable);
-    Flux<Notification> findBySubAccountIdAndAgencyId(String subAccountId, String agencyId, Pageable pageable);
+    Flux<Notification> findByAgencyId(String agencyId, Pageable pageable);
+//    Flux<Notification> findBySubAccountIdAndAgencyId(String subAccountId, String agencyId, Pageable pageable);
 }
