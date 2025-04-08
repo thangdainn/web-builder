@@ -24,4 +24,6 @@ public interface IFunnelRepository extends R2dbcRepository<Funnel, String> {
             WHERE id = :id
             """)
     Mono<Integer> updateLiveProducts(String id, String liveProducts);
+
+    Mono<Boolean> existsBySubDomainName(String subDomainName);
 }

@@ -14,5 +14,5 @@ public interface IFunnelService {
     Mono<FunnelDetailDto> findDetailById(String id);
     Mono<FunnelDetailDto> findDetailByDomain(String domain);
     Mono<Void> delete(String id);
-    Mono<Page<FunnelDto>> findByFilters(FunnelReq request);
+    Mono<Page<FunnelDto>> findByFilters(String subAccountId, FunnelReq request);
 }

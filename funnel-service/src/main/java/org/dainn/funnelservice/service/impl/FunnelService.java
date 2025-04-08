@@ -32,10 +32,17 @@ public class FunnelService implements IFunnelService {
     @Transactional
     @Override
     public Mono<FunnelDto> create(FunnelDto dto) {
-        Funnel funnel = funnelMapper.toEntity(dto);
-        funnel.markNew();
-        return funnelRepository.save(funnel)
-                .map(funnelMapper::toDto);
+        return funnelRepository.existsBySubDomainName(dto.getSubDomainName())
+                .flatMap(exists -> {
+                    if (exists) {
+                        return Mono.error(new AppException(ErrorCode.DOMAIN_ALREADY_EXISTED ));
+                    }
+                    Funnel funnel = funnelMapper.toEntity(dto);
+                    funnel.markNew();
+                    return funnelRepository.save(funnel)
+                            .map(funnelMapper::toDto);
+                });
+
     }
 
     @Transactional
@@ -109,16 +116,16 @@ public class FunnelService implements IFunnelService {
     }
 
     @Override
-    public Mono<Page<FunnelDto>> findByFilters(FunnelReq request) {
+    public Mono<Page<FunnelDto>> findByFilters(String subAccountId, FunnelReq request) {
         Pageable pageable = Paging.getPageable(request);
         Mono<Page<Funnel>> page;
         if (StringUtils.hasText(request.getKeyword())) {
-            page = funnelRepository.findAllBySubAccountIdAndNameContainingIgnoreCase(request.getKeyword(), request.getSubAccountId(), pageable)
+            page = funnelRepository.findAllBySubAccountIdAndNameContainingIgnoreCase(request.getKeyword(), subAccountId, pageable)
                     .collectList()
                     .zipWith(funnelRepository.count())
                     .map(m -> new PageImpl<>(m.getT1(), pageable, m.getT2()));
         } else {
-            page = funnelRepository.findAllBySubAccountId(request.getSubAccountId(), pageable)
+            page = funnelRepository.findAllBySubAccountId(subAccountId, pageable)
                     .collectList()
                     .zipWith(funnelRepository.count())
                     .map(m -> new PageImpl<>(m.getT1(), pageable, m.getT2()));

@@ -7,6 +7,9 @@ public class Endpoint {
         public static final String BASE = API_PREFIX + "/funnels";
         public static final String ID = "/{id}";
         public static final String DETAIL = "/{id}/detail";
+        public static final String SUB_ACCOUNT = "/sub-accounts/{id}";
+        public static final String PRODUCTS = "/{id}/products";
+        public static final String DOMAIN = "/domain/{domain}";
     }
 
     public static final class FunnelPage {

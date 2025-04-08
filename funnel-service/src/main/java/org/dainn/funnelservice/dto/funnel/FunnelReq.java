@@ -12,5 +12,4 @@ import org.dainn.funnelservice.dto.PageRequest;
 @AllArgsConstructor
 public class FunnelReq extends PageRequest {
     private String keyword;
-    private String subAccountId;
 }

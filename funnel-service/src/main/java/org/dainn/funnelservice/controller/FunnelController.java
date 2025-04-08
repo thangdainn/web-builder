@@ -17,9 +17,14 @@ import org.springframework.web.bind.annotation.*;
 public class FunnelController {
     private final IFunnelService funnelService;
 
-    @GetMapping
-    public ResponseEntity<?> findAll(@ModelAttribute FunnelReq request) {
-        return ResponseEntity.ok(funnelService.findByFilters(request));
+    @GetMapping(Endpoint.Funnel.SUB_ACCOUNT)
+    public ResponseEntity<?> findAll(@PathVariable String id, @ModelAttribute FunnelReq request) {
+        return ResponseEntity.ok(funnelService.findByFilters(id, request));
+    }
+
+    @GetMapping(Endpoint.Funnel.DOMAIN)
+    public ResponseEntity<?> findByDomain(@PathVariable String domain) {
+        return ResponseEntity.ok(funnelService.findDetailByDomain(domain));
     }
 
     @GetMapping(Endpoint.Funnel.ID)
@@ -41,6 +46,12 @@ public class FunnelController {
     public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody FunnelDto dto) {
         dto.setId(id);
         return ResponseEntity.ok(funnelService.update(dto));
+    }
+
+    @PutMapping(Endpoint.Funnel.PRODUCTS)
+    public ResponseEntity<?> updateProducts(@PathVariable String id, @RequestBody FunnelDto dto) {
+        dto.setId(id);
+        return ResponseEntity.ok(funnelService.updateLiveProducts(dto));
     }
 
     @DeleteMapping

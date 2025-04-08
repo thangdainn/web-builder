@@ -24,12 +24,17 @@ public class FunnelPageService implements IFunnelPageService {
     @Transactional
     @Override
     public Mono<FunnelPageDto> create(FunnelPageDto dto) {
-        funnelRepository.findById(dto.getId())
-                .switchIfEmpty(Mono.error(new AppException(ErrorCode.FUNNEL_NOT_EXISTED)));
-        FunnelPage funnelPage = funnelPageMapper.toEntity(dto);
-        funnelPage.markNew();
-        return funnelPageRepository.save(funnelPage)
-                .map(funnelPageMapper::toDto);
+        return funnelRepository.existsById(dto.getFunnelId())
+                .flatMap(exists -> {
+                    if (!exists) {
+                        return Mono.error(new AppException(ErrorCode.FUNNEL_NOT_EXISTED));
+                    }
+                    FunnelPage funnelPage = funnelPageMapper.toEntity(dto);
+                    funnelPage.markNew();
+                    return funnelPageRepository.save(funnelPage)
+                            .map(funnelPageMapper::toDto);
+                });
+
     }
 
     @Transactional
