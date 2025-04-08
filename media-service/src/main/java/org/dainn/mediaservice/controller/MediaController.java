@@ -41,8 +41,8 @@ public class MediaController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> delete(String id, @RequestHeader("X-User-Id") String userId) throws Exception {
-        mediaService.delete(id, userId);
+    public ResponseEntity<?> delete(String id) throws Exception {
+        mediaService.delete(id);
         return ResponseEntity.ok().build();
     }
 }
