@@ -6,6 +6,7 @@ public class Endpoint {
     public static final class SubAccount {
         public static final String BASE = API_PREFIX + "/sub-accounts";
         public static final String ID = "/{id}";
+        public static final String DETAIL = "/{id}/detail";
     }
 
     public static final class Contact {

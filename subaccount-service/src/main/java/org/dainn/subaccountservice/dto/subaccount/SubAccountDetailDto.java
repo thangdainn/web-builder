@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SubAccountDto extends AbstractDto {
+public class SubAccountDetailDto extends AbstractDto {
     private String connectAccountId;
 
     @NotNull(message = "Name is required")

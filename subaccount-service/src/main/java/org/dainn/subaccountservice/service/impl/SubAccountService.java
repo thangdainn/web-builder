@@ -6,6 +6,7 @@ import org.dainn.subaccountservice.dto.response.PipelineDto;
 import org.dainn.subaccountservice.dto.response.TagDto;
 import org.dainn.subaccountservice.dto.response.UserDto;
 import org.dainn.subaccountservice.dto.subaccount.CreateSubAccount;
+import org.dainn.subaccountservice.dto.subaccount.SubAccountDetailDto;
 import org.dainn.subaccountservice.dto.subaccount.SubAccountDto;
 import org.dainn.subaccountservice.dto.subaccount.SubAccountReq;
 import org.dainn.subaccountservice.exception.AppException;
@@ -41,7 +42,7 @@ public class SubAccountService implements ISubAccountService {
 
     @Transactional
     @Override
-    public SubAccountDto create(CreateSubAccount dto) {
+    public SubAccountDetailDto create(CreateSubAccount dto) {
         UserDto userDto = userClient.getByEmail(dto.getUserEmail()).getBody();
         assert userDto != null;
         if (!userDto.getRole().equals("AGENCY_OWNER") || !userDto.getAgencyId().equals(dto.getAgencyId())) {
@@ -49,7 +50,7 @@ public class SubAccountService implements ISubAccountService {
         }
         SubAccount entity = subAccountMapper.toEntity(dto);
         entity = subAccountRepository.save(entity);
-        SubAccountDto newSA = subAccountMapper.toDto(entity);
+        SubAccountDetailDto newSA = subAccountMapper.toDetailDto(entity);
         newSA.setOptions(subAccountSOService.create(entity));
         PermissionDto permissionDto = PermissionDto.builder()
                 .access(true)
@@ -73,13 +74,19 @@ public class SubAccountService implements ISubAccountService {
 
     @Transactional
     @Override
-    public SubAccountDto update(SubAccountDto dto) {
+    public SubAccountDetailDto update(SubAccountDetailDto dto) {
         return null;
     }
 
     @Override
     public SubAccountDto findById(String id) {
-        SubAccountDto dto = subAccountMapper.toDto(subAccountRepository.findById(id)
+        return subAccountMapper.toDto(subAccountRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.SA_NOT_EXISTED)));
+    }
+
+    @Override
+    public SubAccountDetailDto findDetailById(String id) {
+        SubAccountDetailDto dto = subAccountMapper.toDetailDto(subAccountRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.SA_NOT_EXISTED)));
         dto.setOptions(subAccountSOService.findBySA(dto.getId()));
         List<TagDto> tags = tagClient.getBySubAccount(id).getBody();
@@ -88,14 +95,14 @@ public class SubAccountService implements ISubAccountService {
     }
 
     @Override
-    public Page<SubAccountDto> findAll(SubAccountReq request) {
+    public Page<SubAccountDetailDto> findAll(SubAccountReq request) {
         Pageable pageable = Paging.getPageable(request);
         if (StringUtils.hasText(request.getKeyword())) {
             return subAccountRepository.findAllByNameContainingIgnoreCase(request.getKeyword(), pageable)
-                    .map(subAccountMapper::toDto);
+                    .map(subAccountMapper::toDetailDto);
         } else {
             return subAccountRepository.findAll(pageable)
-                    .map(subAccountMapper::toDto);
+                    .map(subAccountMapper::toDetailDto);
         }
     }
 }

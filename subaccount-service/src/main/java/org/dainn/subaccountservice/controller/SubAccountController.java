@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.dainn.subaccountservice.config.endpoint.Endpoint;
 import org.dainn.subaccountservice.dto.subaccount.CreateSubAccount;
-import org.dainn.subaccountservice.dto.subaccount.SubAccountDto;
 import org.dainn.subaccountservice.dto.subaccount.SubAccountReq;
 import org.dainn.subaccountservice.service.ISubAccountService;
 import org.springframework.http.HttpStatus;
@@ -24,8 +23,13 @@ public class SubAccountController {
     }
 
     @GetMapping(Endpoint.SubAccount.ID)
-    public ResponseEntity<?> get(@PathVariable String id) {
+    public ResponseEntity<?> getById(@PathVariable String id) {
         return ResponseEntity.ok(subAccountService.findById(id));
+    }
+
+    @GetMapping(Endpoint.SubAccount.DETAIL)
+    public ResponseEntity<?> getDetailById(@PathVariable String id) {
+        return ResponseEntity.ok(subAccountService.findDetailById(id));
     }
 
     @PostMapping
