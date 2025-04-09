@@ -24,8 +24,8 @@ public class NotificationController {
         return ResponseEntity.ok(notificationService.findByAgency(id, request));
     }
 
-//    @PostMapping
-//    public ResponseEntity<Mono<NotificationDto>> create(@RequestBody NotificationDto dto) {
-//        return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.create(dto));
-//    }
+    @PostMapping
+    public ResponseEntity<Mono<Void>> create(@RequestBody NotificationDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.createWithKafka(dto));
+    }
 }

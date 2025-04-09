@@ -9,5 +9,6 @@ import reactor.core.publisher.Mono;
 
 public interface INotificationService {
     Mono<NotificationDto> create(NotificationDto dto);
+    Mono<Void> createWithKafka(NotificationDto dto);
     Mono<Page<NotificationDetailDto>> findByAgency(String agencyId, NotificationRequest request);
 }

@@ -3,14 +3,19 @@ package org.dainn.notificationservice.event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.dainn.notificationservice.dto.NotificationDto;
 import org.dainn.notificationservice.service.impl.NotificationService;
-import org.dainn.notificationservice.webclient.SubAccountWC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,60 +23,65 @@ import reactor.core.scheduler.Schedulers;
 public class EventConsumer {
     private final NotificationService notificationService;
     private final ObjectMapper objectMapper;
-    private final SubAccountWC subAccountClient;
-//    private final SimpMessagingTemplate messagingTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
-    @KafkaListener(topics = "media-events", groupId = "notification-service-group")
-    public void handleMediaEvent(@Payload String rawJson) {
-        try {
-            NotificationDto dto = objectMapper.readValue(rawJson, NotificationDto.class);
-            if (dto.getSubAccountId() != null) {
-                getSubAccount(dto)
-                        .doOnNext(n -> log.info("Enriched notification: {}", n))
-                        .subscribe();
-            } else {
-                log.warn("SubAccountId is null, skipping enrichment for notification: {}", dto);
-            }
+    @Value("${kafka.topic.dead-letter}")
+    private String deadLetterTopic;
 
-            Mono.just(dto)
-                    .doOnNext(n -> log.info("Received media notification: {}", n))
-                    .flatMap(this::processMessage)
-                    .subscribeOn(Schedulers.boundedElastic())
-                    .subscribe();
+    @KafkaListener(
+            topics = {"create-events", "update-events", "delete-events"},
+            groupId = "${spring.kafka.consumer.group-id:notification-service-group}",
+            concurrency = "${spring.kafka.listener.concurrency:3}"
+    )
+    public void handleEvents(List<ConsumerRecord<String, String>> records) {
+        log.info("Received batch of {} events from Kafka", records.size());
 
-        } catch (Exception e) {
-            log.error("Failed to process message: {}", rawJson, e);
-        }
+        Flux.fromIterable(records)
+                .flatMap(record -> processEvent(record)
+                        .onErrorResume(error -> {
+                            log.error("Failed to process event from topic {}: {}", record.topic(), record.value(), error);
+                            return sendToDeadLetterQueue(record);
+                        }), 10)
+                .subscribeOn(Schedulers.boundedElastic())
+                .subscribe();
+    }
+
+    private Mono<Void> processEvent(ConsumerRecord<String, String> record) {
+        return Mono.fromCallable(() -> objectMapper.readValue(record.value(), NotificationDto.class))
+                .doOnNext(dto -> log.info("Received event from topic {}: {}", record.topic(), dto))
+                .flatMap(this::processMessage)
+                .doOnError(error -> log.error("Error processing event from topic {}: {}", record.topic(), record.value(), error));
     }
 
     private Mono<Void> processMessage(NotificationDto dto) {
         return notificationService.create(dto)
-                .doOnNext(n -> {
-                    log.info("Notification saved: {}", n.getId());
-//                    sendWebSocketNotification(n);
+                .doOnNext(savedDto -> {
+                    log.info("Notification saved: {}", savedDto.getId());
+                    sendWebSocketNotification(savedDto);
                 })
                 .then();
     }
 
-    private Mono<NotificationDto> getSubAccount(NotificationDto dto) {
-        return subAccountClient.getById(dto.getSubAccountId())
-                .map(subAccount -> {
-                    dto.setAgencyId(subAccount.getAgencyId());
-                    return dto;
-                })
-                .doOnError(e -> log.error("Failed to enrich notification with sub account: {}", dto, e))
-                .thenReturn(dto);
+    private void sendWebSocketNotification(NotificationDto dto) {
+        messagingTemplate.convertAndSendToUser(
+                dto.getAgencyId(),
+                "/topic/notifications",
+                dto
+        );
     }
 
-//    private void sendWebSocketNotification(NotificationDto dto) {
-//        // Gửi thông báo tới tất cả client subscribe vào /topic/notifications
-//        messagingTemplate.convertAndSend("/topic/notifications", dto);
-//
-//        // (Tùy chọn) Gửi thông báo tới một user cụ thể (dựa trên userId)
-//        messagingTemplate.convertAndSendToUser(
-//                dto.getAgencyId(),
-//                "/topic/notifications",
-//                dto
-//        );
-//    }
+    private Mono<Void> sendToDeadLetterQueue(ConsumerRecord<String, String> record) {
+        return Mono.fromRunnable(() -> {
+            kafkaTemplate.send(deadLetterTopic, record.key(), record.value())
+                    .whenComplete((result, ex) -> {
+                        if (ex == null) {
+                            log.info("Sent failed event to dead-letter topic {}: {}", deadLetterTopic, record.value());
+                        } else {
+                            log.error("Failed to send event to dead-letter topic {}: {}", deadLetterTopic, ex.getMessage());
+                        }
+                    });
+        });
+    }
+
 }

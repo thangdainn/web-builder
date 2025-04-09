@@ -16,20 +16,24 @@ public class NotificationDto {
     private String id;
 
     @NotNull(message = "Content is required")
-    @NotBlank(message = "Agency ID is required")
+    @NotBlank(message = "Content is required")
     private String notification;
 
-    @NotNull(message = "Agency Id is required")
-    @NotBlank(message = "Agency ID is required")
+//    @NotNull(message = "Agency Id is required")
+//    @NotBlank(message = "Agency ID is required")
     private String agencyId;
 
-    @NotNull(message = "SubAccount Id is required")
-    @NotBlank(message = "SubAccount ID is required")
+//    @NotNull(message = "SubAccount Id is required")
+//    @NotBlank(message = "SubAccount ID is required")
     private String subAccountId;
 
     @NotNull(message = "User Id is required")
     @NotBlank(message = "User ID is required")
     private String userId;
+
+    @NotNull(message = "Action is required")
+    @NotBlank(message = "Action is required")
+    private String action;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
