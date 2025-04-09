@@ -11,7 +11,7 @@ import java.io.IOException;
 public interface IMediaService {
     MediaDto create(MediaDto dto);
     MediaDto findById(String id);
-    void delete(String id) throws Exception;
+    void delete(String id);
     Page<MediaDto> findByFilters(MediaReq request);
 
     FirebaseResponse upload(MultipartFile file) throws IOException;
