@@ -14,8 +14,6 @@ public enum ErrorCode {
 
     TAG_NOT_EXISTED("Tag not existed", HttpStatus.NOT_FOUND);
 
-
-
     ErrorCode(String message, HttpStatusCode statusCode) {
         this.message = message;
         this.statusCode = statusCode;

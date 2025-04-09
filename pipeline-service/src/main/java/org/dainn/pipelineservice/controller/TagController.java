@@ -27,12 +27,12 @@ public class TagController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody TagDto dto) {
+    public ResponseEntity<?> create(@Valid @RequestBody TagDto dto) throws Exception {
         return ResponseEntity.status(HttpStatus.CREATED).body(tagService.create(dto));
     }
 
     @PutMapping(Endpoint.Tag.ID)
-    public ResponseEntity<?> update(@PathVariable String id, @RequestBody TagDto dto) {
+    public ResponseEntity<?> update(@PathVariable String id, @RequestBody TagDto dto) throws Exception {
         dto.setId(id);
         return ResponseEntity.ok(tagService.update(dto));
     }

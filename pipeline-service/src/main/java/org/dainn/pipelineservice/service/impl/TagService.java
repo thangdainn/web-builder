@@ -1,6 +1,7 @@
 package org.dainn.pipelineservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dainn.pipelineservice.dto.tag.TagDto;
 import org.dainn.pipelineservice.exception.AppException;
 import org.dainn.pipelineservice.exception.ErrorCode;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TagService implements ITagService {
@@ -44,6 +46,9 @@ public class TagService implements ITagService {
     @Transactional
     @Override
     public void delete(String id) {
+        if (tagRepository.existsById(id)) {
+            throw new AppException(ErrorCode.TAG_NOT_EXISTED);
+        }
         tagRepository.deleteById(id);
     }
 
