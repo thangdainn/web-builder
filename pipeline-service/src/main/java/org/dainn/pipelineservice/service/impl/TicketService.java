@@ -19,6 +19,7 @@ import org.dainn.pipelineservice.repository.ITicketRepository;
 import org.dainn.pipelineservice.service.ITicketService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,21 +64,13 @@ public class TicketService implements ITicketService {
         TicketDto ticketDto = ticketMapper.toDto(ticket);
         ticketDto.setTags(ticket.getTags()
                 .stream().map(tagMapper::toDto).toList());
-        if (ticket.getAssignedUserId() != null) {
-            try {
-                ticketDto.setAssignedName(Objects.requireNonNull(userClient.getById(ticket.getAssignedUserId())
-                        .getBody()).getName());
-            } catch (Exception e) {
-                ticketDto.setAssignedName("Unknown");
-            }
+        if (StringUtils.hasText(ticket.getAssignedUserId())) {
+            ticketDto.setAssignedName(Objects.requireNonNull(userClient.getById(ticket.getAssignedUserId())
+                    .getBody()).getName());
         }
-        if (ticket.getCustomerId() != null) {
-            try {
-                ticketDto.setCustomerName(Objects.requireNonNull(contactClient.getById(ticket.getCustomerId())
-                        .getBody()).getName());
-            } catch (Exception e) {
-                ticketDto.setCustomerName("Unknown");
-            }
+        if (StringUtils.hasText(ticket.getCustomerId())) {
+            ticketDto.setCustomerName(Objects.requireNonNull(contactClient.getById(ticket.getCustomerId())
+                    .getBody()).getName());
         }
         return ticketDto;
     }

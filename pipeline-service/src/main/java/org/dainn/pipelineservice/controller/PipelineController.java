@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.dainn.pipelineservice.config.endpoint.Endpoint;
 import org.dainn.pipelineservice.dto.lane.LaneOrderDto;
 import org.dainn.pipelineservice.dto.pipeline.PipelineDto;
-import org.dainn.pipelineservice.dto.ticket.TicketOrderDto;
 import org.dainn.pipelineservice.dto.ticket.TicketOrderList;
 import org.dainn.pipelineservice.service.ILaneService;
 import org.dainn.pipelineservice.service.IPipelineService;
