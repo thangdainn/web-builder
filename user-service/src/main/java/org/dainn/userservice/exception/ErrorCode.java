@@ -13,7 +13,7 @@ public enum ErrorCode {
     INVITATION_NOT_EXISTED("Invitation not existed", HttpStatus.NOT_FOUND),
 
     PERMISSION_EXISTED("Permission existed", HttpStatus.BAD_REQUEST),
-    PERMISSION_NOT_EXISTED("Permission not existed", HttpStatus.NOT_FOUND);
+    PERMISSION_NOT_EXISTED("Permission not existed", HttpStatus.NOT_FOUND),;
 
     ErrorCode(String message, HttpStatusCode statusCode) {
         this.message = message;
