@@ -2,8 +2,6 @@ package org.dainn.pipelineservice.feignclient;
 
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
-import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.dainn.pipelineservice.dto.response.ContactDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +16,12 @@ public interface IContactClient {
     Logger log = LoggerFactory.getLogger(IContactClient.class);
 
     @CircuitBreaker(name = "contactService", fallbackMethod = "fallbackContact")
-    @Retry(name = "contactService")
     @Bulkhead(name = "contactService")
     @GetMapping("/{id}")
     ResponseEntity<ContactDto> getById(@PathVariable String id);
 
     default ResponseEntity<ContactDto> fallbackContact(String id, Throwable t) {
-        log.warn("Fallback triggered for contact service. ID: {}, Error: {}", id, t.getMessage(), t);
+        log.warn("Fallback triggered for contact service. ID: {}, Error: {}", id, t.getMessage());
         return ResponseEntity.ok(new ContactDto("unknown", "unknown"));
     }
 }
