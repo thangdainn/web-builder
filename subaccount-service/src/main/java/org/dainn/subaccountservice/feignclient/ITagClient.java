@@ -2,7 +2,6 @@ package org.dainn.subaccountservice.feignclient;
 
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
 import org.dainn.subaccountservice.dto.response.TagDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,6 @@ public interface ITagClient {
     Logger log = LoggerFactory.getLogger(ITagClient.class);
 
     @CircuitBreaker(name = "pipeService", fallbackMethod = "fallbackTag")
-    @Retry(name = "pipeService")
     @Bulkhead(name = "pipeService")
     @GetMapping("/sub-accounts/{id}")
     ResponseEntity<List<TagDto>> getBySubAccount(@PathVariable String id);
