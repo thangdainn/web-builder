@@ -59,6 +59,7 @@ public class UserController {
 
     @PutMapping(Endpoint.User.EMAIL)
     public ResponseEntity<UserDto> update(@PathVariable String email, @RequestBody UserDto dto) {
+        dto.setEmail(email);
         return ResponseEntity.ok(userService.update(dto));
     }
 

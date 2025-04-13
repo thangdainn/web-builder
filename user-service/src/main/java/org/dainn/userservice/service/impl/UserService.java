@@ -1,11 +1,10 @@
 package org.dainn.userservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dainn.userservice.dto.permission.PermissionDto;
-import org.dainn.userservice.dto.user.UserDetailDto;
-import org.dainn.userservice.dto.user.UserDto;
-import org.dainn.userservice.dto.user.UserOwnerDto;
-import org.dainn.userservice.dto.user.UserReq;
+import org.dainn.userservice.dto.user.*;
+import org.dainn.userservice.event.EventProducer;
 import org.dainn.userservice.exception.AppException;
 import org.dainn.userservice.exception.ErrorCode;
 import org.dainn.userservice.mapper.IPermissionMapper;
@@ -22,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService implements IUserService {
@@ -29,6 +29,7 @@ public class UserService implements IUserService {
     private final IPermissionRepository permissionRepository;
     private final IUserMapper userMapper;
     private final IPermissionMapper permissionMapper;
+    private final EventProducer eventProducer;
 
     @Transactional
     @Override
@@ -38,14 +39,21 @@ public class UserService implements IUserService {
                     throw new AppException(ErrorCode.USER_EXISTED);
                 });
         User user = userMapper.toEntity(dto);
-        return userMapper.toDto(userRepository.save(user));
+        User newUser = userRepository.save(user);
+        log.info("Created new user: {}", newUser);
+
+        eventProducer.sendUserEvent(UserProducer.toProducer(newUser, List.of()));
+        return userMapper.toDto(newUser);
     }
 
     @Transactional
     @Override
     public void delete(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         permissionRepository.deleteById(id);
         userRepository.deleteById(id);
+        eventProducer.sendUserEvent(UserProducer.toProducer(user, List.of()));
     }
 
     @Transactional
@@ -54,7 +62,10 @@ public class UserService implements IUserService {
         User old = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         old = userMapper.toUpdate(old, dto);
-        return userMapper.toDto(userRepository.save(old));
+        old = userRepository.save(old);
+        log.info("Updated user: {}", old);
+        eventProducer.sendUserEvent(UserProducer.toProducer(old, List.of()));
+        return userMapper.toDto(old);
     }
 
     @Override

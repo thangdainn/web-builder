@@ -1,6 +1,7 @@
 package org.dainn.subaccountservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.dainn.subaccountservice.dto.UserProducer;
 import org.dainn.subaccountservice.dto.response.PermissionDto;
 import org.dainn.subaccountservice.dto.response.PipelineDto;
 import org.dainn.subaccountservice.dto.response.TagDto;
@@ -9,6 +10,7 @@ import org.dainn.subaccountservice.dto.subaccount.CreateSubAccount;
 import org.dainn.subaccountservice.dto.subaccount.SubAccountDetailDto;
 import org.dainn.subaccountservice.dto.subaccount.SubAccountDto;
 import org.dainn.subaccountservice.dto.subaccount.SubAccountReq;
+import org.dainn.subaccountservice.event.EventProducer;
 import org.dainn.subaccountservice.exception.AppException;
 import org.dainn.subaccountservice.exception.ErrorCode;
 import org.dainn.subaccountservice.feignclient.IPermissionClient;
@@ -39,6 +41,7 @@ public class SubAccountService implements ISubAccountService {
     private final ITagClient tagClient;
     private final IUserClient userClient;
     private final IPipelineClient pipelineClient;
+    private final EventProducer eventProducer;
 
     @Transactional
     @Override
@@ -57,12 +60,15 @@ public class SubAccountService implements ISubAccountService {
                 .email(userDto.getEmail())
                 .subAccountId(newSA.getId())
                 .build();
-        permissionClient.create(permissionDto);
+        PermissionDto permissionResp = permissionClient.create(permissionDto).getBody();
         PipelineDto pipelineDto = PipelineDto.builder()
                 .subAccountId(newSA.getId())
                 .name("Lead Cycle")
                 .build();
         pipelineClient.create(pipelineDto);
+        assert permissionResp != null;
+        UserProducer producer = UserProducer.toProducer(userDto.getId(), entity.getAgencyId(), List.of(permissionResp), List.of(entity));
+        eventProducer.sendUserEvent(producer);
         return newSA;
     }
 
