@@ -3,7 +3,9 @@ package org.dainn.userservice.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.dainn.userservice.dto.invitation.InvitationDto;
 import org.dainn.userservice.dto.invitation.InvitationReq;
+import org.dainn.userservice.dto.mail.MailData;
 import org.dainn.userservice.dto.user.UserDto;
+import org.dainn.userservice.event.EventProducer;
 import org.dainn.userservice.exception.AppException;
 import org.dainn.userservice.exception.ErrorCode;
 import org.dainn.userservice.mapper.IInvitationMapper;
@@ -27,6 +29,7 @@ public class InvitationService implements IInvitationService {
     private final IInvitationMapper invitationMapper;
     private final IUserService userService;
     private final IUserMapper userMapper;
+    private final EventProducer eventProducer;
 
     @Transactional
     @Override
@@ -36,7 +39,18 @@ public class InvitationService implements IInvitationService {
                     throw new AppException(ErrorCode.INVITATION_EXISTED);
                 });
         Invitation entity = invitationMapper.toEntity(dto);
+        entity = invitationRepository.save(entity);
+        MailData mailData = MailData.builder()
+                .to(dto.getEmail())
+                .subject("Your Invitation to Join Web builder")
+                .inviterName("Dainn")
+                .invitationLink("http://localhost:3000")
+                .agencyId(entity.getAgencyId())
+                .build();
+        eventProducer.sendInviteEvent(mailData);
         return invitationMapper.toDto(invitationRepository.save(entity));
+
+
     }
 
     @Transactional

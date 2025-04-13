@@ -101,6 +101,12 @@ public class UserService implements IUserService {
         return userRepository.findByIdAndRole(id, Role.AGENCY_OWNER).isPresent();
     }
 
+    @Override
+    public UserDto findOwnerByAgency(String id) {
+        return userMapper.toDto(userRepository.findByAgencyIdAndRole(id, Role.AGENCY_OWNER)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+    }
+
     @Transactional
     @Override
     public void setOwner(UserOwnerDto dto) {

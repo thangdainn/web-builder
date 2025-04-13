@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface IUserRepository extends JpaRepository<User, String> {
     Optional<User> findByEmail(String email);
     Optional<User> findByIdAndRole(String id, Role role);
+    Optional<User> findByAgencyIdAndRole(String agencyId, Role role);
 
     @Query("""
                 SELECT u

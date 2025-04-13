@@ -15,6 +15,6 @@ public interface IUserService {
     UserDto findByEmail(String email);
     Page<UserDto> findAll(UserReq req);
     boolean isOwner(String id);
-
+    UserDto findOwnerByAgency(String id);
     void setOwner(UserOwnerDto dto);
 }

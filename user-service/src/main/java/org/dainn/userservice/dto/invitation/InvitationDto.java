@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.dainn.userservice.dto.AbstractDto;
 import org.dainn.userservice.util.enums.InvitationStatus;
 import org.dainn.userservice.util.enums.Role;
 
@@ -15,7 +14,8 @@ import org.dainn.userservice.util.enums.Role;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class InvitationDto extends AbstractDto {
+public class InvitationDto {
+    private String id;
 
     @NotNull(message = "Email is required")
     @NotBlank(message = "Email is required")

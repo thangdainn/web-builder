@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitation Email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d4a017;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .content {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        .button {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 18px;
+            color: #ffffff !important;
+            background-color: #6a0dad;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .link {
+            color: #6a0dad;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">Web builder</div>
+    <div class="title">Your invitation</div>
+    <div class="content">
+        <span th:text="${inviterName}"></span> has invited you to join them on Web builder.
+    </div>
+    <a th:href="${invitationLink}" class="button">Accept invitation</a>
+    <div class="link">
+        If you're having trouble with the above button,
+        <a th:href="${invitationLink}" style="color: #6a0dad;">click here</a>.
+    </div>
+</div>
+</body>
+</html>

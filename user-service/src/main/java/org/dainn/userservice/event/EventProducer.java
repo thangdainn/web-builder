@@ -3,6 +3,7 @@ package org.dainn.userservice.event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dainn.userservice.dto.mail.MailData;
 import org.dainn.userservice.dto.user.UserAccessProducer;
 import org.dainn.userservice.dto.user.UserProducer;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,9 @@ public class EventProducer {
     @Value("${kafka.topic.delete-events}")
     private String deleteEventsTopic;
 
+    @Value("${kafka.topic.invite-events}")
+    private String inviteEventsTopic;
+
     @Value("${kafka.topic.dead-letter}")
     private String deadLetterTopic;
 
@@ -40,6 +44,10 @@ public class EventProducer {
         sendWithRetry(dto, key, updateAccessTopic, 3, 1000);
     }
 
+    public void sendInviteEvent(MailData dto) {
+        String key = dto.getTo();
+        sendWithRetry(dto, key, inviteEventsTopic, 3, 1000);
+    }
 
     private <T> void sendWithRetry(T dto, String key, String topic, int maxRetries, long delay) {
         try {
