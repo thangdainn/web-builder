@@ -19,7 +19,8 @@ public interface IUserClient {
     @Bulkhead(name = "userService")
     @CircuitBreaker(name = "userService", fallbackMethod = "fallbackUser")
     @PutMapping("/{email}/owner")
-    ResponseEntity<Void> isOwner(@PathVariable String email, @RequestBody UserOwnerDto dto);
+    ResponseEntity<Void> setOwner(@PathVariable String email, @RequestBody UserOwnerDto dto);
+
 
     default ResponseEntity<Void> fallbackUser(String email, UserOwnerDto dto, Throwable t) {
         log.warn("Fallback triggered for user service. Email: {}, Error: {}", email, t.getMessage());

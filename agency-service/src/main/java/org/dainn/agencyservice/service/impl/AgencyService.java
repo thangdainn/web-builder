@@ -33,7 +33,7 @@ public class AgencyService implements IAgencyService {
         agency = agencyRepository.save(agency);
         AgencyDto newAgency = agencyMapper.toDto(agency);
         newAgency.setOptions(agencySOService.create(agency));
-        userClient.isOwner(dto.getCompanyEmail(), new UserOwnerDto(dto.getCompanyEmail(), newAgency.getId()));
+        userClient.setOwner(dto.getCompanyEmail(), new UserOwnerDto(dto.getCompanyEmail(), newAgency.getId()));
         return newAgency;
     }
 
