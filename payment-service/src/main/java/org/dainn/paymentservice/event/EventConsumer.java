@@ -26,7 +26,7 @@ public class EventConsumer {
             // Process the customer object as needed
             log.info("Processed customer: {}", customer);
             CreateCustomerResp resp = stripeService.createCustomer(customer);
-            eventProducer.sendCreateCustomerSuccessEvent(resp.getCustomerId());
+            eventProducer.sendCreateCustomerSuccessEvent(resp.getCustomerId(), customer.getAgencyId());
         } catch (Exception e) {
             log.error("Failed to process create customer event", e);
             eventProducer.sendCreateCustomerFailedEvent(message);
