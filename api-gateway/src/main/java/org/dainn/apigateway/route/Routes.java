@@ -67,6 +67,18 @@ public class Routes {
                         .filters(f -> f.circuitBreaker(config -> config.setName("subaccountService")))
                         .uri("lb://subaccount-service"))
 
+                // Search Service Route
+                .route("search-service", r -> r
+                        .path("/api/search/**")
+                        .filters(f -> f.circuitBreaker(config -> config.setName("searchService")))
+                        .uri("lb://search-service"))
+
+                // Payment Service Route
+                .route("payment-service", r -> r
+                        .path("/api/payments/**")
+                        .filters(f -> f.circuitBreaker(config -> config.setName("paymentService")))
+                        .uri("lb://payment-service"))
+
                 // Swagger UI API Docs Routes
                 .route("user-service-api-docs", r -> r
                         .path("/user-service/v3/api-docs/**")
@@ -107,6 +119,16 @@ public class Routes {
                         .path("/subaccount-service/v3/api-docs/**")
                         .filters(f -> f.rewritePath("/subaccount-service(?<segment>/?.*)","${segment}"))
                         .uri("lb://subaccount-service"))
+
+                .route("search-service-api-docs", r -> r
+                        .path("/search-service/v3/api-docs/**")
+                        .filters(f -> f.rewritePath("/search-service(?<segment>/?.*)","${segment}"))
+                        .uri("lb://search-service"))
+
+                .route("payment-service-api-docs", r -> r
+                        .path("/payment-service/v3/api-docs/**")
+                        .filters(f -> f.rewritePath("/payment-service(?<segment>/?.*)","${segment}"))
+                        .uri("lb://payment-service"))
 
                 .build();
     }
