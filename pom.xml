@@ -26,6 +26,7 @@
         <module>subaccount-service</module>
         <module>media-service</module>
         <module>search-service</module>
+        <module>payment-service</module>
     </modules>
 
     <properties>
