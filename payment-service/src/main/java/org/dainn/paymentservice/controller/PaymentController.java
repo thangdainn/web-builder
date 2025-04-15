@@ -17,15 +17,15 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
     private final IStripeService stripeService;
 
-    @PostMapping(Endpoint.Payment.STRIPE)
+    @PostMapping(Endpoint.Payment.CREATE_SESSION)
     public ResponseEntity<?> checkoutProducts(@RequestBody PaymentRequest productRequest) {
         return ResponseEntity.ok(stripeService.createSession(productRequest));
     }
 
-    @PostMapping(Endpoint.Payment.CREATE_CUSTOMER)
-    public ResponseEntity<?> createCustomer(@RequestBody CreateCustomer customer) {
-        return ResponseEntity.ok(stripeService.createCustomer(customer));
-    }
+//    @PostMapping(Endpoint.Payment.CREATE_CUSTOMER)
+//    public ResponseEntity<?> createCustomer(@RequestBody CreateCustomer customer) {
+//        return ResponseEntity.ok(stripeService.createCustomer(customer));
+//    }
 
     @PostMapping(Endpoint.Payment.SUBSCRIPTION)
     public ResponseEntity<?> createSubscription(@RequestBody SubscriptionRequest request) {
