@@ -40,10 +40,11 @@ public class InvitationService implements IInvitationService {
                 });
         Invitation entity = invitationMapper.toEntity(dto);
         entity = invitationRepository.save(entity);
+        UserDto user = userService.findOwnerByAgency(dto.getAgencyId());
         MailData mailData = MailData.builder()
                 .to(dto.getEmail())
                 .subject("Your Invitation to Join Web builder")
-                .inviterName("Dainn")
+                .inviterName(user.getName())
                 .invitationLink("http://localhost:3000")
                 .agencyId(entity.getAgencyId())
                 .build();

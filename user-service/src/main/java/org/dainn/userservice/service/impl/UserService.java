@@ -29,7 +29,6 @@ public class UserService implements IUserService {
     private final IPermissionRepository permissionRepository;
     private final IUserMapper userMapper;
     private final IPermissionMapper permissionMapper;
-    private final EventProducer eventProducer;
 
     @Transactional
     @Override
@@ -42,7 +41,6 @@ public class UserService implements IUserService {
         User newUser = userRepository.save(user);
         log.info("Created new user: {}", newUser);
 
-        eventProducer.sendUserEvent(UserProducer.toProducer(newUser, List.of()));
         return userMapper.toDto(newUser);
     }
 
@@ -53,7 +51,6 @@ public class UserService implements IUserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         permissionRepository.deleteById(id);
         userRepository.deleteById(id);
-        eventProducer.sendUserEvent(UserProducer.toProducer(user, List.of()));
     }
 
     @Transactional
@@ -64,7 +61,6 @@ public class UserService implements IUserService {
         old = userMapper.toUpdate(old, dto);
         old = userRepository.save(old);
         log.info("Updated user: {}", old);
-        eventProducer.sendUserEvent(UserProducer.toProducer(old, List.of()));
         return userMapper.toDto(old);
     }
 
