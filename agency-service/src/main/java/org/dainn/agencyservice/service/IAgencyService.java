@@ -10,5 +10,7 @@ public interface IAgencyService {
     AgencyDto update(AgencyDto dto);
     AgencyDto updateGoal(String id, UpdateGoalDto dto);
     AgencyDetailDto findById(String id);
+    AgencyDetailDto findByCustomerId(String id);
     void delete(String id);
+    void updateConnectAccId(String id, String connectAccId);
 }

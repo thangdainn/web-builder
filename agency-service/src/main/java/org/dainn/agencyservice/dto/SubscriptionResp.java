@@ -17,6 +17,7 @@ public class SubscriptionResp {
     private String plan;
 
     private BigDecimal price;
+    private String priceId;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime currentPeriodEndDate;
@@ -26,4 +27,5 @@ public class SubscriptionResp {
     private String customerId;
 
     private String agencyId;
+    private String subscriptionId;
 }

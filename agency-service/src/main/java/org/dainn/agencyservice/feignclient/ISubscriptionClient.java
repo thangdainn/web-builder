@@ -2,7 +2,6 @@ package org.dainn.agencyservice.feignclient;
 
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.dainn.agencyservice.dto.SubscriptionResp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,8 +9,6 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @FeignClient(name = "subscription-service", path = "/api/subscriptions")
@@ -20,19 +17,11 @@ public interface ISubscriptionClient {
 
     @Bulkhead(name = "subscriptionService")
     @CircuitBreaker(name = "subscriptionService", fallbackMethod = "fallbackSubscription")
-//    @TimeLimiter(name = "subscriptionService")
     @GetMapping("/agency/{id}")
-    List<SubscriptionResp> getByAgencyId(@PathVariable String id);
+    SubscriptionResp getByAgencyId(@PathVariable String id);
 
     default List<SubscriptionResp> fallbackSubscription(String id, Throwable t) {
         log.warn("Fallback triggered for subscription service. Agency ID: {}, Error: {}", id, t.getMessage());
-        return List.of(new SubscriptionResp(
-                "fallback-id",
-                BigDecimal.ZERO,
-                LocalDateTime.now(),
-                false,
-                "fallback",
-                "fallback"
-        ));
+        return List.of(new SubscriptionResp());
     }
 }

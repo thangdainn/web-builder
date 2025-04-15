@@ -21,6 +21,11 @@ public class AgencyController {
         return ResponseEntity.ok(agencyService.findById(id));
     }
 
+    @GetMapping(Endpoint.Agency.CUSTOMER)
+    public ResponseEntity<?> getByCustomerId(@PathVariable String id) {
+        return ResponseEntity.ok(agencyService.findByCustomerId(id));
+    }
+
     @PostMapping
     public ResponseEntity<?> create(@RequestBody AgencyDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(agencyService.create(dto));
@@ -34,6 +39,12 @@ public class AgencyController {
     @PutMapping(Endpoint.Agency.GOAL)
     public ResponseEntity<?> updateGoal(@PathVariable String id, @RequestBody UpdateGoalDto dto) {
         return ResponseEntity.ok(agencyService.updateGoal(id, dto));
+    }
+
+    @PutMapping(Endpoint.Agency.CONNECT_ACC_ID)
+    public ResponseEntity<?> updateConnectAccId(@PathVariable String id, @RequestBody String connectAccId) {
+        agencyService.updateConnectAccId(id, connectAccId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping

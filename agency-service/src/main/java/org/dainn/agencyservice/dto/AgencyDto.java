@@ -1,6 +1,5 @@
 package org.dainn.agencyservice.dto;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -16,6 +15,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AgencyDto extends AbstractDto{
+    @NotNull(message = "User email is required")
+    @NotBlank(message = "User email is required")
+    private String userEmail;
+
     private String connectAccountId;
 
     private String customerId;

@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface IAgencyRepository extends JpaRepository<Agency, String> {
     @Modifying
@@ -15,4 +17,22 @@ public interface IAgencyRepository extends JpaRepository<Agency, String> {
                 WHERE a.id = :id
             """)
     void updateGoal(String id, Integer goal);
+
+    @Modifying
+    @Query("""
+                UPDATE Agency a
+                SET a.connectAccountId = :connectAccId
+                WHERE a.id = :id
+            """)
+    void updateConnectAccId(String id, String connectAccId);
+
+    @Modifying
+    @Query("""
+                UPDATE Agency a
+                SET a.customerId = :customerId
+                WHERE a.id = :id
+            """)
+    void updateCustomerId(String id, String customerId);
+
+    Optional<Agency> findByCustomerId(String customerId);
 }

@@ -3,8 +3,10 @@ package org.dainn.agencyservice.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.dainn.agencyservice.dto.AgencyDetailDto;
 import org.dainn.agencyservice.dto.AgencyDto;
+import org.dainn.agencyservice.dto.CreateCustomer;
 import org.dainn.agencyservice.dto.UpdateGoalDto;
 import org.dainn.agencyservice.dto.response.UserOwnerDto;
+import org.dainn.agencyservice.event.EventProducer;
 import org.dainn.agencyservice.exception.AppException;
 import org.dainn.agencyservice.exception.ErrorCode;
 import org.dainn.agencyservice.feignclient.ISubscriptionClient;
@@ -25,6 +27,7 @@ public class AgencyService implements IAgencyService {
     private final ISubscriptionClient subscriptionClient;
     private final IAgencySOService agencySOService;
     private final IUserClient userClient;
+    private final EventProducer eventProducer;
 
     @Transactional
     @Override
@@ -33,7 +36,18 @@ public class AgencyService implements IAgencyService {
         agency = agencyRepository.save(agency);
         AgencyDto newAgency = agencyMapper.toDto(agency);
         newAgency.setOptions(agencySOService.create(agency));
-        userClient.setOwner(dto.getCompanyEmail(), new UserOwnerDto(dto.getCompanyEmail(), newAgency.getId()));
+        userClient.setOwner(dto.getUserEmail(), new UserOwnerDto(dto.getCompanyEmail(), newAgency.getId()));
+        eventProducer.sendCreateCustomerEvent(CreateCustomer.builder()
+                .email(dto.getCompanyEmail())
+                .name(dto.getName())
+                .phone(dto.getCompanyPhone())
+                .line1(dto.getAddress())
+                .city(dto.getCity())
+                .state(dto.getState())
+                .zipCode(dto.getZipCode())
+                .country(dto.getCountry())
+                .agencyId(newAgency.getId())
+                .build());
         return newAgency;
     }
 
@@ -59,7 +73,15 @@ public class AgencyService implements IAgencyService {
         AgencyDetailDto detail = agencyMapper.toDetail(agencyRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.AGENCY_NOT_EXISTED)));
         detail.setOptions(agencySOService.findByAgency(id));
-        detail.setSubscriptions(subscriptionClient.getByAgencyId(id));
+        detail.setSubscription(subscriptionClient.getByAgencyId(id));
+        return detail;
+    }
+
+    @Override
+    public AgencyDetailDto findByCustomerId(String id) {
+        AgencyDetailDto detail = agencyMapper.toDetail(agencyRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.AGENCY_NOT_EXISTED)));
+        detail.setSubscription(subscriptionClient.getByAgencyId(id));
         return detail;
     }
 
@@ -67,5 +89,11 @@ public class AgencyService implements IAgencyService {
     @Override
     public void delete(String id) {
         agencyRepository.deleteById(id);
+    }
+
+    @Transactional
+    @Override
+    public void updateConnectAccId(String id, String connectAccId) {
+        agencyRepository.updateConnectAccId(id, connectAccId);
     }
 }
