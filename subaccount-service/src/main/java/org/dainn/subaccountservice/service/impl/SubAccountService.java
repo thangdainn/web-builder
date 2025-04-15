@@ -111,4 +111,10 @@ public class SubAccountService implements ISubAccountService {
                     .map(subAccountMapper::toDetailDto);
         }
     }
+
+    @Transactional
+    @Override
+    public void updateConnectAccId(String id, String connectAccId) {
+        subAccountRepository.updateConnectAccId(id, connectAccId);
+    }
 }

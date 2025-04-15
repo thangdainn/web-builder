@@ -37,6 +37,12 @@ public class SubAccountController {
         return ResponseEntity.status(HttpStatus.CREATED).body(subAccountService.create(dto));
     }
 
+    @PutMapping(Endpoint.SubAccount.CONNECT_ACC_ID)
+    public ResponseEntity<?> update(@PathVariable String id, @RequestBody String connectAccId) {
+        subAccountService.updateConnectAccId(id, connectAccId);
+        return ResponseEntity.ok().build();
+    }
+
     @DeleteMapping
     public ResponseEntity<Void> delete(String id) {
         subAccountService.deleteBy(id);

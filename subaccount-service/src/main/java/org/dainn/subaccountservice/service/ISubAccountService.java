@@ -15,4 +15,5 @@ public interface ISubAccountService {
     SubAccountDetailDto findDetailById(String id);
 
     Page<SubAccountDetailDto> findAll(SubAccountReq request);
+    void updateConnectAccId(String id, String connectAccId);
 }
