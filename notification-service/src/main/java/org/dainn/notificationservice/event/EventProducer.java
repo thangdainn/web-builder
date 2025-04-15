@@ -32,13 +32,12 @@ public class EventProducer {
     public void sendNotification(NotificationDto dto) {
         if (dto == null || dto.getAction() == null) {
             log.error("Invalid notification: action is null or dto is null: {}", dto);
-            sendToDeadLetterQueue(dto);
             return;
         }
 
         String topic = determineTopic(dto.getAction());
         String key = dto.getUserId();
-        sendWithRetry(dto, key, topic, 3, 1000); // Retry 3 lần, delay 1 giây
+        sendWithRetry(dto, key, topic, 3, 1000);
     }
 
     private String determineTopic(String action) {
@@ -72,34 +71,11 @@ public class EventProducer {
                         }
                     } else {
                         log.error("Failed to send notification to topic {} after retries: {}", topic, ex.getMessage());
-                        sendToDeadLetterQueue(dto);
                     }
                 }
             });
         } catch (Exception e) {
             log.error("Failed to serialize NotificationDto to JSON: {}", dto, e);
-            sendToDeadLetterQueue(dto);
-        }
-    }
-
-    private void sendToDeadLetterQueue(NotificationDto dto) {
-        if (dto == null) {
-            log.warn("Cannot send null dto to dead-letter queue");
-            return;
-        }
-        String key = dto.getUserId() != null ? dto.getUserId() : dto.getId();
-        try {
-            String jsonMessage = objectMapper.writeValueAsString(dto);
-            CompletableFuture<?> future = kafkaTemplate.send(deadLetterTopic, key, jsonMessage);
-            future.whenComplete((result, ex) -> {
-                if (ex == null) {
-                    log.info("Sent failed notification to dead-letter topic {}: {}", deadLetterTopic, jsonMessage);
-                } else {
-                    log.error("Failed to send notification to dead-letter topic {}: {}", deadLetterTopic, ex.getMessage());
-                }
-            });
-        } catch (Exception e) {
-            log.error("Failed to serialize NotificationDto to JSON for dead-letter queue: {}", dto, e);
         }
     }
 }

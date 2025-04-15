@@ -1,12 +1,10 @@
-package org.dainn.userservice.service.impl;
+package org.dainn.notificationservice.service.impl;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.dainn.userservice.dto.mail.MailData;
-import org.dainn.userservice.exception.AppException;
-import org.dainn.userservice.exception.ErrorCode;
-import org.dainn.userservice.service.IMailService;
+import org.dainn.notificationservice.dto.mail.MailData;
+import org.dainn.notificationservice.service.IMailService;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -37,7 +35,7 @@ public class MailService implements IMailService {
 
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new AppException(ErrorCode.INVITATION_NOT_EXISTED);
+            throw new  RuntimeException("Failed to send email", e);
         }
 
     }

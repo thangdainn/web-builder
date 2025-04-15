@@ -1,14 +1,16 @@
 package org.dainn.notificationservice.event;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.dainn.notificationservice.dto.NotificationDto;
+import org.dainn.notificationservice.dto.mail.MailData;
+import org.dainn.notificationservice.service.IMailService;
 import org.dainn.notificationservice.service.impl.NotificationService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -24,10 +26,7 @@ public class EventConsumer {
     private final NotificationService notificationService;
     private final ObjectMapper objectMapper;
     private final SimpMessagingTemplate messagingTemplate;
-    private final KafkaTemplate<String, String> kafkaTemplate;
-
-    @Value("${kafka.topic.dead-letter}")
-    private String deadLetterTopic;
+    private final IMailService mailService;
 
     @KafkaListener(
             topics = {"create-events", "update-events", "delete-events"},
@@ -38,11 +37,7 @@ public class EventConsumer {
         log.info("Received batch of {} events from Kafka", records.size());
 
         Flux.fromIterable(records)
-                .flatMap(record -> processEvent(record)
-                        .onErrorResume(error -> {
-                            log.error("Failed to process event from topic {}: {}", record.topic(), record.value(), error);
-                            return sendToDeadLetterQueue(record);
-                        }), 10)
+                .flatMap(this::processEvent, 10)
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe();
     }
@@ -71,17 +66,11 @@ public class EventConsumer {
         );
     }
 
-    private Mono<Void> sendToDeadLetterQueue(ConsumerRecord<String, String> record) {
-        return Mono.fromRunnable(() -> {
-            kafkaTemplate.send(deadLetterTopic, record.key(), record.value())
-                    .whenComplete((result, ex) -> {
-                        if (ex == null) {
-                            log.info("Sent failed event to dead-letter topic {}: {}", deadLetterTopic, record.value());
-                        } else {
-                            log.error("Failed to send event to dead-letter topic {}: {}", deadLetterTopic, ex.getMessage());
-                        }
-                    });
-        });
+    @KafkaListener(topics = {"invite-created-events"}, groupId = "${spring.kafka.consumer.group-id}")
+    public void consumeInviteCreatedEvent(@Payload String message) throws JsonProcessingException {
+        log.info("Invite saved event consumed: {}", message);
+        MailData data = objectMapper.readValue(message, MailData.class);
+        mailService.sendEmail(data);
     }
 
 }
