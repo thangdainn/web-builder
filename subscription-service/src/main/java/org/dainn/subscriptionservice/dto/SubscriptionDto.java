@@ -23,6 +23,9 @@ public class SubscriptionDto extends AbstractDto {
     @NotNull(message = "Price is required")
     private BigDecimal price;
 
+    private String priceId;
+
+
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime currentPeriodEndDate;
 
@@ -35,4 +38,6 @@ public class SubscriptionDto extends AbstractDto {
     @NotNull(message = "Agency ID is required")
     @NotBlank(message = "Agency ID is required")
     private String agencyId;
+
+    private String subscriptionId;
 }

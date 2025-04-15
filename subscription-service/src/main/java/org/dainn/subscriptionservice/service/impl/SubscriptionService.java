@@ -54,6 +54,13 @@ public class SubscriptionService implements ISubscriptionService {
                 .map(subscriptionMapper::toDto);
     }
 
+    @Override
+    public Mono<SubscriptionDto> findFirstByAgencyId(String id) {
+        return findByAgencyId(id)
+                .next()
+                .switchIfEmpty(Mono.error(new AppException(ErrorCode.SUBSCRIPTION_NOT_EXISTED)));
+    }
+
     @Transactional
     @Override
     public Mono<Void> delete(String id) {

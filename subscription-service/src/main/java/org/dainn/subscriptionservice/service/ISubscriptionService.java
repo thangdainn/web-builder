@@ -10,5 +10,6 @@ public interface ISubscriptionService {
     Mono<SubscriptionDto> update(SubscriptionDto dto);
     Mono<SubscriptionDto> findById(String id);
     Flux<SubscriptionDto> findByAgencyId(String id);
+    Mono<SubscriptionDto> findFirstByAgencyId(String id);
     Mono<Void> delete(String id);
 }
