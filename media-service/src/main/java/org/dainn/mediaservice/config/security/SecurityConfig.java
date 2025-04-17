@@ -16,29 +16,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/eureka/**").permitAll()
                         .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated()
-//                )
-//                .oauth2ResourceServer(oauth2 -> oauth2
-//                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 );
         return http.build();
     }
-
-//    @Bean
-//    public JwtAuthenticationConverter jwtAuthenticationConverter() {
-//        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-//        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
-//            List<String> roles = jwt.getClaimAsStringList("roles");
-//            if (roles == null) {
-//                roles = Collections.emptyList();
-//            }
-//            return roles.stream()
-//                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
-//                    .collect(Collectors.toList());
-//        });
-//        return converter;
-//    }
 }

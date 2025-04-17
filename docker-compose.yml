@@ -1,0 +1,475 @@
+version: '3.8'
+services:
+  postgres-agency:
+    container_name: postgres-agency
+    image: postgres
+    environment:
+      POSTGRES_DB: agency_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres-agency:/data/postgres
+    expose:
+      - "5431"
+    ports:
+      - "5431:5431"
+    command: -p 5431
+    restart: unless-stopped
+    networks:
+      - wb-network
+
+  mysql-funnel:
+    container_name: mysql-funnel
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: funnel_db
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./mysql-funnel:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+    networks:
+      - wb-network
+
+  postgres-media:
+    container_name: postgres-media
+    image: postgres
+    environment:
+      POSTGRES_DB: media_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres-media:/data/postgres
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+    command: -p 5432
+    restart: unless-stopped
+    networks:
+      - wb-network
+
+  postgres-notification:
+    container_name: postgres-notification
+    image: postgres
+    environment:
+      POSTGRES_DB: notification_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres-notification:/data/postgres
+    expose:
+      - "5433"
+    ports:
+      - "5433:5433"
+    command: -p 5433
+    restart: unless-stopped
+    networks:
+      - wb-network
+
+  postgres-pipeline:
+    container_name: postgres-pipeline
+    image: postgres
+    environment:
+      POSTGRES_DB: pipeline_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres-pipeline:/data/postgres
+    expose:
+      - "5434"
+    ports:
+      - "5434:5434"
+    command: -p 5434
+    restart: unless-stopped
+    networks:
+      - wb-network
+
+  postgres-subaccount:
+    container_name: postgres-subaccount
+    image: postgres
+    environment:
+      POSTGRES_DB: subaccount_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres-subaccount:/data/postgres
+    expose:
+      - "5435"
+    ports:
+      - "5435:5435"
+    command: -p 5435
+    restart: unless-stopped
+    networks:
+      - wb-network
+
+  mysql-subscription:
+    container_name: mysql-subscription
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: subscription_db
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./mysql-subscription:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    restart: unless-stopped
+    networks:
+      - wb-network
+
+  postgres-user:
+    container_name: postgres-user
+    image: postgres
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres-user:/data/postgres
+    expose:
+      - "5436"
+    ports:
+      - "5436:5436"
+    command: -p 5436
+    restart: unless-stopped
+    networks:
+      - wb-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.2
+    container_name: zookeeper-wb
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - wb-network
+
+  broker-1:
+    image: confluentinc/cp-kafka:7.6.2
+    container_name: broker-1-wb
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-wb:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-1-wb:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    networks:
+      - wb-network
+
+  broker-2:
+    image: confluentinc/cp-kafka:7.6.2
+    container_name: broker-2-wb
+    ports:
+      - "9093:9093"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-wb:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-2-wb:29093,PLAINTEXT_HOST://localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    networks:
+      - wb-network
+
+  broker-3:
+    image: confluentinc/cp-kafka:7.6.2
+    container_name: broker-3-wb
+    ports:
+      - "9094:9094"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-wb:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-3-wb:29094,PLAINTEXT_HOST://localhost:9094
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    networks:
+      - wb-network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.4
+    container_name: elasticsearch-wb
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - wb-network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.10.4
+    container_name: kibana-wb
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch-wb:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - wb-network
+
+  discovery-server:
+    image: thanngdainn/discovery-server:4.2.0
+    container_name: discovery-server-wb
+    pull_policy: always
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - wb-network
+
+  api-gateway:
+    image: thanngdainn/api-gateway:4.2.0
+    container_name: api-gateway-wb
+    pull_policy: always
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
+      - LOGGING_LEVEL_ROOT=INFO
+    depends_on:
+      - discovery-server
+    networks:
+      - wb-network
+
+  agency-service:
+    container_name: agency-service-wb
+    image: thanngdainn/agency-service:4.2.0
+    pull_policy: always
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-agency:5431/agency_db
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
+    depends_on:
+      - postgres-agency
+      - discovery-server
+      - api-gateway
+      - broker-1
+      - broker-2
+      - broker-3
+    networks:
+      - wb-network
+
+  funnel-service:
+    container_name: funnel-service-wb
+    image: thanngdainn/funnel-service:4.2.0
+    pull_policy: always
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:mysql://mysql-funnel:3306/funnel_db
+      - SPRING_R2DBC_USERNAME=${MYSQL_USER}
+      - SPRING_R2DBC_PASSWORD=${MYSQL_PASSWORD}
+      - SPRING_FLYWAY_URL=jdbc:mysql://mysql-funnel:3306/funnel_db
+      - SPRING_FLYWAY_USER=${MYSQL_USER}
+      - SPRING_FLYWAY_PASSWORD=${MYSQL_PASSWORD}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
+    depends_on:
+      - mysql-funnel
+      - discovery-server
+      - api-gateway
+    networks:
+      - wb-network
+
+  media-service:
+    container_name: media-service-wb
+    image: thanngdainn/media-service:4.2.0
+    pull_policy: always
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-media:5432/media_db
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
+      - FIREBASE_SERVICE_ACCOUNT_JSON=${FIREBASE_SERVICE_ACCOUNT_JSON}
+      - FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET}
+      - IMAGE_BASE_URL=${IMAGE_STORAGE_BASE}
+    depends_on:
+      - postgres-media
+      - discovery-server
+      - api-gateway
+    networks:
+      - wb-network
+
+  notification-service:
+    container_name: notification-service-wb
+    image: thanngdainn/notification-service:4.2.0
+    pull_policy: always
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:postgresql://postgres-notification:5433/notification_db
+      - SPRING_R2DBC_USERNAME=${POSTGRES_USER}
+      - SPRING_R2DBC_PASSWORD=${POSTGRES_PASSWORD}
+      - SPRING_FLYWAY_URL=jdbc:postgresql://postgres-notification:5433/notification_db
+      - SPRING_FLYWAY_USER=${POSTGRES_USER}
+      - SPRING_FLYWAY_PASSWORD=${POSTGRES_PASSWORD}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
+      - SPRING_MAIL_USERNAME=${SMTP_USERNAME}
+      - SPRING_MAIL_PASSWORD=${SMTP_PASSWORD}
+    depends_on:
+      - postgres-notification
+      - discovery-server
+      - api-gateway
+      - broker-1
+      - broker-2
+      - broker-3
+    networks:
+      - wb-network
+
+  payment-service:
+    container_name: payment-service-wb
+    image: thanngdainn/payment-service:4.2.0
+    pull_policy: always
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
+      - WEBHOOK_SECRET_KEY=${WEBHOOK_SECRET_KEY}
+    depends_on:
+      - discovery-server
+      - api-gateway
+      - broker-1
+      - broker-2
+      - broker-3
+    networks:
+      - wb-network
+
+  pipeline-service:
+    container_name: pipeline-service-wb
+    image: thanngdainn/pipeline-service:4.2.0
+    pull_policy: always
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-pipeline:5434/pipeline_db
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
+    depends_on:
+      - postgres-pipeline
+      - discovery-server
+      - api-gateway
+    networks:
+      - wb-network
+
+  search-service:
+    container_name: search-service-wb
+    image: thanngdainn/search-service:4.2.0
+    pull_policy: always
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
+      - SPRING_ELASTICSEARCH_URIS=http://elasticsearch-wb:9200
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
+    depends_on:
+      - discovery-server
+      - api-gateway
+      - elasticsearch
+      - kibana
+      - broker-1
+      - broker-2
+      - broker-3
+    networks:
+      - wb-network
+
+  subaccount-service:
+    container_name: subaccount-service-wb
+    image: thanngdainn/subaccount-service:4.2.0
+    pull_policy: always
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-subaccount:5435/subaccount_db
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
+    depends_on:
+      - postgres-subaccount
+      - discovery-server
+      - api-gateway
+      - broker-1
+      - broker-2
+      - broker-3
+    networks:
+      - wb-network
+
+  subscription-service:
+    container_name: subscription-service-wb
+    image: thanngdainn/subscription-service:4.2.0
+    pull_policy: always
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:mysql://mysql-subscription:3306/subscription_db
+      - SPRING_R2DBC_USERNAME=${MYSQL_USER}
+      - SPRING_R2DBC_PASSWORD=${MYSQL_PASSWORD}
+      - SPRING_FLYWAY_URL=jdbc:mysql://mysql-subscription:3306/subscription_db
+      - SPRING_FLYWAY_USER=${MYSQL_USER}
+      - SPRING_FLYWAY_PASSWORD=${MYSQL_PASSWORD}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
+    depends_on:
+      - mysql-subscription
+      - discovery-server
+      - api-gateway
+      - broker-1
+      - broker-2
+      - broker-3
+    networks:
+      - wb-network
+
+  user-service:
+    container_name: user-service-wb
+    image: thanngdainn/user-service:4.2.0
+    pull_policy: always
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-user:5436/user_db
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
+    depends_on:
+      - postgres-user
+      - discovery-server
+      - api-gateway
+      - broker-1
+      - broker-2
+      - broker-3
+    networks:
+      - wb-network
+
+volumes:
+  elasticsearch-data:
+    driver: local
+
+networks:
+  wb-network:
+    driver: bridge

@@ -29,7 +29,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        http.csrf(ServerHttpSecurity.CsrfSpec::disable)
+        http
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers("/eureka/**").permitAll()
                         .pathMatchers("/**").permitAll()
@@ -37,6 +38,7 @@ public class SecurityConfig {
 //                .oauth2ResourceServer(oAuth -> oAuth.jwt(Customizer.withDefaults()));
         return http.build();
     }
+
 
 //    @Bean
 //    public ReactiveJwtAuthenticationConverter jwtAuthenticationConverter() {

@@ -3,6 +3,7 @@ package org.dainn.userservice.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dainn.userservice.config.endpoint.Endpoint;
 import org.dainn.userservice.dto.user.UserDetailDto;
 import org.dainn.userservice.dto.user.UserDto;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping(Endpoint.User.BASE)
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<?> getAll(UserReq userReq) {
+        log.info("getAll");
         return ResponseEntity.ok(userService.findAll(userReq));
     }
 
