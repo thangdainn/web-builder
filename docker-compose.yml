@@ -16,6 +16,17 @@ services:
       - "5431:5431"
     command: -p 5431
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d agency_db -p 5431" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -32,6 +43,17 @@ services:
     ports:
       - "3306:3306"
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -51,6 +73,17 @@ services:
       - "5432:5432"
     command: -p 5432
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d media_db -p 5432" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -70,6 +103,17 @@ services:
       - "5433:5433"
     command: -p 5433
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d notification_db -p 5433" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -89,6 +133,17 @@ services:
       - "5434:5434"
     command: -p 5434
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d pipeline_db -p 5434" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -108,6 +163,17 @@ services:
       - "5435:5435"
     command: -p 5435
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d subaccount_db -p 5435" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -124,6 +190,17 @@ services:
     ports:
       - "3307:3306"
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -143,6 +220,17 @@ services:
       - "5436:5436"
     command: -p 5436
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d user_db -p 5436" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -152,6 +240,18 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 256M
+    healthcheck:
+      test: echo srvr | nc zookeeper 2181 || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - wb-network
 
@@ -171,6 +271,18 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    restart: on-failure
+    healthcheck:
+      test: nc -z broker-1-wb 29092 || exit 1
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
     networks:
       - wb-network
 
@@ -190,6 +302,18 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    restart: on-failure
+    healthcheck:
+      test: nc -z broker-2-wb 29093 || exit 1
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
     networks:
       - wb-network
 
@@ -209,6 +333,18 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    restart: on-failure
+    healthcheck:
+      test: nc -z broker-3-wb 29094 || exit 1
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
     networks:
       - wb-network
 
@@ -224,6 +360,18 @@ services:
       - "9300:9300"
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+    healthcheck:
+      test: curl -s http://localhost:9200/_cluster/health | grep -q 'status":"green\|status":"yellow'
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     networks:
       - wb-network
 
@@ -236,6 +384,18 @@ services:
       - "5601:5601"
     depends_on:
       - elasticsearch
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: curl -s http://localhost:5601/api/status | grep -q 'available'
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     networks:
       - wb-network
 
@@ -247,6 +407,18 @@ services:
       - "8761:8761"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    restart: on-failure
+    healthcheck:
+      test: curl -f http://localhost:8761/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
     networks:
       - wb-network
 
@@ -262,7 +434,20 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
       - LOGGING_LEVEL_ROOT=INFO
     depends_on:
-      - discovery-server
+      discovery-server:
+        condition: service_healthy
+    restart: on-failure
+    healthcheck:
+      test: curl -f http://localhost:8080/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -277,12 +462,26 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
     depends_on:
-      - postgres-agency
-      - discovery-server
-      - api-gateway
-      - broker-1
-      - broker-2
-      - broker-3
+      postgres-agency:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+      broker-1:
+        condition: service_healthy
+    restart: on-failure
+    healthcheck:
+      test: curl -f http://localhost:8080/agency-service/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -299,9 +498,24 @@ services:
       - SPRING_FLYWAY_PASSWORD=${MYSQL_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
     depends_on:
-      - mysql-funnel
-      - discovery-server
-      - api-gateway
+      mysql-funnel:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+    restart: on-failure
+    healthcheck:
+      test: curl -f http://localhost:8080/funnel-service/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -318,9 +532,24 @@ services:
       - FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET}
       - IMAGE_BASE_URL=${IMAGE_STORAGE_BASE}
     depends_on:
-      - postgres-media
-      - discovery-server
-      - api-gateway
+      postgres-media:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+    restart: on-failure
+    healthcheck:
+      test: curl -f http://localhost:8080/media-service/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -340,12 +569,26 @@ services:
       - SPRING_MAIL_USERNAME=${SMTP_USERNAME}
       - SPRING_MAIL_PASSWORD=${SMTP_PASSWORD}
     depends_on:
-      - postgres-notification
-      - discovery-server
-      - api-gateway
-      - broker-1
-      - broker-2
-      - broker-3
+      postgres-notification:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+      broker-1:
+        condition: service_healthy
+    restart: on-failure
+    healthcheck:
+      test: curl -f http://localhost:8080/notification-service/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -360,11 +603,24 @@ services:
       - STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
       - WEBHOOK_SECRET_KEY=${WEBHOOK_SECRET_KEY}
     depends_on:
-      - discovery-server
-      - api-gateway
-      - broker-1
-      - broker-2
-      - broker-3
+      discovery-server:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+      broker-1:
+        condition: service_healthy
+    restart: on-failure
+    healthcheck:
+      test: curl -f http://localhost:8080/payment-service/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -378,9 +634,24 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
     depends_on:
-      - postgres-pipeline
-      - discovery-server
-      - api-gateway
+      postgres-pipeline:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+    restart: on-failure
+    healthcheck:
+      test: curl -f http://localhost:8080/pipeline-service/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -393,13 +664,26 @@ services:
       - SPRING_ELASTICSEARCH_URIS=http://elasticsearch-wb:9200
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
     depends_on:
-      - discovery-server
-      - api-gateway
-      - elasticsearch
-      - kibana
-      - broker-1
-      - broker-2
-      - broker-3
+      discovery-server:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      broker-1:
+        condition: service_healthy
+    restart: on-failure
+    healthcheck:
+      test: curl -f http://localhost:8080/search-service/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -414,12 +698,26 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
     depends_on:
-      - postgres-subaccount
-      - discovery-server
-      - api-gateway
-      - broker-1
-      - broker-2
-      - broker-3
+      postgres-subaccount:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+      broker-1:
+        condition: service_healthy
+    restart: on-failure
+    healthcheck:
+      test: curl -f http://localhost:8080/subaccount-service/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -437,12 +735,26 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
     depends_on:
-      - mysql-subscription
-      - discovery-server
-      - api-gateway
-      - broker-1
-      - broker-2
-      - broker-3
+      mysql-subscription:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+      broker-1:
+        condition: service_healthy
+    restart: on-failure
+    healthcheck:
+      test: curl -f http://localhost:8080/subscription-service/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
@@ -457,12 +769,26 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
     depends_on:
-      - postgres-user
-      - discovery-server
-      - api-gateway
-      - broker-1
-      - broker-2
-      - broker-3
+      postgres-user:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+      broker-1:
+        condition: service_healthy
+    restart: on-failure
+    healthcheck:
+      test: curl -f http://localhost:8080/user-service/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - wb-network
 
