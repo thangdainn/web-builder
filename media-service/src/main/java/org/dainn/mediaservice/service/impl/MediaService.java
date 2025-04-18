@@ -5,14 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.dainn.mediaservice.dto.FirebaseResponse;
 import org.dainn.mediaservice.dto.MediaDto;
 import org.dainn.mediaservice.dto.MediaReq;
+import org.dainn.mediaservice.event.EventProducer;
+import org.dainn.mediaservice.event.FileMessage;
 import org.dainn.mediaservice.exception.AppException;
 import org.dainn.mediaservice.exception.ErrorCode;
 import org.dainn.mediaservice.mapper.IMediaMapper;
 import org.dainn.mediaservice.model.Media;
 import org.dainn.mediaservice.repository.IMediaRepository;
-import org.dainn.mediaservice.service.IFirebaseService;
 import org.dainn.mediaservice.service.IMediaService;
 import org.dainn.mediaservice.util.Paging;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Slf4j
@@ -29,7 +34,11 @@ import java.util.UUID;
 public class MediaService implements IMediaService {
     private final IMediaRepository mediaRepository;
     private final IMediaMapper mediaMapper;
-    private final IFirebaseService firebaseService;
+    private final EventProducer eventProducer;
+    private final Path tempDirectory;
+
+    @Value("${image.base.url}")
+    private String imageBaseUrl;
 
     @Transactional
     @Override
@@ -67,11 +76,31 @@ public class MediaService implements IMediaService {
 
     @Override
     public FirebaseResponse upload(MultipartFile file) throws IOException {
-        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename() + ".jpg";
-        String imageUrl = firebaseService.upload(file, fileName);
+        String uniqueFileName = generateUniqueFileName(file.getOriginalFilename());
+
+        Path tempFilePath = tempDirectory.resolve(uniqueFileName);
+        Files.copy(file.getInputStream(), tempFilePath, StandardCopyOption.REPLACE_EXISTING);
+
+        FileMessage message = new FileMessage(
+                uniqueFileName,
+                file.getContentType(),
+                tempFilePath.toString(),
+                file.getOriginalFilename()
+        );
+
+        eventProducer.sendUploadEvent(message);
+        String imageUrl = imageBaseUrl + uniqueFileName + "?alt=media";
         return FirebaseResponse.builder()
                 .url(imageUrl)
                 .success(true)
                 .build();
+    }
+
+    private String generateUniqueFileName(String originalFilename) {
+        String extension = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        }
+        return UUID.randomUUID().toString() + extension;
     }
 }
