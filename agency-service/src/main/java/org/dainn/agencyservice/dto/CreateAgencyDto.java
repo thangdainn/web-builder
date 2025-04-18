@@ -9,14 +9,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.dainn.agencyservice.dto.response.UserDto;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateAgencyDto extends AbstractDto{
+public class CreateAgencyDto {
     @Valid
     private UserDto user;
 

@@ -41,8 +41,7 @@ public class InvitationController {
 
     @PostMapping(Endpoint.Invitation.VERIFY)
     public ResponseEntity<?> verify(@PathVariable String email, @RequestBody UserDto userInfo) {
-        invitationService.verify(email, userInfo);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(invitationService.verify(email, userInfo));
     }
 
     @PutMapping

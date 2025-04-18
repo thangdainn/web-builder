@@ -56,12 +56,13 @@ public class InvitationService implements IInvitationService {
 
     @Transactional
     @Override
-    public void verify(String email, UserDto userInfo) {
+    public String verify(String email, UserDto userInfo) {
         Invitation invitation = invitationRepository.findByEmailAndStatus(email, InvitationStatus.PENDING)
                 .orElseThrow(() -> new AppException(ErrorCode.INVITATION_NOT_EXISTED));
         userInfo = userMapper.toUserInfo(userInfo, invitation);
         userService.create(userInfo);
         invitationRepository.deleteById(invitation.getId());
+        return invitation.getAgencyId();
     }
 
     @Transactional

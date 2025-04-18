@@ -118,6 +118,7 @@ public class UserService implements IUserService {
         }
         user.setRole(Role.AGENCY_OWNER);
         user.setAgencyId(dto.getAgencyId());
+        log.info("Set owner for user: {}", user);
         userRepository.save(user);
     }
 }

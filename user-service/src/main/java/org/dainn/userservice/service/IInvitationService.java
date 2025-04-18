@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface IInvitationService {
     InvitationDto create(InvitationDto dto);
-    void verify(String email, UserDto userInfo);
+    String verify(String email, UserDto userInfo);
     void updateStatus(String id, InvitationStatus status);
     InvitationDto findById(String id);
     InvitationDto findByEmailPending(String email);
