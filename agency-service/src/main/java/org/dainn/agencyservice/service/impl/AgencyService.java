@@ -1,11 +1,7 @@
 package org.dainn.agencyservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.dainn.agencyservice.dto.AgencyDetailDto;
-import org.dainn.agencyservice.dto.AgencyDto;
-import org.dainn.agencyservice.dto.CreateCustomer;
-import org.dainn.agencyservice.dto.UpdateGoalDto;
-import org.dainn.agencyservice.dto.response.UserOwnerDto;
+import org.dainn.agencyservice.dto.*;
 import org.dainn.agencyservice.event.EventProducer;
 import org.dainn.agencyservice.exception.AppException;
 import org.dainn.agencyservice.exception.ErrorCode;
@@ -31,12 +27,13 @@ public class AgencyService implements IAgencyService {
 
     @Transactional
     @Override
-    public AgencyDto create(AgencyDto dto) {
+    public AgencyDto create(CreateAgencyDto dto) {
         Agency agency = agencyMapper.toEntity(dto);
         agency = agencyRepository.save(agency);
         AgencyDto newAgency = agencyMapper.toDto(agency);
         newAgency.setOptions(agencySOService.create(agency));
-        userClient.setOwner(dto.getUserEmail(), new UserOwnerDto(dto.getCompanyEmail(), newAgency.getId()));
+        dto.getUser().setAgencyId(agency.getId());
+        userClient.setOwner(dto.getUser().getEmail(), dto.getUser());
         eventProducer.sendCreateCustomerEvent(CreateCustomer.builder()
                 .email(dto.getCompanyEmail())
                 .name(dto.getName())

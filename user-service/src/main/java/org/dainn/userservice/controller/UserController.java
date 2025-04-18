@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.dainn.userservice.config.endpoint.Endpoint;
 import org.dainn.userservice.dto.user.UserDetailDto;
 import org.dainn.userservice.dto.user.UserDto;
-import org.dainn.userservice.dto.user.UserOwnerDto;
 import org.dainn.userservice.dto.user.UserReq;
 import org.dainn.userservice.service.IUserService;
 import org.springframework.http.HttpStatus;
@@ -54,7 +53,7 @@ public class UserController {
     }
 
     @PutMapping(Endpoint.User.SET_OWNER)
-    public ResponseEntity<Void> setOwner(@PathVariable String email, @Valid @RequestBody UserOwnerDto dto) {
+    public ResponseEntity<Void> setOwner(@PathVariable String email, @Valid @RequestBody UserDto dto) {
         dto.setEmail(email);
         userService.setOwner(dto);
         return ResponseEntity.ok().build();

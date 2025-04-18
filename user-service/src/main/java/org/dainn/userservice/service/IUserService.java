@@ -2,7 +2,6 @@ package org.dainn.userservice.service;
 
 import org.dainn.userservice.dto.user.UserDetailDto;
 import org.dainn.userservice.dto.user.UserDto;
-import org.dainn.userservice.dto.user.UserOwnerDto;
 import org.dainn.userservice.dto.user.UserReq;
 import org.springframework.data.domain.Page;
 
@@ -16,5 +15,5 @@ public interface IUserService {
     Page<UserDto> findAll(UserReq req);
     boolean isOwner(String id);
     UserDto findOwnerByAgency(String id);
-    void setOwner(UserOwnerDto dto);
+    void setOwner(UserDto dto);
 }

@@ -3,8 +3,9 @@ package org.dainn.userservice.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.userservice.dto.permission.PermissionDto;
-import org.dainn.userservice.dto.user.*;
-import org.dainn.userservice.event.EventProducer;
+import org.dainn.userservice.dto.user.UserDetailDto;
+import org.dainn.userservice.dto.user.UserDto;
+import org.dainn.userservice.dto.user.UserReq;
 import org.dainn.userservice.exception.AppException;
 import org.dainn.userservice.exception.ErrorCode;
 import org.dainn.userservice.mapper.IPermissionMapper;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -105,9 +107,15 @@ public class UserService implements IUserService {
 
     @Transactional
     @Override
-    public void setOwner(UserOwnerDto dto) {
-        User user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    public void setOwner(UserDto dto) {
+        Optional<User> optional = userRepository.findByEmail(dto.getEmail());
+        User user = new User();
+        if (optional.isPresent()) {
+            user = optional.get();
+            user = userMapper.toUpdate(user, dto);
+        } else {
+            user = userMapper.toEntity(dto);
+        }
         user.setRole(Role.AGENCY_OWNER);
         user.setAgencyId(dto.getAgencyId());
         userRepository.save(user);

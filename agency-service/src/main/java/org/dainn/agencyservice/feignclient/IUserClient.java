@@ -2,6 +2,7 @@ package org.dainn.agencyservice.feignclient;
 
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import org.dainn.agencyservice.dto.response.UserDto;
 import org.dainn.agencyservice.dto.response.UserOwnerDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ public interface IUserClient {
     @Bulkhead(name = "userService")
     @CircuitBreaker(name = "userService", fallbackMethod = "fallbackUser")
     @PutMapping("/{email}/owner")
-    ResponseEntity<Void> setOwner(@PathVariable String email, @RequestBody UserOwnerDto dto);
+    ResponseEntity<Void> setOwner(@PathVariable String email, @RequestBody UserDto dto);
 
 
     default ResponseEntity<Void> fallbackUser(String email, UserOwnerDto dto, Throwable t) {
