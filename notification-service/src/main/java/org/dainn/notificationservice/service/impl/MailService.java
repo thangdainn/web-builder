@@ -23,6 +23,9 @@ public class MailService implements IMailService {
     @Value("${resend.api.key}")
     private String resendApiKey;
 
+    @Value("${resend.api.mail}")
+    private String resendMail;
+
     @Override
     public void sendEmail(MailData mailData) {
         try {
@@ -33,13 +36,16 @@ public class MailService implements IMailService {
 
             Resend resend = new Resend(resendApiKey);
             CreateEmailOptions params = CreateEmailOptions.builder()
-                    .from(mailData.getFrom())
+                    .from("Taskium <" + resendMail +">")
                     .to(mailData.getTo())
                     .subject(mailData.getSubject())
                     .html(htmlContent)
                     .build();
             resend.emails().send(params);
             log.info("Email sent from {} to {} successfully", mailData.getFrom(), mailData.getTo());
+        }catch (ResendException e) {
+            log.error("Failed to send email from {} to {}: {}", mailData.getFrom(), mailData.getTo(), e.getMessage());
+            eventProducer.sendEmailFailed(mailData.getInviteId());
         } catch (Exception e) {
             log.error("Failed to send email from {} to {}", mailData.getFrom(), mailData.getTo());
             eventProducer.sendEmailFailed(mailData.getInviteId());
