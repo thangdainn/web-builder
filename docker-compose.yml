@@ -406,7 +406,8 @@ services:
     ports:
       - "8761:8761"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
+      - BETTERSTACK_HOST=${BETTER_STACK_HOST}
     restart: on-failure
     healthcheck:
       test: curl -f http://localhost:8761/actuator/health || exit 1
@@ -433,6 +434,8 @@ services:
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
       - LOGGING_LEVEL_ROOT=INFO
+      - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
+      - BETTERSTACK_HOST=${BETTER_STACK_HOST}
     depends_on:
       discovery-server:
         condition: service_healthy
@@ -461,6 +464,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
+      - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
+      - BETTERSTACK_HOST=${BETTER_STACK_HOST}
     depends_on:
       postgres-agency:
         condition: service_healthy
@@ -497,6 +502,8 @@ services:
       - SPRING_FLYWAY_USER=${MYSQL_USER}
       - SPRING_FLYWAY_PASSWORD=${MYSQL_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
+      - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
+      - BETTERSTACK_HOST=${BETTER_STACK_HOST}
     depends_on:
       mysql-funnel:
         condition: service_healthy
@@ -531,6 +538,8 @@ services:
       - FIREBASE_SERVICE_ACCOUNT_JSON=${FIREBASE_SERVICE_ACCOUNT_JSON}
       - FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET}
       - IMAGE_BASE_URL=${IMAGE_STORAGE_BASE}
+      - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
+      - BETTERSTACK_HOST=${BETTER_STACK_HOST}
     depends_on:
       postgres-media:
         condition: service_healthy
@@ -566,8 +575,9 @@ services:
       - SPRING_FLYWAY_PASSWORD=${POSTGRES_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
-      - SPRING_MAIL_USERNAME=${SMTP_USERNAME}
-      - SPRING_MAIL_PASSWORD=${SMTP_PASSWORD}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
+      - BETTERSTACK_HOST=${BETTER_STACK_HOST}
     depends_on:
       postgres-notification:
         condition: service_healthy
@@ -602,6 +612,8 @@ services:
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
       - WEBHOOK_SECRET_KEY=${WEBHOOK_SECRET_KEY}
+      - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
+      - BETTERSTACK_HOST=${BETTER_STACK_HOST}
     depends_on:
       discovery-server:
         condition: service_healthy
@@ -633,6 +645,8 @@ services:
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
+      - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
+      - BETTERSTACK_HOST=${BETTER_STACK_HOST}
     depends_on:
       postgres-pipeline:
         condition: service_healthy
@@ -663,6 +677,8 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
       - SPRING_ELASTICSEARCH_URIS=http://elasticsearch-wb:9200
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
+      - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
+      - BETTERSTACK_HOST=${BETTER_STACK_HOST}
     depends_on:
       discovery-server:
         condition: service_healthy
@@ -697,6 +713,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
+      - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
+      - BETTERSTACK_HOST=${BETTER_STACK_HOST}
     depends_on:
       postgres-subaccount:
         condition: service_healthy
@@ -734,6 +752,8 @@ services:
       - SPRING_FLYWAY_PASSWORD=${MYSQL_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
+      - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
+      - BETTERSTACK_HOST=${BETTER_STACK_HOST}
     depends_on:
       mysql-subscription:
         condition: service_healthy
@@ -768,6 +788,10 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
+      - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
+      - BETTERSTACK_HOST=${BETTER_STACK_HOST}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+      - JWT_SECRET=${JWT_SECRET}
     depends_on:
       postgres-user:
         condition: service_healthy
@@ -789,6 +813,36 @@ services:
         limits:
           cpus: '0.5'
           memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - wb-network
+
+  vector:
+    image: timberio/vector:latest-alpine
+    container_name: vector-wb
+    volumes:
+      - ./vector:/etc/vector
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - BETTER_STACK_HOST=${BETTER_STACK_HOST}
+      - BETTER_STACK_TOKEN=${BETTER_STACK_TOKEN}
+      - VECTOR_CONFIG=/etc/vector/vector.yml
+      - VECTOR_LOG=debug
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - wb-network
 

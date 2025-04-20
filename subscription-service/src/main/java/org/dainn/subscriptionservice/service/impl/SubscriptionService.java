@@ -10,7 +10,6 @@ import org.dainn.subscriptionservice.repository.ISubscriptionRepository;
 import org.dainn.subscriptionservice.service.ISubscriptionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -49,16 +48,10 @@ public class SubscriptionService implements ISubscriptionService {
     }
 
     @Override
-    public Flux<SubscriptionDto> findByAgencyId(String id) {
-        return subscriptionRepository.findAllByAgencyId(id)
+    public Mono<SubscriptionDto> findByAgencyId(String id) {
+        return subscriptionRepository.findByAgencyId(id)
+                .switchIfEmpty(Mono.error(new AppException(ErrorCode.SUBSCRIPTION_NOT_EXISTED)))
                 .map(subscriptionMapper::toDto);
-    }
-
-    @Override
-    public Mono<SubscriptionDto> findFirstByAgencyId(String id) {
-        return findByAgencyId(id)
-                .next()
-                .switchIfEmpty(Mono.error(new AppException(ErrorCode.SUBSCRIPTION_NOT_EXISTED)));
     }
 
     @Transactional

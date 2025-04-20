@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.notificationservice.dto.NotificationDto;
+import org.dainn.notificationservice.dto.mail.MailData;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -26,8 +27,8 @@ public class EventProducer {
     @Value("${kafka.topic.delete-events}")
     private String deleteEventsTopic;
 
-    @Value("${kafka.topic.dead-letter}")
-    private String deadLetterTopic;
+    @Value("${kafka.topic.send-email-failed-events}")
+    private String sendEmailFailedEventsTopic;
 
     public void sendNotification(NotificationDto dto) {
         if (dto == null || dto.getAction() == null) {
@@ -40,19 +41,21 @@ public class EventProducer {
         sendWithRetry(dto, key, topic, 3, 1000);
     }
 
+    public void sendEmailFailed(String inviteId) {
+        String topic = sendEmailFailedEventsTopic;
+        sendWithRetry(inviteId, inviteId, topic, 3, 1000);
+    }
+
     private String determineTopic(String action) {
         return switch (action.toUpperCase()) {
             case "CREATE" -> createEventsTopic;
             case "UPDATE" -> updateEventsTopic;
             case "DELETE" -> deleteEventsTopic;
-            default -> {
-                log.warn("Unknown action: {}, sending to dead-letter topic", action);
-                yield deadLetterTopic;
-            }
+            default -> createEventsTopic;
         };
     }
 
-    private void sendWithRetry(NotificationDto dto, String key, String topic, int maxRetries, long delay) {
+    private <T> void sendWithRetry(T dto, String key, String topic, int maxRetries, long delay) {
         try {
             String jsonMessage = objectMapper.writeValueAsString(dto);
             CompletableFuture<?> future = kafkaTemplate.send(topic, key, jsonMessage);

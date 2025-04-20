@@ -28,7 +28,7 @@ public class SubscriptionController {
 
     @GetMapping(Endpoint.Subscription.AGENCY)
     public ResponseEntity<?> getByAgency(@PathVariable String id) {
-        return ResponseEntity.ok(subscriptionService.findByAgencyId(id).collectList());
+        return ResponseEntity.ok(subscriptionService.findByAgencyId(id));
     }
 
     @PostMapping

@@ -20,8 +20,8 @@ public interface ISubscriptionClient {
     @GetMapping("/agency/{id}")
     SubscriptionResp getByAgencyId(@PathVariable String id);
 
-    default List<SubscriptionResp> fallbackSubscription(String id, Throwable t) {
+    default SubscriptionResp fallbackSubscription(String id, Throwable t) {
         log.warn("Fallback triggered for subscription service. Agency ID: {}, Error: {}", id, t.getMessage());
-        return List.of(new SubscriptionResp());
+        return new SubscriptionResp();
     }
 }

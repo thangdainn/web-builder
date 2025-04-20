@@ -1,42 +1,48 @@
 package org.dainn.notificationservice.service.impl;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import com.resend.Resend;
+import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.CreateEmailOptions;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dainn.notificationservice.dto.mail.MailData;
+import org.dainn.notificationservice.event.EventProducer;
 import org.dainn.notificationservice.service.IMailService;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MailService implements IMailService {
-    private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
+    private final EventProducer eventProducer;
+
+    @Value("${resend.api.key}")
+    private String resendApiKey;
 
     @Override
     public void sendEmail(MailData mailData) {
         try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setTo(mailData.getTo());
-            helper.setSubject(mailData.getSubject());
-
             Context context = new Context();
             context.setVariable("inviterName", mailData.getInviterName());
             context.setVariable("invitationLink", mailData.getInvitationLink());
-
             String htmlContent = templateEngine.process("invitation-email", context);
-            helper.setText(htmlContent, true);
 
-            mailSender.send(message);
-        } catch (MessagingException e) {
-            throw new  RuntimeException("Failed to send email", e);
+            Resend resend = new Resend(resendApiKey);
+            CreateEmailOptions params = CreateEmailOptions.builder()
+                    .from(mailData.getFrom())
+                    .to(mailData.getTo())
+                    .subject(mailData.getSubject())
+                    .html(htmlContent)
+                    .build();
+            resend.emails().send(params);
+            log.info("Email sent from {} to {} successfully", mailData.getFrom(), mailData.getTo());
+        } catch (Exception e) {
+            log.error("Failed to send email from {} to {}", mailData.getFrom(), mailData.getTo());
+            eventProducer.sendEmailFailed(mailData.getInviteId());
         }
-
     }
 }

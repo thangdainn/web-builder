@@ -1,0 +1,45 @@
+sources:
+    docker:
+        type: docker_logs
+        include_containers:
+            - agency-service-wb
+            - api-gateway-wb
+            - discovery-server-wb
+            - funnel-service-wb
+            - media-service-wb
+            - notification-service-wb
+            - payment-service-wb
+            - pipeline-service-wb
+            - search-service-wb
+            - subaccount-service-wb
+            - subscription-service-wb
+            - user-service-wb
+
+transforms:
+    add_fields:
+        type: remap
+        inputs: ["docker"]
+        source: |
+            .message = to_string(.message) ?? ""
+            
+            match = parse_regex(.message, r'^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) (?P<level>\w+)\s+(?P<content>.+)$') ?? {}
+            if match != {} {
+                .level = match.level
+                .message = match.content
+                .timestamp = match.timestamp
+            } else {
+                .level = "UNKNOWN"
+            }
+            del(.source)
+
+sinks:
+    better_stack:
+        type: http
+        method: "post"
+        inputs: ["add_fields"]
+        uri: ${BETTER_STACK_HOST}
+        encoding:
+            codec: json
+        auth:
+            strategy: bearer
+            token: ${BETTER_STACK_TOKEN}

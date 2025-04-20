@@ -1,5 +1,8 @@
 package org.dainn.userservice.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.access.AccessDeniedException;
@@ -50,6 +53,23 @@ public class GlobalExceptionHandler {
         return ProblemDetail
                 .forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ProblemDetail handleException(ExpiredJwtException e) {
+        return ProblemDetail
+                .forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+
+    @ExceptionHandler(MalformedJwtException.class)
+    public ProblemDetail handleException(MalformedJwtException e) {
+        return ProblemDetail
+                .forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+    @ExceptionHandler(SignatureException.class)
+    public ProblemDetail handleSignatureException(SignatureException e) {
+        return ProblemDetail
+                .forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleException(Exception e) {
         return ProblemDetail
