@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.dainn.userservice.config.endpoint.Endpoint;
 import org.dainn.userservice.dto.invitation.InvitationDto;
 import org.dainn.userservice.dto.invitation.InvitationReq;
+import org.dainn.userservice.dto.invitation.UserInfo;
 import org.dainn.userservice.dto.user.UserDto;
 import org.dainn.userservice.service.IInvitationService;
 import org.springframework.http.HttpStatus;
@@ -40,8 +41,8 @@ public class InvitationController {
     }
 
     @PostMapping(Endpoint.Invitation.VERIFY)
-    public ResponseEntity<?> verify(@PathVariable String email, @RequestBody UserDto userInfo) {
-        return ResponseEntity.ok(invitationService.verify(email, userInfo));
+    public ResponseEntity<?> verify(@Valid @RequestBody UserInfo userInfo) {
+        return ResponseEntity.ok(invitationService.verify(userInfo));
     }
 
     @PutMapping

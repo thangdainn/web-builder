@@ -22,7 +22,6 @@ public class Endpoint {
         public static final String BASE = API_PREFIX + "/invitations";
         public static final String AGENCY = "/agency/{id}";
         public static final String PENDING = "/pending/{email}";
-        public static final String VERIFY = "/{email}/verify";
-        public static final String SEND_EMAIL = "/send-email";
+        public static final String VERIFY = "/verify";
     }
 }

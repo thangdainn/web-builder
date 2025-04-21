@@ -49,7 +49,7 @@ public class UserService implements IUserService {
     @Transactional
     @Override
     public void delete(String id) {
-        User user = userRepository.findById(id)
+        userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         permissionRepository.deleteById(id);
         userRepository.deleteById(id);

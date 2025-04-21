@@ -3,6 +3,7 @@ package org.dainn.userservice.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.dainn.userservice.dto.invitation.InvitationDto;
 import org.dainn.userservice.dto.invitation.InvitationReq;
+import org.dainn.userservice.dto.invitation.UserInfo;
 import org.dainn.userservice.dto.mail.MailData;
 import org.dainn.userservice.dto.user.UserDto;
 import org.dainn.userservice.event.EventProducer;
@@ -68,21 +69,27 @@ public class InvitationService implements IInvitationService {
 
     @Transactional
     @Override
-    public String verify(String email, UserDto userInfo) {
-        try {
-            Invitation invitation = invitationRepository.findByEmailAndStatus(email, InvitationStatus.PENDING)
-                    .orElseThrow(() -> new AppException(ErrorCode.INVITATION_NOT_EXISTED));
-            Optional<User> optional = userRepository.findByEmail(userInfo.getEmail());
-            if (optional.isPresent()) {
-                return optional.get().getAgencyId();
-            }
-            userInfo = userMapper.toUserInfo(userInfo, invitation);
-            userService.create(userInfo);
-            invitationRepository.deleteById(invitation.getId());
-            return invitation.getAgencyId();
-        } catch (Exception e) {
+    public String verify(UserInfo userInfo) {
+        if (!jwtProvider.validateToken(userInfo.getToken())) {
             return null;
         }
+        String email = jwtProvider.extractEmail(userInfo.getToken());
+        Invitation invitation = invitationRepository.findByEmailAndStatus(email, InvitationStatus.PENDING)
+                .orElseThrow(() -> new AppException(ErrorCode.INVITATION_NOT_EXISTED));
+        Optional<User> optional = userRepository.findByEmail(email);
+        if (optional.isPresent()) {
+            return optional.get().getAgencyId();
+        }
+        UserDto dto = new UserDto();
+        dto.setEmail(email);
+        dto.setName(userInfo.getName());
+        dto.setAvatarUrl(userInfo.getAvatarUrl());
+        dto.setRole(invitation.getRole());
+        dto.setAgencyId(invitation.getAgencyId());
+
+        userService.create(dto);
+        invitationRepository.deleteById(invitation.getId());
+        return invitation.getAgencyId();
     }
 
     @Transactional
