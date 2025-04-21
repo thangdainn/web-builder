@@ -1,0 +1,1 @@
+ALTER TABLE subscriptions MODIFY COLUMN plan VARCHAR(30) NOT NULL;

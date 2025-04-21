@@ -1,7 +1,7 @@
 CREATE TABLE subscriptions
 (
     id                      VARCHAR(36) PRIMARY KEY,
-    plan                    VARCHAR(30) NOT NULL,
+    plan                    VARCHAR(25) NOT NULL,
     price                   DECIMAL(19, 2) NOT NULL,
     price_id                VARCHAR(36),
     current_period_end_date DATETIME,
