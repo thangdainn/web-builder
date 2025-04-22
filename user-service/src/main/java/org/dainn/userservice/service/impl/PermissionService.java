@@ -41,7 +41,9 @@ public class PermissionService implements IPermissionService {
             permission = permissionMapper.toEntity(dto);
             permission.setUser(user);
         }
-        return permissionMapper.toDto(permissionRepository.save(permission));
+        permission = permissionRepository.save(permission);
+        eventProducer.changePerEvent(user.getEmail());
+        return permissionMapper.toDto(permission);
     }
 
     @Transactional
@@ -57,7 +59,7 @@ public class PermissionService implements IPermissionService {
                 .orElseThrow(() -> new AppException(ErrorCode.PERMISSION_NOT_EXISTED));
         permission.setAccess(access);
         permission = permissionRepository.save(permission);
-        eventProducer.changePerEvent(permission.getUser().getId());
+        eventProducer.changePerEvent(permission.getUser().getEmail());
     }
 
     @Override
