@@ -1,8 +1,8 @@
 package org.dainn.userservice.mapper;
 
+import org.dainn.userservice.dto.invitation.UserInfo;
 import org.dainn.userservice.dto.user.UserDetailDto;
 import org.dainn.userservice.dto.user.UserDto;
-import org.dainn.userservice.model.Invitation;
 import org.dainn.userservice.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -24,5 +24,5 @@ public interface IUserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    UserDto toUserInfo(@MappingTarget UserDto userDto, Invitation invitation);
+    UserDto toUserInfo(@MappingTarget UserDto userDto, UserInfo info);
 }

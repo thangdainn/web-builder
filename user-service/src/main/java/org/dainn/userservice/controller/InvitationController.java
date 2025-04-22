@@ -7,7 +7,6 @@ import org.dainn.userservice.config.endpoint.Endpoint;
 import org.dainn.userservice.dto.invitation.InvitationDto;
 import org.dainn.userservice.dto.invitation.InvitationReq;
 import org.dainn.userservice.dto.invitation.UserInfo;
-import org.dainn.userservice.dto.user.UserDto;
 import org.dainn.userservice.service.IInvitationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,6 @@ public class InvitationController {
     private final IInvitationService invitationService;
 
     @GetMapping
-//    @PreAuthorize("hasRole('MEMBER')")
     public ResponseEntity<?> getAll(@ModelAttribute InvitationReq request) {
         return ResponseEntity.ok(invitationService.findAll(request));
     }

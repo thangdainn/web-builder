@@ -22,6 +22,11 @@ public class AgencyController {
         return ResponseEntity.ok(agencyService.findById(id));
     }
 
+    @GetMapping(Endpoint.Agency.DETAIL)
+    public ResponseEntity<?> getDetail(@PathVariable String id) {
+        return ResponseEntity.ok(agencyService.findDetailById(id));
+    }
+
     @GetMapping(Endpoint.Agency.CUSTOMER)
     public ResponseEntity<?> getByCustomerId(@PathVariable String id) {
         return ResponseEntity.ok(agencyService.findByCustomerId(id));

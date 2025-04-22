@@ -8,11 +8,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface ISubAccountRepository extends JpaRepository<SubAccount, String> {
     Page<SubAccount> findAllByNameContainingIgnoreCase(String keyword, Pageable pageable);
+    List<SubAccount> findAllByAgencyId(String agencyId);
 
     @Modifying
     @Query("""

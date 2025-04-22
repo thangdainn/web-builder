@@ -3,8 +3,8 @@ package org.dainn.userservice.event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dainn.userservice.dto.event.UserProducer;
 import org.dainn.userservice.dto.mail.MailData;
-import org.dainn.userservice.dto.user.UserAccessProducer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -18,15 +18,44 @@ public class EventProducer {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
-    @Value("${kafka.topic.update-access-events}")
-    private String updateAccessTopic;
+    @Value("${kafka.topic.sync-permission-events}")
+    private String syncPermissionTopic;
+
+    @Value("${kafka.topic.sync-agency-events}")
+    private String syncAgencyTopic;
+
+    @Value("${kafka.topic.change-permission-events}")
+    private String changePermissionTopic;
+
+    @Value("${kafka.topic.change-agency-events}")
+    private String changeAgencyTopic;
+
+    @Value("${kafka.topic.user-delete-events}")
+    private String deleteUserTopic;
 
     @Value("${kafka.topic.invite-events}")
     private String inviteEventsTopic;
 
-    public void sendUpdateAccessEvent(UserAccessProducer dto) {
-        String key = dto.getUserId();
-        sendWithRetry(dto, key, updateAccessTopic, 3, 1000);
+    public void changePerEvent(String userId) {
+        sendWithRetry(userId, userId, changePermissionTopic, 3, 1000);
+    }
+
+    public void changeAgencyEvent(String email) {
+        sendWithRetry(email, email, changeAgencyTopic, 3, 1000);
+    }
+
+    public void syncPerEvent(UserProducer dto) {
+        String key = dto.getId();
+        sendWithRetry(dto, key, syncPermissionTopic, 3, 1000);
+    }
+
+    public void syncAgencyEvent(UserProducer dto) {
+        String key = dto.getId();
+        sendWithRetry(dto, key, syncAgencyTopic, 3, 1000);
+    }
+
+    public void sendDeleteUser(String id) {
+        sendWithRetry(id, id, deleteUserTopic, 3, 1000);
     }
 
     public void sendInviteEvent(MailData dto) {

@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.dainn.subaccountservice.config.endpoint.Endpoint;
 import org.dainn.subaccountservice.dto.subaccount.CreateSubAccount;
+import org.dainn.subaccountservice.dto.subaccount.DeleteSubAccount;
 import org.dainn.subaccountservice.dto.subaccount.SubAccountReq;
 import org.dainn.subaccountservice.service.ISubAccountService;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,11 @@ public class SubAccountController {
         return ResponseEntity.ok(subAccountService.findById(id));
     }
 
+    @GetMapping(Endpoint.SubAccount.AGENCY)
+    public ResponseEntity<?> getByAgencyId(@PathVariable String id) {
+        return ResponseEntity.ok(subAccountService.findByAgencyId(id));
+    }
+
     @GetMapping(Endpoint.SubAccount.DETAIL)
     public ResponseEntity<?> getDetailById(@PathVariable String id) {
         return ResponseEntity.ok(subAccountService.findDetailById(id));
@@ -44,8 +50,8 @@ public class SubAccountController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> delete(String id) {
-        subAccountService.deleteBy(id);
+    public ResponseEntity<Void> delete(@Valid @RequestBody DeleteSubAccount dto) {
+        subAccountService.delete(dto.getId(), dto.getEmail());
         return ResponseEntity.ok().build();
     }
 }

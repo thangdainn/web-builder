@@ -2,7 +2,6 @@ package org.dainn.userservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.dainn.userservice.dto.permission.PermissionDto;
-import org.dainn.userservice.dto.user.UserAccessProducer;
 import org.dainn.userservice.event.EventProducer;
 import org.dainn.userservice.exception.AppException;
 import org.dainn.userservice.exception.ErrorCode;
@@ -58,11 +57,7 @@ public class PermissionService implements IPermissionService {
                 .orElseThrow(() -> new AppException(ErrorCode.PERMISSION_NOT_EXISTED));
         permission.setAccess(access);
         permission = permissionRepository.save(permission);
-        eventProducer.sendUpdateAccessEvent(UserAccessProducer.builder()
-                        .userId(permission.getUser().getId())
-                        .permissionId(permission.getId())
-                        .access(access)
-                .build());
+        eventProducer.changePerEvent(permission.getUser().getId());
     }
 
     @Override

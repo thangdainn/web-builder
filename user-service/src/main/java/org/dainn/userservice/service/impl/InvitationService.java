@@ -1,6 +1,7 @@
 package org.dainn.userservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dainn.userservice.dto.invitation.InvitationDto;
 import org.dainn.userservice.dto.invitation.InvitationReq;
 import org.dainn.userservice.dto.invitation.UserInfo;
@@ -9,7 +10,6 @@ import org.dainn.userservice.dto.user.UserDto;
 import org.dainn.userservice.event.EventProducer;
 import org.dainn.userservice.exception.AppException;
 import org.dainn.userservice.exception.ErrorCode;
-import org.dainn.userservice.jwt.JwtProvider;
 import org.dainn.userservice.mapper.IInvitationMapper;
 import org.dainn.userservice.mapper.IUserMapper;
 import org.dainn.userservice.model.Invitation;
@@ -20,6 +20,7 @@ import org.dainn.userservice.service.IInvitationService;
 import org.dainn.userservice.service.IUserService;
 import org.dainn.userservice.util.Paging;
 import org.dainn.userservice.util.enums.InvitationStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class InvitationService implements IInvitationService {
@@ -36,7 +38,9 @@ public class InvitationService implements IInvitationService {
     private final IUserRepository userRepository;
     private final IUserMapper userMapper;
     private final EventProducer eventProducer;
-    private final JwtProvider jwtProvider;
+
+    @Value("${app.domain}")
+    private String domain;
 
     @Transactional
     @Override
@@ -52,14 +56,13 @@ public class InvitationService implements IInvitationService {
         Invitation entity = invitationMapper.toEntity(dto);
         entity = invitationRepository.save(entity);
         UserDto user = userService.findOwnerByAgency(dto.getAgencyId());
-        String token = jwtProvider.generateToken(dto.getEmail(), entity.getAgencyId());
         MailData mailData = MailData.builder()
                 .inviteId(entity.getId())
                 .from(user.getEmail())
                 .to(dto.getEmail())
                 .subject("Your Invitation to Join Web builder")
                 .inviterName(user.getName())
-                .invitationLink("http://localhost:3000/accept-invite?token=" + token)
+                .invitationLink(domain + "/sign-in")
                 .build();
         eventProducer.sendInviteEvent(mailData);
         return invitationMapper.toDto(invitationRepository.save(entity));
@@ -70,25 +73,25 @@ public class InvitationService implements IInvitationService {
     @Transactional
     @Override
     public String verify(UserInfo userInfo) {
-        if (!jwtProvider.validateToken(userInfo.getToken())) {
-            return null;
-        }
-        String email = jwtProvider.extractEmail(userInfo.getToken());
-        Invitation invitation = invitationRepository.findByEmailAndStatus(email, InvitationStatus.PENDING)
+        Invitation invitation = invitationRepository.findByEmailAndStatus(userInfo.getEmail(), InvitationStatus.PENDING)
                 .orElseThrow(() -> new AppException(ErrorCode.INVITATION_NOT_EXISTED));
-        Optional<User> optional = userRepository.findByEmail(email);
+        Optional<User> optional = userRepository.findByEmail(userInfo.getEmail());
         if (optional.isPresent()) {
             return optional.get().getAgencyId();
         }
         UserDto dto = new UserDto();
-        dto.setEmail(email);
+        dto = userMapper.toUserInfo(dto, userInfo);
+        dto.setId(userInfo.getId());
+        dto.setEmail(invitation.getEmail());
         dto.setName(userInfo.getName());
         dto.setAvatarUrl(userInfo.getAvatarUrl());
         dto.setRole(invitation.getRole());
         dto.setAgencyId(invitation.getAgencyId());
 
-        userService.create(dto);
+        dto = userService.create(dto);
         invitationRepository.deleteById(invitation.getId());
+        log.info("Invitation verified");
+        eventProducer.changeAgencyEvent(dto.getEmail());
         return invitation.getAgencyId();
     }
 

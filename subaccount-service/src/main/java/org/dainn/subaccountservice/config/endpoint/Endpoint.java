@@ -8,6 +8,7 @@ public class Endpoint {
         public static final String ID = "/{id}";
         public static final String DETAIL = "/{id}/detail";
         public static final String CONNECT_ACC_ID = "/{id}/connect-acc-id";
+        public static final String AGENCY = "/agency/{id}";
     }
 
     public static final class Contact {

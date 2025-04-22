@@ -45,6 +45,7 @@ public class AgencyService implements IAgencyService {
                 .country(dto.getCountry())
                 .agencyId(newAgency.getId())
                 .build());
+        eventProducer.changeAgencyEvent(dto.getUser().getEmail());
         return newAgency;
     }
 
@@ -54,7 +55,9 @@ public class AgencyService implements IAgencyService {
         Agency old = agencyRepository.findById(dto.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.AGENCY_NOT_EXISTED));
         Agency newAgency = agencyMapper.update(old, dto);
-        return agencyMapper.toDto(agencyRepository.save(newAgency));
+        newAgency = agencyRepository.save(newAgency);
+        eventProducer.changeAgencyEvent(dto.getUserEmail());
+        return agencyMapper.toDto(newAgency);
     }
 
     @Transactional
@@ -66,7 +69,13 @@ public class AgencyService implements IAgencyService {
     }
 
     @Override
-    public AgencyDetailDto findById(String id) {
+    public AgencyDto findById(String id) {
+        return agencyMapper.toDto(agencyRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.AGENCY_NOT_EXISTED)));
+    }
+
+    @Override
+    public AgencyDetailDto findDetailById(String id) {
         AgencyDetailDto detail = agencyMapper.toDetail(agencyRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.AGENCY_NOT_EXISTED)));
         detail.setOptions(agencySOService.findByAgency(id));

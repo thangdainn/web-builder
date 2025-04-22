@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.dainn.userservice.dto.AbstractDto;
-import org.dainn.userservice.util.enums.Role;
 
 @Getter
 @Setter
@@ -18,9 +17,11 @@ public class UserInfo extends AbstractDto {
     @NotBlank(message = "ID is required")
     private String id;
 
+    @NotNull(message = "Email is required")
+    @NotBlank(message = "Email is required")
+    private String email;
+
     private String name;
 
     private String avatarUrl;
-
-    private String token;
 }

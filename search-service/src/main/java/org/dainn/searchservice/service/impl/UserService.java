@@ -3,8 +3,6 @@ package org.dainn.searchservice.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.searchservice.document.User;
-import org.dainn.searchservice.dto.user.UserAccessConsumer;
-import org.dainn.searchservice.dto.user.UserInfoConsumer;
 import org.dainn.searchservice.exception.AppException;
 import org.dainn.searchservice.exception.ErrorCode;
 import org.dainn.searchservice.repository.IUserRepository;
@@ -16,6 +14,7 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -32,52 +31,36 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void update(User user) {
-        log.info("Updating user: {}", user.getId());
+    public void syncPermission(User request) {
+        User user = findById(request.getId());
+        user.setPermissions(request.getPermissions());
         userRepository.save(user);
     }
 
     @Override
-    public void updateInfo(UserInfoConsumer dto) {
-        User user = findById(dto.getId());
-        user.setAgencyId(dto.getAgencyId());
-        List<User.Permission> permissions = dto.getPermissions().stream()
-                .map(permission -> User.Permission.builder()
-                        .id(permission.getId())
-                        .subAccountId(permission.getSubAccountId())
-                        .access(permission.getAccess())
-                        .build())
-                .toList();
-        user.getPermissions().addAll(permissions);
-
-        List<User.SubAccount> subAccounts = dto.getSubAccounts().stream()
-                .map(subAccount -> User.SubAccount.builder()
-                        .id(subAccount.getId())
-                        .agencyId(subAccount.getAgencyId())
-                        .build())
-                .toList();
-        user.getSubAccounts().addAll(subAccounts);
-
-        userRepository.save(user);
-    }
-
-    @Override
-    public void updateAccess(UserAccessConsumer dto) {
-        User user = findById(dto.getUserId());
-
-        User.Permission permissionToUpdate = user.getPermissions().stream()
-                .filter(p -> p.getId().equals(dto.getPermissionId()))
-                .findFirst()
-                .orElseThrow(() -> new AppException(ErrorCode.PERMISSION_NOT_EXISTED));
-        permissionToUpdate.setAccess(dto.getAccess());
-
-        userRepository.save(user);
+    public void syncAgency(User request) {
+        Optional<User> optional = userRepository.findById(request.getId());
+        if (optional.isEmpty()) {
+            userRepository.save(request);
+        }
+        List<User> users = userRepository.findByAgencyId(request.getAgency().getId());
+        for (User user : users) {
+            user.setAgency(request.getAgency());
+        }
+        userRepository.saveAll(users);
     }
 
     @Override
     public User findById(String id) {
         log.info("Finding user by id: {}", id);
         return userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        log.info("Finding user by email: {}", email);
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
     }
 
@@ -126,4 +109,6 @@ public class UserService implements IUserService {
                 .map(SearchHit::getContent)
                 .collect(Collectors.toList());
     }
+
+
 }

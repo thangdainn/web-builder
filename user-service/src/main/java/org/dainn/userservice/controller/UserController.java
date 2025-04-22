@@ -53,7 +53,7 @@ public class UserController {
     }
 
     @PutMapping(Endpoint.User.SET_OWNER)
-    public ResponseEntity<Void> setOwner(@PathVariable String email, @Valid @RequestBody UserDto dto) {
+    public ResponseEntity<Void> setOwner(@PathVariable String email, @RequestBody UserDto dto) {
         dto.setEmail(email);
         userService.setOwner(dto);
         return ResponseEntity.ok().build();

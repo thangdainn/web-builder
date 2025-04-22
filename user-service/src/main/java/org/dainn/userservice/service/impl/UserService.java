@@ -2,12 +2,16 @@ package org.dainn.userservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dainn.userservice.dto.event.UserProducer;
 import org.dainn.userservice.dto.permission.PermissionDto;
 import org.dainn.userservice.dto.user.UserDetailDto;
 import org.dainn.userservice.dto.user.UserDto;
 import org.dainn.userservice.dto.user.UserReq;
+import org.dainn.userservice.event.EventProducer;
 import org.dainn.userservice.exception.AppException;
 import org.dainn.userservice.exception.ErrorCode;
+import org.dainn.userservice.feignclient.IAgencyClient;
+import org.dainn.userservice.feignclient.ISAClient;
 import org.dainn.userservice.mapper.IPermissionMapper;
 import org.dainn.userservice.mapper.IUserMapper;
 import org.dainn.userservice.model.User;
@@ -31,6 +35,9 @@ public class UserService implements IUserService {
     private final IPermissionRepository permissionRepository;
     private final IUserMapper userMapper;
     private final IPermissionMapper permissionMapper;
+    private final EventProducer eventProducer;
+    private final ISAClient saClient;
+    private final IAgencyClient agencyClient;
 
     @Transactional
     @Override
@@ -53,6 +60,8 @@ public class UserService implements IUserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         permissionRepository.deleteById(id);
         userRepository.deleteById(id);
+        log.info("Deleted user with ID: {}", id);
+        eventProducer.sendDeleteUser(id);
     }
 
     @Transactional
@@ -63,6 +72,7 @@ public class UserService implements IUserService {
         old = userMapper.toUpdate(old, dto);
         old = userRepository.save(old);
         log.info("Updated user: {}", old);
+        eventProducer.changePerEvent(old.getId());
         return userMapper.toDto(old);
     }
 
@@ -109,7 +119,7 @@ public class UserService implements IUserService {
     @Override
     public void setOwner(UserDto dto) {
         Optional<User> optional = userRepository.findByEmail(dto.getEmail());
-        User user = new User();
+        User user;
         if (optional.isPresent()) {
             user = optional.get();
             user = userMapper.toUpdate(user, dto);
@@ -120,5 +130,35 @@ public class UserService implements IUserService {
         user.setAgencyId(dto.getAgencyId());
         log.info("Set owner for user: {}", user);
         userRepository.save(user);
+    }
+
+    @Override
+    public void syncPermission(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        List<PermissionDto> permissions = permissionRepository.findAllByUserId(user.getId())
+                .stream().map(permissionMapper::toDto).toList();
+        List<UserProducer.Permission> permissionList = permissions.stream()
+                .map(permission -> UserProducer.Permission.builder()
+                        .id(permission.getId())
+                        .subAccount(saClient.getById(permission.getSubAccountId()).getBody())
+                        .access(permission.getAccess())
+                        .build())
+                .toList();
+        UserProducer userProducer = UserProducer.toProducerPer(user, permissionList);
+        eventProducer.syncPerEvent(userProducer);
+        log.info("Sync permission for user successfully: {}", userProducer);
+    }
+
+    @Override
+    public void syncAgency(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        UserProducer.Agency agency = agencyClient.getById(user.getAgencyId()).getBody();
+        assert agency != null;
+        agency.setSubAccounts(saClient.getAllByAgency(agency.getId()).getBody());
+        UserProducer userProducer = UserProducer.toProducerAgency(user, agency);
+        eventProducer.syncAgencyEvent(userProducer);
+        log.info("Sync agency for user successfully: {}", userProducer);
     }
 }

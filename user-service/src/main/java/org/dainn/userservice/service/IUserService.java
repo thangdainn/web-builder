@@ -16,4 +16,6 @@ public interface IUserService {
     boolean isOwner(String id);
     UserDto findOwnerByAgency(String id);
     void setOwner(UserDto dto);
+    void syncPermission(String email);
+    void syncAgency(String email);
 }

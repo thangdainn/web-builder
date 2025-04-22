@@ -19,7 +19,7 @@ public interface IPermissionClient {
     @CircuitBreaker(name = "userService", fallbackMethod = "fallbackPermission")
     @Bulkhead(name = "userService")
     @PostMapping
-    ResponseEntity<PermissionDto> create(@RequestBody PermissionDto dto);
+    ResponseEntity<Void> create(@RequestBody PermissionDto dto);
 
     default ResponseEntity<PermissionDto> fallbackPermission(PermissionDto dto, Throwable t) {
         log.warn("Fallback triggered for permission service. PermissionDto: {}, Error: {}", dto, t.getMessage());

@@ -33,14 +33,30 @@ public class User {
     @Field(type = FieldType.Keyword)
     private String role;
 
-    @Field(type = FieldType.Keyword)
-    private String agencyId;
+    @Field(type = FieldType.Nested, includeInParent = true)
+    private Agency agency;
 
     @Field(type = FieldType.Nested)
-    private List<User.Permission> permissions;
+    private List<Permission> permissions;
 
-    @Field(type = FieldType.Nested)
-    private List<User.SubAccount> subAccounts;
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Agency {
+        @Field(type = FieldType.Keyword)
+        private String id;
+
+        @Field(type = FieldType.Keyword)
+        private String name;
+
+        @Field(type = FieldType.Text)
+        private String companyLogo;
+
+        @Field(type = FieldType.Nested)
+        private List<SubAccount> subAccounts;
+
+    }
 
     @Data
     @Builder
@@ -50,8 +66,8 @@ public class User {
         @Field(type = FieldType.Keyword)
         private String id;
 
-        @Field(type = FieldType.Keyword)
-        private String subAccountId;
+        @Field(type = FieldType.Nested)
+        private SubAccount subAccount;
 
         @Field(type = FieldType.Boolean)
         private Boolean access;
@@ -66,6 +82,27 @@ public class User {
         private String id;
 
         @Field(type = FieldType.Keyword)
-        private String agencyId;
+        private String name;
+
+        @Field(type = FieldType.Nested)
+        private List<SidebarOption> options;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class SidebarOption {
+        @Field(type = FieldType.Keyword)
+        private String id;
+
+        @Field(type = FieldType.Keyword)
+        private String name;
+
+        @Field(type = FieldType.Keyword)
+        private String link;
+
+        @Field(type = FieldType.Keyword)
+        private String icon;
     }
 }

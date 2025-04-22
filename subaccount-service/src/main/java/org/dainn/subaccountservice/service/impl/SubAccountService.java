@@ -1,7 +1,6 @@
 package org.dainn.subaccountservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.dainn.subaccountservice.dto.UserProducer;
 import org.dainn.subaccountservice.dto.response.PermissionDto;
 import org.dainn.subaccountservice.dto.response.PipelineDto;
 import org.dainn.subaccountservice.dto.response.TagDto;
@@ -60,22 +59,22 @@ public class SubAccountService implements ISubAccountService {
                 .email(userDto.getEmail())
                 .subAccountId(newSA.getId())
                 .build();
-        PermissionDto permissionResp = permissionClient.create(permissionDto).getBody();
+        permissionClient.create(permissionDto).getBody();
         PipelineDto pipelineDto = PipelineDto.builder()
                 .subAccountId(newSA.getId())
                 .name("Lead Cycle")
                 .build();
         pipelineClient.create(pipelineDto);
-        assert permissionResp != null;
-        UserProducer producer = UserProducer.toProducer(userDto.getId(), entity.getAgencyId(), List.of(permissionResp), List.of(entity));
-        eventProducer.sendUserEvent(producer);
+        eventProducer.changeAgencyEvent(userDto.getEmail());
+        eventProducer.changePerEvent(userDto.getEmail());
         return newSA;
     }
 
     @Transactional
     @Override
-    public void deleteBy(String id) {
+    public void delete(String id, String email) {
         subAccountRepository.deleteById(id);
+        eventProducer.changePerEvent(email);
     }
 
     @Transactional
@@ -116,5 +115,17 @@ public class SubAccountService implements ISubAccountService {
     @Override
     public void updateConnectAccId(String id, String connectAccId) {
         subAccountRepository.updateConnectAccId(id, connectAccId);
+    }
+
+    @Override
+    public List<SubAccountDetailDto> findByAgencyId(String id) {
+        List<SubAccount> subAccounts = subAccountRepository.findAllByAgencyId(id);
+        return subAccounts.stream()
+                .map(sa -> {
+                    SubAccountDetailDto detail = subAccountMapper.toDetailDto(sa);
+                    detail.setOptions(subAccountSOService.findBySA(detail.getId()));
+                    return detail;
+                })
+                .toList();
     }
 }

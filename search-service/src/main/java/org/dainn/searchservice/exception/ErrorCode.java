@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatusCode;
 @Getter
 public enum ErrorCode {
     USER_EXISTED("User existed", HttpStatus.BAD_REQUEST),
-    USER_NOT_EXISTED("User not existed", HttpStatus.NOT_FOUND),
+    USER_NOT_EXISTED("Email not existed", HttpStatus.NOT_FOUND),
 
     INVITATION_EXISTED("Invitation existed", HttpStatus.BAD_REQUEST),
     INVITATION_NOT_EXISTED("Invitation not existed", HttpStatus.NOT_FOUND),

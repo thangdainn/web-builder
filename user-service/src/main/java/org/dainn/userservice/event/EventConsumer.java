@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.userservice.repository.IInvitationRepository;
+import org.dainn.userservice.service.IUserService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 public class EventConsumer {
     private final ObjectMapper objectMapper;
     private final IInvitationRepository invitationRepository;
+    private final IUserService userService;
 
     @KafkaListener(topics = "send-email-failed-events", groupId = "${spring.kafka.consumer.group-id}")
     public void handleSendMailFailed(@Payload String message) {
@@ -26,4 +28,34 @@ public class EventConsumer {
             log.error("Failed to process create customer event", e);
         }
     }
+
+    @KafkaListener(topics = "change-permission-events", groupId = "${spring.kafka.consumer.group-id}")
+    public void changePermission(@Payload String message) {
+        log.info("User sync permission event consumed: {}", message);
+        try {
+            Thread.sleep(500);
+            String email = objectMapper.readValue(message, String.class);
+            userService.syncPermission(email);
+
+            log.info("User sync permission for email: {} success", email);
+        } catch (Exception e) {
+            log.error("Failed to process user sync permission event", e);
+        }
+    }
+
+    @KafkaListener(topics = "change-agency-events", groupId = "${spring.kafka.consumer.group-id}")
+    public void changeAgency(@Payload String message) {
+        log.info("User sync agency event consumed: {}", message);
+        try {
+            Thread.sleep(500);
+            String email = objectMapper.readValue(message, String.class);
+            userService.syncAgency(email);
+
+            log.info("User sync agency for email: {} success", email);
+        } catch (Exception e) {
+            log.error("Failed to process user sync agency event: {}", e.getMessage());
+        }
+    }
+
+
 }
