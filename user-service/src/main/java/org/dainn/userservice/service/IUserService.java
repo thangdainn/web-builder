@@ -18,4 +18,5 @@ public interface IUserService {
     void setOwner(UserDto dto);
     void syncPermission(String email);
     void syncAgency(String email);
+    void syncUser();
 }

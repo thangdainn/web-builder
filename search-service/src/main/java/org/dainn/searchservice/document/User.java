@@ -36,7 +36,7 @@ public class User {
     @Field(type = FieldType.Nested, includeInParent = true)
     private Agency agency;
 
-    @Field(type = FieldType.Nested)
+    @Field(type = FieldType.Nested, includeInParent = true)
     private List<Permission> permissions;
 
     @Data

@@ -10,6 +10,7 @@ public class Endpoint {
         public static final String EMAIL = "/email/{email}";
         public static final String IS_OWNER = "/{id}/is-owner";
         public static final String SET_OWNER = "/{email}/owner";
+        public static final String SYNC = "/sync";
     }
 
     public static final class Permission {

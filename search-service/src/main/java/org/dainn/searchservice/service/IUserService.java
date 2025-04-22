@@ -8,6 +8,7 @@ public interface IUserService {
     void create(User user);
     void syncPermission(User user);
     void syncAgency(User user);
+    void sync(List<User> users);
 
     User findById(String id);
     User findByEmail(String email);

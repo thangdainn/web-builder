@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -23,6 +24,9 @@ public class EventProducer {
 
     @Value("${kafka.topic.sync-agency-events}")
     private String syncAgencyTopic;
+
+    @Value("${kafka.topic.sync-user-events}")
+    private String syncUserTopic;
 
     @Value("${kafka.topic.change-permission-events}")
     private String changePermissionTopic;
@@ -52,6 +56,11 @@ public class EventProducer {
     public void syncAgencyEvent(UserProducer dto) {
         String key = dto.getId();
         sendWithRetry(dto, key, syncAgencyTopic, 3, 1000);
+    }
+
+    public void syncUserEvent(List<UserProducer> list) {
+        String key = list.get(0).getId();
+        sendWithRetry(list, key, syncUserTopic, 3, 1000);
     }
 
     public void sendDeleteUser(String id) {

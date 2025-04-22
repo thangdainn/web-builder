@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -160,5 +161,30 @@ public class UserService implements IUserService {
         UserProducer userProducer = UserProducer.toProducerAgency(user, agency);
         eventProducer.syncAgencyEvent(userProducer);
         log.info("Sync agency for user successfully: {}", userProducer);
+    }
+
+    @Override
+    public void syncUser() {
+        List<UserProducer> userProducers = new ArrayList<>();
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            UserProducer.Agency agency = agencyClient.getById(user.getAgencyId()).getBody();
+            assert agency != null;
+            agency.setSubAccounts(saClient.getAllByAgency(agency.getId()).getBody());
+            UserProducer userProducer = UserProducer.toProducerAgency(user, agency);
+            List<PermissionDto> permissions = permissionRepository.findAllByUserId(user.getId())
+                    .stream().map(permissionMapper::toDto).toList();
+            List<UserProducer.Permission> permissionList = permissions.stream()
+                    .map(permission -> UserProducer.Permission.builder()
+                            .id(permission.getId())
+                            .subAccount(saClient.getById(permission.getSubAccountId()).getBody())
+                            .access(permission.getAccess())
+                            .build())
+                    .toList();
+            userProducer.setPermissions(permissionList);
+            userProducers.add(userProducer);
+        }
+        eventProducer.syncUserEvent(userProducers);
+        log.info("Sync user successfully");
     }
 }

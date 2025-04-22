@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface IUserRepository extends ElasticsearchRepository<User, String> {
     Optional<User> findByEmail(String email);
     List<User> findByAgencyId(String agencyId);
+    List<User> findByAgencySubAccountsIdAndRoleAndPermissionsSubAccountIdAndPermissionsAccess(
+            String subaccountId, String role, String permissionsSubAccountId, Boolean access);
 }

@@ -47,6 +47,12 @@ public class UserController {
         return ResponseEntity.ok(userService.isOwner(id));
     }
 
+    @PostMapping(Endpoint.User.SYNC)
+    public ResponseEntity<Void> syncPermission() {
+        userService.syncUser();
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping
     public ResponseEntity<UserDto> create(@Valid @RequestBody UserDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(dto));
