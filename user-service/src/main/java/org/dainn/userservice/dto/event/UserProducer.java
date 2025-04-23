@@ -1,5 +1,7 @@
 package org.dainn.userservice.dto.event;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.dainn.userservice.model.User;
 
@@ -26,7 +28,18 @@ public class UserProducer {
     public static class Agency {
         private String id;
         private String name;
+        private String connectAccountId;
+        private String customerId;
         private String companyLogo;
+        private String companyEmail;
+        private String companyPhone;
+        private Boolean whiteLabel;
+        private String address;
+        private String city;
+        private String zipCode;
+        private String state;
+        private String country;
+        private Integer goal;
         private List<SidebarOption> options = new ArrayList<>();
         private List<SubAccount> subAccounts = new ArrayList<>();
     }
@@ -48,6 +61,16 @@ public class UserProducer {
     public static class SubAccount {
         private String id;
         private String name;
+        private String connectAccountId;
+        private String subAccountLogo;
+        private String companyEmail;
+        private String companyPhone;
+        private String address;
+        private Integer goal;
+        private String city;
+        private String state;
+        private String country;
+        private String zipCode;
         private List<SidebarOption> options = new ArrayList<>();
     }
 

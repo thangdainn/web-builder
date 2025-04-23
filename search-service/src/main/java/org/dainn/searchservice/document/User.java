@@ -47,11 +47,44 @@ public class User {
         @Field(type = FieldType.Keyword)
         private String id;
 
-        @Field(type = FieldType.Keyword)
+        @Field(type = FieldType.Text)
         private String name;
 
         @Field(type = FieldType.Text)
         private String companyLogo;
+
+        @Field(type = FieldType.Keyword)
+        private String connectAccountId;
+
+        @Field(type = FieldType.Keyword)
+        private String customerId;
+
+        @Field(type = FieldType.Text)
+        private String companyEmail;
+
+        @Field(type = FieldType.Keyword)
+        private String companyPhone;
+
+        @Field(type = FieldType.Boolean)
+        private Boolean whiteLabel;
+
+        @Field(type = FieldType.Text)
+        private String address;
+
+        @Field(type = FieldType.Text)
+        private String city;
+
+        @Field(type = FieldType.Text)
+        private String zipCode;
+
+        @Field(type = FieldType.Text)
+        private String state;
+
+        @Field(type = FieldType.Text)
+        private String country;
+
+        @Field(type = FieldType.Integer)
+        private Integer goal;
 
         @Field(type = FieldType.Nested)
         private List<SidebarOption> options;
@@ -84,8 +117,38 @@ public class User {
         @Field(type = FieldType.Keyword)
         private String id;
 
-        @Field(type = FieldType.Keyword)
+        @Field(type = FieldType.Text)
         private String name;
+
+        @Field(type = FieldType.Keyword)
+        private String connectAccountId;
+
+        @Field(type = FieldType.Text)
+        private String subAccountLogo;
+
+        @Field(type = FieldType.Text)
+        private String companyEmail;
+
+        @Field(type = FieldType.Keyword)
+        private String companyPhone;
+
+        @Field(type = FieldType.Text)
+        private String address;
+
+        @Field(type = FieldType.Integer)
+        private Integer goal;
+
+        @Field(type = FieldType.Text)
+        private String city;
+
+        @Field(type = FieldType.Text)
+        private String state;
+
+        @Field(type = FieldType.Text)
+        private String country;
+
+        @Field(type = FieldType.Text)
+        private String zipCode;
 
         @Field(type = FieldType.Nested)
         private List<SidebarOption> options;
