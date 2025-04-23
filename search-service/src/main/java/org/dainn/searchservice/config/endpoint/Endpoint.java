@@ -7,6 +7,7 @@ public class Endpoint {
         public static final String BASE = API_PREFIX + "/users";
         public static final String ID = "/{id}";
         public static final String EMAIL = "/email/{email}";
-        public static final String TEAM_MEMBER = "/members/{id}";
+        public static final String SUB_TEAM_MEMBER = "/sub-members/{subAccountId}";
+        public static final String TEAM_MEMBER = "/members/{agencyId}";
     }
 }

@@ -9,6 +9,7 @@ public enum ErrorCode {
     USER_EXISTED("User existed", HttpStatus.BAD_REQUEST),
     EMAIL_EXISTED("Email existed", HttpStatus.BAD_REQUEST),
     USER_NOT_EXISTED("User not existed", HttpStatus.NOT_FOUND),
+    AGENCY_NOT_EXIST("Agency not existed", HttpStatus.NOT_FOUND),
 
     INVITATION_EXISTED("Invitation existed", HttpStatus.BAD_REQUEST),
     INVITATION_NOT_EXISTED("Invitation not existed", HttpStatus.NOT_FOUND),

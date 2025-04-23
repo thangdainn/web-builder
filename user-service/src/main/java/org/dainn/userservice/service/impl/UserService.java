@@ -113,7 +113,7 @@ public class UserService implements IUserService {
     @Override
     public UserDto findOwnerByAgency(String id) {
         return userMapper.toDto(userRepository.findByAgencyIdAndRole(id, Role.AGENCY_OWNER)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+                .orElseThrow(() -> new AppException(ErrorCode.AGENCY_NOT_EXIST)));
     }
 
     @Transactional

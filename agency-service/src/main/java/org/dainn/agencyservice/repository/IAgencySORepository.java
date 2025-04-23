@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface IAgencySORepository extends JpaRepository<AgencySidebarOption, String> {
     List<AgencySidebarOption> findAllByAgencyId(String agencyId);
+    void deleteAllByAgencyId(String agencyId);
 }

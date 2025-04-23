@@ -10,6 +10,7 @@ import org.dainn.agencyservice.feignclient.IUserClient;
 import org.dainn.agencyservice.mapper.IAgencyMapper;
 import org.dainn.agencyservice.model.Agency;
 import org.dainn.agencyservice.repository.IAgencyRepository;
+import org.dainn.agencyservice.repository.IAgencySORepository;
 import org.dainn.agencyservice.service.IAgencySOService;
 import org.dainn.agencyservice.service.IAgencyService;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AgencyService implements IAgencyService {
     private final IAgencyRepository agencyRepository;
+    private final IAgencySORepository agencySORepository;
     private final IAgencyMapper agencyMapper;
     private final ISubscriptionClient subscriptionClient;
     private final IAgencySOService agencySOService;
@@ -94,6 +96,7 @@ public class AgencyService implements IAgencyService {
     @Transactional
     @Override
     public void delete(String id) {
+        agencySORepository.deleteAllByAgencyId(id);
         agencyRepository.deleteById(id);
     }
 

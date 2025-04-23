@@ -77,5 +77,8 @@ public class UserService implements IUserService {
                 subAccountId, "SUBACCOUNT_USER", subAccountId, true);
     }
 
-
+    @Override
+    public List<User> getTeamMembers(String agencyId) {
+        return userRepository.findByAgencyId(agencyId);
+    }
 }

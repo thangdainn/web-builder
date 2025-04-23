@@ -16,9 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final IUserService userService;
 
+    @GetMapping(Endpoint.User.SUB_TEAM_MEMBER)
+    public ResponseEntity<?> getSubAccountTeamMembers(@PathVariable String subAccountId) {
+        return ResponseEntity.ok(userService.getSubAccountTeamMembers(subAccountId));
+    }
+
     @GetMapping(Endpoint.User.TEAM_MEMBER)
-    public ResponseEntity<?> getSubAccountTeamMembers(@PathVariable String id) {
-        return ResponseEntity.ok(userService.getSubAccountTeamMembers(id));
+    public ResponseEntity<?> getTeamMembers(@PathVariable String agencyId) {
+        return ResponseEntity.ok(userService.getTeamMembers(agencyId));
     }
 
     @GetMapping(Endpoint.User.ID)

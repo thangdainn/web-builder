@@ -14,5 +14,6 @@ public interface IUserService {
     User findByEmail(String email);
     void delete(String id);
     List<User> getSubAccountTeamMembers(String subAccountId);
+    List<User> getTeamMembers(String agencyId);
 
 }
