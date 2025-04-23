@@ -27,6 +27,7 @@ public class UserProducer {
         private String id;
         private String name;
         private String companyLogo;
+        private List<SidebarOption> options = new ArrayList<>();
         private List<SubAccount> subAccounts = new ArrayList<>();
     }
 

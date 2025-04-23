@@ -73,12 +73,15 @@ public class InvitationService implements IInvitationService {
     @Transactional
     @Override
     public String verify(UserInfo userInfo) {
-        Invitation invitation = invitationRepository.findByEmailAndStatus(userInfo.getEmail(), InvitationStatus.PENDING)
-                .orElseThrow(() -> new AppException(ErrorCode.INVITATION_NOT_EXISTED));
-        Optional<User> optional = userRepository.findByEmail(userInfo.getEmail());
-        if (optional.isPresent()) {
-            return optional.get().getAgencyId();
+        Optional<Invitation> invitationOptional = invitationRepository.findByEmailAndStatus(userInfo.getEmail(), InvitationStatus.PENDING);
+        if (invitationOptional.isEmpty()) {
+            Optional<User> optional = userRepository.findByEmail(userInfo.getEmail());
+            if (optional.isPresent()) {
+                return optional.get().getAgencyId();
+            }
+            return null;
         }
+        Invitation invitation = invitationOptional.get();
         UserDto dto = new UserDto();
         dto = userMapper.toUserInfo(dto, userInfo);
         dto.setId(userInfo.getId());

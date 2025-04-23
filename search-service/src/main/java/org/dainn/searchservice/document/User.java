@@ -54,6 +54,9 @@ public class User {
         private String companyLogo;
 
         @Field(type = FieldType.Nested)
+        private List<SidebarOption> options;
+
+        @Field(type = FieldType.Nested)
         private List<SubAccount> subAccounts;
 
     }

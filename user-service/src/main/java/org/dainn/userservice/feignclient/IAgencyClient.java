@@ -17,7 +17,7 @@ public interface IAgencyClient {
 
     @CircuitBreaker(name = "agencyService", fallbackMethod = "fallbackAgency")
     @Bulkhead(name = "agencyService")
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/detail")
     ResponseEntity<UserProducer.Agency> getById(@PathVariable String id);
 
     default ResponseEntity<UserProducer.Agency> fallbackAgency(String id, Throwable t) {
