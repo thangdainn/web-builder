@@ -11,7 +11,7 @@ import org.dainn.funnelservice.util.constant.PageConstant;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class PageRequest {
-    private Integer page;
+    private Integer page = PageConstant.DEFAULT_PAGE;
     private Integer size = PageConstant.DEFAULT_PAGE_SIZE;
     private String sortBy = PageConstant.DEFAULT_SORT_BY;
     private String sortDir = PageConstant.DEFAULT_SORT_DIRECTION;
