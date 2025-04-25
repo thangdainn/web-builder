@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 public interface IUserService {
     UserDto create(UserDto dto);
     void delete(String id);
+    void deleteByAgency(String agencyId);
     UserDto update(UserDto dto);
     UserDetailDto findDetailById(String id);
     UserDto findById(String id);
@@ -19,4 +20,6 @@ public interface IUserService {
     void syncPermission(String email);
     void syncAgency(String email);
     void syncUser();
+
+    Boolean isOwnerAgency(UserDto dto);
 }

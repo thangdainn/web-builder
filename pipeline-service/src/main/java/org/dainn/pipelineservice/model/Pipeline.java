@@ -1,5 +1,6 @@
 package org.dainn.pipelineservice.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -22,6 +23,6 @@ public class Pipeline extends BaseEntity {
 
     private String subAccountId;
 
-    @OneToMany(mappedBy = "pipeline")
+    @OneToMany(mappedBy = "pipeline", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Lane> lanes = new ArrayList<>();
 }

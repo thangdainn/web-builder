@@ -7,7 +7,6 @@ import org.dainn.funnelservice.exception.ErrorCode;
 import org.dainn.funnelservice.mapper.IFunnelPageMapper;
 import org.dainn.funnelservice.model.FunnelPage;
 import org.dainn.funnelservice.repository.IFunnelPageRepository;
-import org.dainn.funnelservice.repository.IFunnelRepository;
 import org.dainn.funnelservice.service.IFunnelPageService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,22 +17,15 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class FunnelPageService implements IFunnelPageService {
     private final IFunnelPageRepository funnelPageRepository;
-    private final IFunnelRepository funnelRepository;
     private final IFunnelPageMapper funnelPageMapper;
 
     @Transactional
     @Override
     public Mono<FunnelPageDto> create(FunnelPageDto dto) {
-        return funnelRepository.existsById(dto.getFunnelId())
-                .flatMap(exists -> {
-                    if (!exists) {
-                        return Mono.error(new AppException(ErrorCode.FUNNEL_NOT_EXISTED));
-                    }
-                    FunnelPage funnelPage = funnelPageMapper.toEntity(dto);
-                    funnelPage.markNew();
-                    return funnelPageRepository.save(funnelPage)
-                            .map(funnelPageMapper::toDto);
-                });
+        FunnelPage funnelPage = funnelPageMapper.toEntity(dto);
+        funnelPage.markNew();
+        return funnelPageRepository.save(funnelPage)
+                .map(funnelPageMapper::toDto);
 
     }
 

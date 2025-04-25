@@ -1,18 +1,16 @@
 package org.dainn.subaccountservice.service;
 
 
-import org.dainn.subaccountservice.dto.subaccount.CreateSubAccount;
-import org.dainn.subaccountservice.dto.subaccount.SubAccountDetailDto;
-import org.dainn.subaccountservice.dto.subaccount.SubAccountDto;
-import org.dainn.subaccountservice.dto.subaccount.SubAccountReq;
+import org.dainn.subaccountservice.dto.subaccount.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface ISubAccountService {
     SubAccountDetailDto create(CreateSubAccount dto);
-    SubAccountDetailDto update(SubAccountDetailDto dto);
+    SubAccountDetailDto update(String id, UpdateSubAccount dto);
     void delete(String id, String email);
+    void deleteByAgency(String agencyId);
     SubAccountDto findById(String id);
     SubAccountDetailDto findDetailById(String id);
 

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatusCode;
 public enum ErrorCode {
     FUNNEL_NOT_EXISTED("Funnel not existed", HttpStatus.NOT_FOUND),
     FUNNEL_PAGE_NOT_EXISTED("Funnel page not existed", HttpStatus.NOT_FOUND),
+    CLASS_NAME_NOT_EXISTED("Class not existed", HttpStatus.NOT_FOUND),
     DOMAIN_ALREADY_EXISTED("Domain existed", HttpStatus.BAD_REQUEST),;
 
     ErrorCode(String message, HttpStatusCode statusCode) {

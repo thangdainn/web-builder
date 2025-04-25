@@ -22,9 +22,19 @@ public interface IUserClient {
     @PutMapping("/{email}/owner")
     ResponseEntity<Void> setOwner(@PathVariable String email, @RequestBody UserDto dto);
 
+    @Bulkhead(name = "userService")
+    @CircuitBreaker(name = "userService", fallbackMethod = "fallbackOwner")
+    @PutMapping("/is-agency-owner")
+    ResponseEntity<Boolean> isOwner(@RequestBody UserDto dto);
+
 
     default ResponseEntity<Void> fallbackUser(String email, UserOwnerDto dto, Throwable t) {
         log.warn("Fallback triggered for user service. Email: {}, Error: {}", email, t.getMessage());
         return ResponseEntity.ok().build();
+    }
+
+    default ResponseEntity<Boolean> fallbackOwner(UserDto dto, Throwable t) {
+        log.warn("Fallback triggered for user service. Error: {}", t.getMessage());
+        return ResponseEntity.ok(false);
     }
 }

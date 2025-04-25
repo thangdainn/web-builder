@@ -21,11 +21,14 @@ import org.dainn.userservice.service.IUserService;
 import org.dainn.userservice.util.Paging;
 import org.dainn.userservice.util.enums.Role;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -57,12 +60,25 @@ public class UserService implements IUserService {
     @Transactional
     @Override
     public void delete(String id) {
-        userRepository.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        permissionRepository.deleteById(id);
+        if (user.getRole() == Role.AGENCY_OWNER) {
+            userRepository.deleteById(id);
+            eventProducer.sendDeleteUserOwner(user.getAgencyId());
+            log.info("Deleted user with ID: {}", id);
+            return;
+        }
         userRepository.deleteById(id);
-        log.info("Deleted user with ID: {}", id);
         eventProducer.sendDeleteUser(id);
+        log.info("Deleted user with ID: {}", id);
+    }
+
+    @Override
+    public void deleteByAgency(String agencyId) {
+        List<User> users = userRepository.findAllByAgencyId(agencyId);
+        users.forEach(user -> eventProducer.sendDeleteUser(user.getId()));
+        userRepository.deleteAll(users);
+        log.info("Deleted all users by agency ID: {}", agencyId);
     }
 
     @Transactional
@@ -140,11 +156,24 @@ public class UserService implements IUserService {
         List<PermissionDto> permissions = permissionRepository.findAllByUserId(user.getId())
                 .stream().map(permissionMapper::toDto).toList();
         List<UserProducer.Permission> permissionList = permissions.stream()
-                .map(permission -> UserProducer.Permission.builder()
-                        .id(permission.getId())
-                        .subAccount(saClient.getById(permission.getSubAccountId()).getBody())
-                        .access(permission.getAccess())
-                        .build())
+                .map(permission -> {
+                    try {
+                        ResponseEntity<UserProducer.SubAccount> response = saClient.getById(permission.getSubAccountId());
+                        if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+                            log.warn("SubAccount not found for permission ID: {}", permission.getId());
+                            return null;
+                        }
+                        return UserProducer.Permission.builder()
+                                .id(permission.getId())
+                                .subAccount(response.getBody())
+                                .access(permission.getAccess())
+                                .build();
+                    } catch (Exception e) {
+                        log.error("Error fetching SubAccount for permission ID: {}", permission.getId(), e);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
                 .toList();
         UserProducer userProducer = UserProducer.toProducerPer(user, permissionList);
         eventProducer.syncPerEvent(userProducer);
@@ -175,16 +204,39 @@ public class UserService implements IUserService {
             List<PermissionDto> permissions = permissionRepository.findAllByUserId(user.getId())
                     .stream().map(permissionMapper::toDto).toList();
             List<UserProducer.Permission> permissionList = permissions.stream()
-                    .map(permission -> UserProducer.Permission.builder()
-                            .id(permission.getId())
-                            .subAccount(saClient.getById(permission.getSubAccountId()).getBody())
-                            .access(permission.getAccess())
-                            .build())
+                    .map(permission -> {
+                        try {
+                            ResponseEntity<UserProducer.SubAccount> response = saClient.getById(permission.getSubAccountId());
+                            if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+                                log.warn("SubAccount not found for permission ID: {}", permission.getId());
+                                return null;
+                            }
+                            return UserProducer.Permission.builder()
+                                    .id(permission.getId())
+                                    .subAccount(response.getBody())
+                                    .access(permission.getAccess())
+                                    .build();
+                        } catch (Exception e) {
+                            log.error("Error fetching SubAccount for permission ID: {}", permission.getId(), e);
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
                     .toList();
             userProducer.setPermissions(permissionList);
             userProducers.add(userProducer);
         }
         eventProducer.syncUserEvent(userProducers);
         log.info("Sync user successfully");
+    }
+
+    @Override
+    public Boolean isOwnerAgency(UserDto dto) {
+        Optional<User> optional = userRepository.findByIdAndAgencyId(dto.getId(), dto.getAgencyId());
+        if (optional.isPresent()) {
+            return optional.get().getRole() == Role.AGENCY_OWNER;
+        } else {
+            return false;
+        }
     }
 }

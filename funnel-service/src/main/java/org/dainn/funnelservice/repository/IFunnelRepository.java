@@ -9,13 +9,19 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Repository
 public interface IFunnelRepository extends R2dbcRepository<Funnel, String> {
     Flux<Funnel> findAllBySubAccountIdAndNameContainingIgnoreCase(String subAccountId, String name, Pageable pageable);
 
     Flux<Funnel> findAllBySubAccountId(String subAccountId, Pageable pageable);
+    Flux<Funnel> findAllBySubAccountId(String subAccountId);
 
     Mono<Funnel> findBySubDomainName(String subDomainName);
+
+    @Modifying
+    Mono<Void> deleteAllBySubAccountId(String subAccountId);
 
     @Modifying
     @Query("""

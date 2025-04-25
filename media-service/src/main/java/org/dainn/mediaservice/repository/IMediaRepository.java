@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface IMediaRepository extends JpaRepository<Media, String> {
     Page<Media> findBySubAccountId(String subAccountId, Pageable pageable);
     Page<Media> findByNameContainingIgnoreCaseAndSubAccountId(String name, String subAccountId, Pageable pageable);
+    void deleteAllBySubAccountId(String subAccountId);
 }

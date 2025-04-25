@@ -31,7 +31,7 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Permission> permissions = new ArrayList<>();
 
     @Column(name = "agency_id")

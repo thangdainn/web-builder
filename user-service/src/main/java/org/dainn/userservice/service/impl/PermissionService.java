@@ -1,6 +1,7 @@
 package org.dainn.userservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dainn.userservice.dto.permission.PermissionDto;
 import org.dainn.userservice.event.EventProducer;
 import org.dainn.userservice.exception.AppException;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PermissionService implements IPermissionService {
@@ -50,6 +52,14 @@ public class PermissionService implements IPermissionService {
     @Override
     public void delete(String id) {
         permissionRepository.deleteById(id);
+        log.info("Deleted permission by id: {}", id);
+    }
+
+    @Transactional
+    @Override
+    public void deleteBySA(String subAccountId) {
+        permissionRepository.deleteAllBySubAccountId(subAccountId);
+        log.info("Deleted all permissions by sub account id: {}", subAccountId);
     }
 
     @Transactional

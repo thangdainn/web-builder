@@ -9,6 +9,7 @@ public class Endpoint {
         public static final String DETAIL = "/{id}/detail";
         public static final String EMAIL = "/email/{email}";
         public static final String IS_OWNER = "/{id}/is-owner";
+        public static final String IS_OWNER_AGENCY = "/is-agency-owner";
         public static final String SET_OWNER = "/{email}/owner";
         public static final String SYNC = "/sync";
     }

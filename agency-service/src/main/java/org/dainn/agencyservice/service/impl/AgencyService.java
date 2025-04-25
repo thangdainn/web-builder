@@ -1,7 +1,9 @@
 package org.dainn.agencyservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dainn.agencyservice.dto.*;
+import org.dainn.agencyservice.dto.response.UserDto;
 import org.dainn.agencyservice.event.EventProducer;
 import org.dainn.agencyservice.exception.AppException;
 import org.dainn.agencyservice.exception.ErrorCode;
@@ -16,6 +18,7 @@ import org.dainn.agencyservice.service.IAgencyService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AgencyService implements IAgencyService {
@@ -96,13 +99,28 @@ public class AgencyService implements IAgencyService {
     @Transactional
     @Override
     public void delete(String id) {
+//        String userId = "ssssssss";
+//        if (Boolean.FALSE.equals(userClient.isOwner(UserDto.builder()
+//                .agencyId(id)
+//                .id(userId)
+//                .build()).getBody())) {
+//            throw new AppException(ErrorCode.USER_NOT_PERMISSION);
+//        }
         agencySORepository.deleteAllByAgencyId(id);
         agencyRepository.deleteById(id);
+        eventProducer.agencyDeletedEvent(id);
+        log.info("Deleted agency with ID: {}", id);
     }
 
     @Transactional
     @Override
     public void updateConnectAccId(String id, String connectAccId) {
         agencyRepository.updateConnectAccId(id, connectAccId);
+    }
+
+    @Transactional
+    @Override
+    public void updateCustomerId(String id, String customerId) {
+        agencyRepository.updateCustomerId(id, customerId);
     }
 }

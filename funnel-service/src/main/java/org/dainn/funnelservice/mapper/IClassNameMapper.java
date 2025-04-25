@@ -13,6 +13,7 @@ public interface IClassNameMapper {
     ClassName toEntity(ClassNameDto dto);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "funnelId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     ClassName toUpdate(@MappingTarget ClassName entity, ClassNameDto dto);

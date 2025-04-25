@@ -9,6 +9,8 @@ import org.dainn.funnelservice.exception.AppException;
 import org.dainn.funnelservice.exception.ErrorCode;
 import org.dainn.funnelservice.mapper.IFunnelMapper;
 import org.dainn.funnelservice.model.Funnel;
+import org.dainn.funnelservice.repository.IClassNameRepository;
+import org.dainn.funnelservice.repository.IFunnelPageRepository;
 import org.dainn.funnelservice.repository.IFunnelRepository;
 import org.dainn.funnelservice.service.IFunnelPageService;
 import org.dainn.funnelservice.service.IFunnelService;
@@ -26,6 +28,8 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class FunnelService implements IFunnelService {
     private final IFunnelRepository funnelRepository;
+    private final IFunnelPageRepository funnelPageRepository;
+    private final IClassNameRepository classNameRepository;
     private final IFunnelPageService funnelPageService;
     private final IFunnelMapper funnelMapper;
 
@@ -35,7 +39,7 @@ public class FunnelService implements IFunnelService {
         return funnelRepository.existsBySubDomainName(dto.getSubDomainName())
                 .flatMap(exists -> {
                     if (exists) {
-                        return Mono.error(new AppException(ErrorCode.DOMAIN_ALREADY_EXISTED ));
+                        return Mono.error(new AppException(ErrorCode.DOMAIN_ALREADY_EXISTED));
                     }
                     Funnel funnel = funnelMapper.toEntity(dto);
                     funnel.markNew();
@@ -113,6 +117,12 @@ public class FunnelService implements IFunnelService {
     @Override
     public Mono<Void> delete(String id) {
         return funnelRepository.deleteById(id);
+    }
+
+    @Transactional
+    @Override
+    public Mono<Void> deleteBySA(String subAccountId) {
+        return funnelRepository.deleteAllBySubAccountId(subAccountId);
     }
 
     @Override

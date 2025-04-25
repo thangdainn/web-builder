@@ -52,4 +52,10 @@ public class PipelineService implements IPipelineService {
         return pipelineRepository.findAllBySubAccountId(id)
                 .stream().map(pipelineMapper::toDto).toList();
     }
+
+    @Transactional
+    @Override
+    public void deleteBySA(String subAccountId) {
+        pipelineRepository.deleteAllBySubAccountId(subAccountId);
+    }
 }

@@ -1,14 +1,12 @@
 package org.dainn.subaccountservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dainn.subaccountservice.dto.response.PermissionDto;
 import org.dainn.subaccountservice.dto.response.PipelineDto;
 import org.dainn.subaccountservice.dto.response.TagDto;
 import org.dainn.subaccountservice.dto.response.UserDto;
-import org.dainn.subaccountservice.dto.subaccount.CreateSubAccount;
-import org.dainn.subaccountservice.dto.subaccount.SubAccountDetailDto;
-import org.dainn.subaccountservice.dto.subaccount.SubAccountDto;
-import org.dainn.subaccountservice.dto.subaccount.SubAccountReq;
+import org.dainn.subaccountservice.dto.subaccount.*;
 import org.dainn.subaccountservice.event.EventProducer;
 import org.dainn.subaccountservice.exception.AppException;
 import org.dainn.subaccountservice.exception.ErrorCode;
@@ -30,6 +28,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SubAccountService implements ISubAccountService {
@@ -75,12 +74,28 @@ public class SubAccountService implements ISubAccountService {
     public void delete(String id, String email) {
         subAccountRepository.deleteById(id);
         eventProducer.changePerEvent(email);
+        eventProducer.changeAgencyEvent(email);
     }
 
     @Transactional
     @Override
-    public SubAccountDetailDto update(SubAccountDetailDto dto) {
-        return null;
+    public void deleteByAgency(String agencyId) {
+        subAccountRepository.deleteByAgencyId(agencyId);
+        log.info("Deleted all sub-accounts for agency ID: {}", agencyId);
+    }
+
+    @Transactional
+    @Override
+    public SubAccountDetailDto update(String id, UpdateSubAccount dto) {
+        SubAccount entity = subAccountRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.SA_NOT_EXISTED));
+        entity = subAccountMapper.toUpdate(entity, dto);
+        entity = subAccountRepository.save(entity);
+        SubAccountDetailDto updatedSA = subAccountMapper.toDetailDto(entity);
+        updatedSA.setOptions(subAccountSOService.findBySA(entity.getId()));
+        eventProducer.changeAgencyEvent(dto.getUserEmail());
+        eventProducer.changePerEvent(dto.getUserEmail());
+        return updatedSA;
     }
 
     @Override

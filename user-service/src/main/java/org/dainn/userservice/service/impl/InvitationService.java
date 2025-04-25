@@ -135,4 +135,10 @@ public class InvitationService implements IInvitationService {
         return invitationRepository.findAll(Paging.getPageable(request))
                 .map(invitationMapper::toDto);
     }
+
+    @Transactional
+    @Override
+    public void deleteByAgencyId(String agencyId) {
+        invitationRepository.deleteAllByAgencyId(agencyId);
+    }
 }

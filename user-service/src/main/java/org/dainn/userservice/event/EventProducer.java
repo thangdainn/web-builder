@@ -37,6 +37,9 @@ public class EventProducer {
     @Value("${kafka.topic.user-delete-events}")
     private String deleteUserTopic;
 
+    @Value("${kafka.topic.owner-delete-events}")
+    private String deleteUserOwnerTopic;
+
     @Value("${kafka.topic.invite-events}")
     private String inviteEventsTopic;
 
@@ -61,6 +64,10 @@ public class EventProducer {
     public void syncUserEvent(List<UserProducer> list) {
         String key = list.get(0).getId();
         sendWithRetry(list, key, syncUserTopic, 3, 1000);
+    }
+
+    public void sendDeleteUserOwner(String agencyId) {
+        sendWithRetry(agencyId, agencyId, deleteUserOwnerTopic, 3, 1000);
     }
 
     public void sendDeleteUser(String id) {

@@ -54,4 +54,10 @@ public class InvitationController {
         invitationService.delete(email);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping(Endpoint.User.ID)
+    public ResponseEntity<Void> deleteByAgency(@PathVariable String id) {
+        invitationService.deleteByAgencyId(id);
+        return ResponseEntity.ok().build();
+    }
 }

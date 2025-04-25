@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.dainn.agencyservice.dto.CreateCustomer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.retry.backoff.Sleeper;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,6 +21,9 @@ public class EventProducer {
     @Value("${kafka.topic.change-agency-events}")
     private String changeAgencyTopic;
 
+    @Value("${kafka.topic.agency-deleted-events}")
+    private String agencyDeletedEventsTopic;
+
     public void sendCreateCustomerEvent(CreateCustomer customer) {
         try {
             String jsonMessage = objectMapper.writeValueAsString(customer);
@@ -35,6 +37,15 @@ public class EventProducer {
         try {
             String jsonMessage = objectMapper.writeValueAsString(email);
             kafkaTemplate.send(changeAgencyTopic, jsonMessage);
+        } catch (Exception e) {
+            log.error("Failed to serialize user to JSON", e);
+        }
+    }
+
+    public void agencyDeletedEvent(String agencyId) {
+        try {
+            String jsonMessage = objectMapper.writeValueAsString(agencyId);
+            kafkaTemplate.send(agencyDeletedEventsTopic, jsonMessage);
         } catch (Exception e) {
             log.error("Failed to serialize user to JSON", e);
         }

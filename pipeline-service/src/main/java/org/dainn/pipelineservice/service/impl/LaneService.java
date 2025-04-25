@@ -12,7 +12,6 @@ import org.dainn.pipelineservice.model.Pipeline;
 import org.dainn.pipelineservice.repository.ILaneRepository;
 import org.dainn.pipelineservice.repository.IPipelineRepository;
 import org.dainn.pipelineservice.service.ILaneService;
-import org.dainn.pipelineservice.service.IPipelineService;
 import org.dainn.pipelineservice.service.ITicketService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +25,6 @@ import java.util.stream.Collectors;
 public class LaneService implements ILaneService {
     private final ILaneRepository laneRepository;
     private final ILaneMapper laneMapper;
-    private final IPipelineService pipelineService;
     private final IPipelineRepository pipelineRepository;
     private final ITicketService ticketService;
 
@@ -65,7 +63,6 @@ public class LaneService implements ILaneService {
 
     @Override
     public List<LaneDetailDto> findByPipeline(String id) {
-        pipelineService.findById(id);
         return laneRepository.findAllByPipelineId(id)
                 .stream().map((lane) -> {
                     LaneDetailDto detailDto = laneMapper.toDetail(lane);

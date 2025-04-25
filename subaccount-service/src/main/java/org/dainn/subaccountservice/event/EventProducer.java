@@ -3,9 +3,6 @@ package org.dainn.subaccountservice.event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dainn.subaccountservice.dto.event.UserAccessCreate;
-import org.dainn.subaccountservice.dto.response.PermissionDto;
-import org.dainn.subaccountservice.dto.subaccount.SubAccountDetailDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -25,12 +22,19 @@ public class EventProducer {
     @Value("${kafka.topic.change-agency-events}")
     private String changeAgencyTopic;
 
+    @Value("${kafka.topic.subaccount-deleted-events}")
+    private String subAccountDeletedTopic;
+
     public void changePerEvent(String email) {
         sendWithRetry(email, email, changePermissionTopic, 3, 1000);
     }
 
     public void changeAgencyEvent(String email) {
         sendWithRetry(email, email, changeAgencyTopic, 3, 1000);
+    }
+
+    public void subAccountDeletedEvent(String subAccountId) {
+        sendWithRetry(subAccountId, subAccountId, subAccountDeletedTopic, 3, 1000);
     }
 
     private <T> void sendWithRetry(T dto, String key, String topic, int maxRetries, long delay) {

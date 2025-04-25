@@ -31,9 +31,9 @@ public class SubAccount extends BaseEntity {
     // reference keys
     private String agencyId;
 
-    @OneToMany(mappedBy = "subAccount")
+    @OneToMany(mappedBy = "subAccount", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Contact> contacts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "subAccount")
+    @OneToMany(mappedBy = "subAccount", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubAccountSidebarOption> sidebarOptions = new ArrayList<>();
 }

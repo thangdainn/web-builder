@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.userservice.repository.IInvitationRepository;
+import org.dainn.userservice.service.IPermissionService;
 import org.dainn.userservice.service.IUserService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -57,5 +58,26 @@ public class EventConsumer {
         }
     }
 
+//    @KafkaListener(topics = "subaccount-deleted-events", groupId = "${spring.kafka.consumer.group-id}")
+//    public void deleteSubAccount(@Payload String message) {
+//        try {
+//            String subAccountId = objectMapper.readValue(message, String.class);
+//            permissionService.deleteBySA(subAccountId);
+//            log.info("Sub-account {} deleted successfully", subAccountId);
+//        } catch (Exception e) {
+//            log.error("Failed to delete permission: {}", e.getMessage());
+//        }
+//    }
 
+    @KafkaListener(topics = "agency-deleted-events", groupId = "${spring.kafka.consumer.group-id}")
+    public void deleteAgency(@Payload String message) {
+        try {
+            String agencyId = objectMapper.readValue(message, String.class);
+            invitationRepository.deleteAllByAgencyId(agencyId);
+            userService.deleteByAgency(agencyId);
+            log.info("Invite deleted by agency id {} successfully", agencyId);
+        } catch (Exception e) {
+            log.error("Failed to delete invite: {}", e.getMessage());
+        }
+    }
 }

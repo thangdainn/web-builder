@@ -12,6 +12,7 @@ public interface IMediaService {
     MediaDto create(MediaDto dto);
     MediaDto findById(String id);
     void delete(String id);
+    void deleteBySA(String subAccountId);
     Page<MediaDto> findByFilters(MediaReq request);
 
     FirebaseResponse upload(MultipartFile file) throws IOException;

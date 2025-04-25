@@ -47,6 +47,11 @@ public class UserController {
         return ResponseEntity.ok(userService.isOwner(id));
     }
 
+    @PostMapping(Endpoint.User.IS_OWNER_AGENCY)
+    public ResponseEntity<Boolean> isOwnerAgency(@RequestBody UserDto dto) {
+        return ResponseEntity.ok(userService.isOwnerAgency(dto));
+    }
+
     @PostMapping(Endpoint.User.SYNC)
     public ResponseEntity<Void> syncPermission() {
         userService.syncUser();

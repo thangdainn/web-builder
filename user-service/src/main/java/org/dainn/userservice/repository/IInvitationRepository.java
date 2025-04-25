@@ -32,4 +32,7 @@ public interface IInvitationRepository extends JpaRepository<Invitation, String>
                     WHERE i.email = :email
             """)
     void deleteByEmail(String email);
+
+    @Modifying
+    void deleteAllByAgencyId(String agencyId);
 }

@@ -1,10 +1,13 @@
 package org.dainn.mediaservice.event;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.dainn.mediaservice.service.IMediaService;
 import org.dainn.mediaservice.service.impl.FirebaseService;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +23,19 @@ import java.nio.file.Paths;
 @Slf4j
 public class EventConsumer {
     private final FirebaseService firebaseService;
+    private final IMediaService mediaService;
+    private final ObjectMapper objectMapper;
+
+    @KafkaListener(topics = "subaccount-deleted-events", groupId = "${spring.kafka.consumer.group-id}")
+    public void deleteSubAccount(@Payload String message) {
+        try {
+            String subAccountId = objectMapper.readValue(message, String.class);
+            mediaService.deleteBySA(subAccountId);
+            log.info("Sub-account {} deleted successfully", subAccountId);
+        } catch (Exception e) {
+            log.error("Failed to delete sub-account: {}", e.getMessage());
+        }
+    }
 
     @KafkaListener(topics = "upload-events", groupId = "${spring.kafka.consumer.group-id}")
     public void receiveFile(ConsumerRecord<String, FileMessage> record) {

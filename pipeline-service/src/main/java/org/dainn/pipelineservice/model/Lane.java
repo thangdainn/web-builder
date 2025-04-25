@@ -25,6 +25,6 @@ public class Lane extends BaseEntity {
     @JoinColumn(name = "pipeline_id")
     private Pipeline pipeline;
 
-    @OneToMany(mappedBy = "lane")
+    @OneToMany(mappedBy = "lane", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ticket> tickets = new ArrayList<>();
 }

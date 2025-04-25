@@ -13,6 +13,7 @@ public interface IFunnelPageMapper {
     FunnelPage toEntity(FunnelPageDto dto);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "funnelId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     FunnelPage toUpdate(@MappingTarget FunnelPage entity, FunnelPageDto dto);

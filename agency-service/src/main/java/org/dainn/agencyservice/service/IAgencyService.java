@@ -15,4 +15,5 @@ public interface IAgencyService {
     AgencyDetailDto findByCustomerId(String id);
     void delete(String id);
     void updateConnectAccId(String id, String connectAccId);
+    void updateCustomerId(String id, String customerId);
 }

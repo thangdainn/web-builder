@@ -6,12 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.dainn.subaccountservice.dto.AbstractDto;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateSubAccount {
+public class UpdateSubAccount {
     private String connectAccountId;
 
     @NotNull(message = "Name is required")
@@ -40,10 +41,6 @@ public class CreateSubAccount {
     private String state;
     private String country;
     private String zipCode;
-
-    @NotNull(message = "Agency id is required")
-    @NotBlank(message = "Agency id is required")
-    private String agencyId;
 
     @NotNull(message = "User email is required")
     private String userEmail;

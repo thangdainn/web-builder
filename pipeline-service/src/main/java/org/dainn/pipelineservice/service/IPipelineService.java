@@ -10,4 +10,6 @@ public interface IPipelineService {
     PipelineDto update(PipelineDto dto);
     void delete(String id);
     List<PipelineDto> findBySA(String id);
+
+    void deleteBySA(String subAccountId);
 }

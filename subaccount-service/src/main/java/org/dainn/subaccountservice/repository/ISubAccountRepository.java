@@ -23,4 +23,7 @@ public interface ISubAccountRepository extends JpaRepository<SubAccount, String>
                 WHERE a.id = :id
             """)
     void updateConnectAccId(String id, String connectAccId);
+
+    @Modifying
+    void deleteByAgencyId(String agencyId);
 }

@@ -7,6 +7,7 @@ import org.dainn.subaccountservice.config.endpoint.Endpoint;
 import org.dainn.subaccountservice.dto.subaccount.CreateSubAccount;
 import org.dainn.subaccountservice.dto.subaccount.DeleteSubAccount;
 import org.dainn.subaccountservice.dto.subaccount.SubAccountReq;
+import org.dainn.subaccountservice.dto.subaccount.UpdateSubAccount;
 import org.dainn.subaccountservice.service.ISubAccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +42,11 @@ public class SubAccountController {
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody CreateSubAccount dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(subAccountService.create(dto));
+    }
+
+    @PutMapping(Endpoint.SubAccount.ID)
+    public ResponseEntity<?> update(@PathVariable String id, @RequestBody UpdateSubAccount dto) {
+        return ResponseEntity.ok(subAccountService.update(id, dto));
     }
 
     @PutMapping(Endpoint.SubAccount.CONNECT_ACC_ID)

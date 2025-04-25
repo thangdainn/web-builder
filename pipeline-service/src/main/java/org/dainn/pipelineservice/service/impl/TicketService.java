@@ -1,6 +1,7 @@
 package org.dainn.pipelineservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dainn.pipelineservice.dto.ticket.TicketDto;
 import org.dainn.pipelineservice.dto.ticket.TicketOrderDto;
 import org.dainn.pipelineservice.dto.ticket.TicketOrderList;
@@ -27,6 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TicketService implements ITicketService {

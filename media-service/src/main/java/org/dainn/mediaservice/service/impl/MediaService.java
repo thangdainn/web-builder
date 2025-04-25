@@ -63,6 +63,12 @@ public class MediaService implements IMediaService {
     }
 
     @Override
+    public void deleteBySA(String subAccountId) {
+        mediaRepository.deleteAllBySubAccountId(subAccountId);
+        log.info("Deleted all media files for sub-account: {}", subAccountId);
+    }
+
+    @Override
     public Page<MediaDto> findByFilters(MediaReq request) {
         Pageable pageable = Paging.getPageable(request);
         Page<Media> page;
