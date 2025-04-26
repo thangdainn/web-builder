@@ -11,6 +11,9 @@ import org.dainn.userservice.dto.user.UserReq;
 import org.dainn.userservice.service.IUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -21,13 +24,15 @@ public class UserController {
     private final IUserService userService;
 
     @GetMapping
+    @PreAuthorize("hasRole('MEMBER')")
     public ResponseEntity<?> getAll(UserReq userReq) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         log.info("getAll");
         return ResponseEntity.ok(userService.findAll(userReq));
     }
 
     @GetMapping(Endpoint.User.DETAIL)
-//    @PreAuthorize("hasRole('MEMBER')")
+    @PreAuthorize("hasRole('MEMBER')")
     public ResponseEntity<UserDetailDto> getDetailById(@PathVariable String id) {
         return ResponseEntity.ok(userService.findDetailById(id));
     }
