@@ -16,7 +16,6 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/eureka/**").permitAll()
                         .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated());
         return http.build();

@@ -24,15 +24,11 @@ public class UserController {
     private final IUserService userService;
 
     @GetMapping
-    @PreAuthorize("hasRole('MEMBER')")
     public ResponseEntity<?> getAll(UserReq userReq) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        log.info("getAll");
         return ResponseEntity.ok(userService.findAll(userReq));
     }
 
     @GetMapping(Endpoint.User.DETAIL)
-    @PreAuthorize("hasRole('MEMBER')")
     public ResponseEntity<UserDetailDto> getDetailById(@PathVariable String id) {
         return ResponseEntity.ok(userService.findDetailById(id));
     }

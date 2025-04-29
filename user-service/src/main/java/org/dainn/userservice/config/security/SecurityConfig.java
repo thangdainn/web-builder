@@ -16,17 +16,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
-@EnableMethodSecurity
 @EnableWebSecurity
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .addFilterBefore(new UserInfoFilter(), UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/eureka/**").permitAll()
                         .requestMatchers("**").permitAll()
                         .anyRequest().authenticated());
         return http.build();

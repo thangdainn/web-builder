@@ -18,7 +18,6 @@ public class LaneDto extends AbstractDto {
     @NotBlank(message = "Name is required")
     private String name;
 
-    @NotNull(message = "Order is required")
     private Integer order;
 
     @NotNull(message = "Pipeline is required")

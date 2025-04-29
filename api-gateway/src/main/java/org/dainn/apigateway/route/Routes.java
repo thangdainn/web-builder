@@ -1,17 +1,12 @@
 package org.dainn.apigateway.route;
 
-import lombok.RequiredArgsConstructor;
-import org.dainn.apigateway.config.SecurityConfig;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@RequiredArgsConstructor
 public class Routes {
-
-    private final SecurityConfig securityConfig;
 
     @Bean
     public RouteLocator gatewayRoutes(RouteLocatorBuilder builder) {
@@ -26,9 +21,7 @@ public class Routes {
                 .route("user-service", r -> r
                         .path("/api/users/**", "/api/permissions/**", "/api/invitations/**")
                         .filters(f -> f
-                                .circuitBreaker(config -> config.setName("userService"))
-                                .filter(securityConfig.jwtForwardingFilter())
-                        )
+                                .circuitBreaker(config -> config.setName("userService")))
                         .uri("lb://user-service"))
 
                 // Agency Service Route
