@@ -317,6 +317,37 @@ services:
     networks:
       - wb-network
 
+  broker-3:
+    image: confluentinc/cp-kafka:7.6.2
+    container_name: broker-3-wb
+    ports:
+      - "9094:9094"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-wb:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-3-wb:29094,PLAINTEXT_HOST://localhost:9094
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    restart: on-failure
+    healthcheck:
+      test: nc -z broker-3-wb 29094 || exit 1
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+    networks:
+      - wb-network
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.10.4
     container_name: elasticsearch-wb
@@ -410,7 +441,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
     depends_on:
@@ -449,7 +480,7 @@ services:
       - SPRING_FLYWAY_USER=${MYSQL_USER}
       - SPRING_FLYWAY_PASSWORD=${MYSQL_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
     depends_on:
@@ -483,7 +514,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
       - FIREBASE_SERVICE_ACCOUNT_JSON=${FIREBASE_SERVICE_ACCOUNT_JSON}
       - FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET}
       - IMAGE_BASE_URL=${IMAGE_STORAGE_BASE}
@@ -523,7 +554,7 @@ services:
       - SPRING_FLYWAY_USER=${POSTGRES_USER}
       - SPRING_FLYWAY_PASSWORD=${POSTGRES_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
       - RESEND_API_KEY=${RESEND_API_KEY}
       - RESEND_API_MAIL=${RESEND_API_MAIL}
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
@@ -558,7 +589,7 @@ services:
     pull_policy: always
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
       - WEBHOOK_SECRET_KEY=${WEBHOOK_SECRET_KEY}
@@ -626,7 +657,7 @@ services:
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
       - SPRING_ELASTICSEARCH_URIS=http://elasticsearch-wb:9200
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
     depends_on:
@@ -662,7 +693,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
     depends_on:
@@ -701,7 +732,7 @@ services:
       - SPRING_FLYWAY_USER=${MYSQL_USER}
       - SPRING_FLYWAY_PASSWORD=${MYSQL_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
     depends_on:
@@ -737,7 +768,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093,broker-3-wb:29094
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
       - APP_DOMAIN=${APP_DOMAIN}
