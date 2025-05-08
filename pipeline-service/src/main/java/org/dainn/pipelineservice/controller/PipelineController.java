@@ -47,13 +47,13 @@ public class PipelineController {
 
     @PutMapping(Endpoint.Pipeline.LANE_ORDER)
     public ResponseEntity<?> changeLaneOrder(@PathVariable String id, @RequestBody List<LaneOrderDto> list) {
-        laneService.changeOrder(id, list);
+        laneService.changeOrderWithKafka(id, list);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(Endpoint.Pipeline.TICKET_ORDER)
     public ResponseEntity<?> changeTicketOrder(@RequestBody @Size(max = 2, message = "List cannot contain more than 2 items") List<TicketOrderList> list) {
-        ticketService.changeOrder(list);
+        ticketService.changeOrderWithKafka(list);
         return ResponseEntity.ok().build();
     }
 

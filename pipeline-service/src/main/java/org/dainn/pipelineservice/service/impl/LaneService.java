@@ -1,9 +1,11 @@
 package org.dainn.pipelineservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.dainn.pipelineservice.dto.event.LaneOrderEvent;
 import org.dainn.pipelineservice.dto.lane.LaneDetailDto;
 import org.dainn.pipelineservice.dto.lane.LaneDto;
 import org.dainn.pipelineservice.dto.lane.LaneOrderDto;
+import org.dainn.pipelineservice.event.EventProducer;
 import org.dainn.pipelineservice.exception.AppException;
 import org.dainn.pipelineservice.exception.ErrorCode;
 import org.dainn.pipelineservice.mapper.ILaneMapper;
@@ -28,6 +30,7 @@ public class LaneService implements ILaneService {
     private final ILaneMapper laneMapper;
     private final IPipelineRepository pipelineRepository;
     private final ITicketService ticketService;
+    private final EventProducer eventProducer;
 
     @Transactional
     @Override
@@ -73,12 +76,21 @@ public class LaneService implements ILaneService {
                 }).toList();
     }
 
+    @Override
+    public void changeOrderWithKafka(String pipelineId, List<LaneOrderDto> list) {
+        LaneOrderEvent data = LaneOrderEvent.builder()
+                .pipelineId(pipelineId)
+                .list(list)
+                .build();
+        eventProducer.changeLaneOrderEvent(data);
+    }
+
     @Transactional
     @Override
-    public void changeOrder(String pipelineId, List<LaneOrderDto> list) {
-        List<Lane> lanes = laneRepository.findAllByPipelineId(pipelineId);
+    public void changeOrder(LaneOrderEvent data) {
+        List<Lane> lanes = laneRepository.findAllByPipelineId(data.getPipelineId());
         Map<String, Lane> laneMap = lanes.stream().collect(Collectors.toMap(Lane::getId, l -> l));
-        list.forEach((item) -> {
+        data.getList().forEach((item) -> {
             Lane lane = laneMap.get(item.getLaneId());
             lane.setOrder(item.getOrder());
         });

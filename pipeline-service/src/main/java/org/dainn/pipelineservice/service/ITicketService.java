@@ -1,5 +1,6 @@
 package org.dainn.pipelineservice.service;
 
+import org.dainn.pipelineservice.dto.event.TicketOrderEvent;
 import org.dainn.pipelineservice.dto.lane.LaneOrderDto;
 import org.dainn.pipelineservice.dto.ticket.TicketDto;
 import org.dainn.pipelineservice.dto.ticket.TicketOrderDto;
@@ -14,5 +15,6 @@ public interface ITicketService {
     TicketDto update(TicketDto dto);
     void delete(String id);
     List<TicketDto> findByLaneId(String laneId, Sort sort);
-    void changeOrder(List<TicketOrderList> list);
+    void changeOrder(TicketOrderEvent data);
+    void changeOrderWithKafka(List<TicketOrderList> list);
 }

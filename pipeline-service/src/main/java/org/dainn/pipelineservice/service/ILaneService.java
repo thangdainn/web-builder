@@ -1,5 +1,6 @@
 package org.dainn.pipelineservice.service;
 
+import org.dainn.pipelineservice.dto.event.LaneOrderEvent;
 import org.dainn.pipelineservice.dto.lane.LaneDetailDto;
 import org.dainn.pipelineservice.dto.lane.LaneDto;
 import org.dainn.pipelineservice.dto.lane.LaneOrderDto;
@@ -12,5 +13,7 @@ public interface ILaneService {
     LaneDto update(LaneDto dto);
     void delete(String id);
     List<LaneDetailDto> findByPipeline(String id);
-    void changeOrder(String pipelineId, List<LaneOrderDto> list);
+    void changeOrderWithKafka(String pipelineId, List<LaneOrderDto> list);
+    void changeOrder(LaneOrderEvent data);
+
 }

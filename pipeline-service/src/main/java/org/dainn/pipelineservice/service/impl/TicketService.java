@@ -2,9 +2,11 @@ package org.dainn.pipelineservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dainn.pipelineservice.dto.event.TicketOrderEvent;
 import org.dainn.pipelineservice.dto.ticket.TicketDto;
 import org.dainn.pipelineservice.dto.ticket.TicketOrderDto;
 import org.dainn.pipelineservice.dto.ticket.TicketOrderList;
+import org.dainn.pipelineservice.event.EventProducer;
 import org.dainn.pipelineservice.exception.AppException;
 import org.dainn.pipelineservice.exception.ErrorCode;
 import org.dainn.pipelineservice.feignclient.IContactClient;
@@ -40,6 +42,7 @@ public class TicketService implements ITicketService {
     private final ITagMapper tagMapper;
     private final IUserClient userClient;
     private final IContactClient contactClient;
+    private final EventProducer eventProducer;
 
     @Transactional
     @Override
@@ -104,15 +107,23 @@ public class TicketService implements ITicketService {
 
     @Transactional
     @Override
-    public void changeOrder(List<TicketOrderList> list) {
-        if (list.isEmpty()) {
+    public void changeOrder(TicketOrderEvent data) {
+        if (data.getList().isEmpty()) {
             throw new IllegalArgumentException("TicketOrderList cannot be empty");
         }
         List<Ticket> tickets = new ArrayList<>();
-        for (TicketOrderList ticketOrderList : list) {
+        for (TicketOrderList ticketOrderList : data.getList()) {
             tickets.addAll(updateTicketOrderInLane(ticketOrderList));
         }
         ticketRepository.saveAll(tickets);
+    }
+
+    @Override
+    public void changeOrderWithKafka(List<TicketOrderList> list) {
+        TicketOrderEvent data = TicketOrderEvent.builder()
+                .list(list)
+                .build();
+        eventProducer.changeTicketOrderEvent(data);
     }
 
     private List<Ticket> updateTicketOrderInLane(TicketOrderList ticketOrderList) {
