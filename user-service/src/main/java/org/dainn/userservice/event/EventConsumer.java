@@ -34,7 +34,7 @@ public class EventConsumer {
     public void changePermission(@Payload String message) {
         log.info("User sync permission event consumed: {}", message);
         try {
-            Thread.sleep(500);
+//            Thread.sleep(500);
             String email = objectMapper.readValue(message, String.class);
             userService.syncPermission(email);
 
@@ -48,7 +48,7 @@ public class EventConsumer {
     public void changeAgency(@Payload String message) {
         log.info("User sync agency event consumed: {}", message);
         try {
-            Thread.sleep(500);
+//            Thread.sleep(500);
             String email = objectMapper.readValue(message, String.class);
             userService.syncAgency(email);
 

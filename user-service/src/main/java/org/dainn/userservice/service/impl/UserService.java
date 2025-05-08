@@ -155,26 +155,7 @@ public class UserService implements IUserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         List<PermissionDto> permissions = permissionRepository.findAllByUserId(user.getId())
                 .stream().map(permissionMapper::toDto).toList();
-        List<UserProducer.Permission> permissionList = permissions.stream()
-                .map(permission -> {
-                    try {
-                        ResponseEntity<UserProducer.SubAccount> response = saClient.getById(permission.getSubAccountId());
-                        if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-                            log.warn("SubAccount not found for permission ID: {}", permission.getId());
-                            return null;
-                        }
-                        return UserProducer.Permission.builder()
-                                .id(permission.getId())
-                                .subAccount(response.getBody())
-                                .access(permission.getAccess())
-                                .build();
-                    } catch (Exception e) {
-                        log.error("Error fetching SubAccount for permission ID: {}", permission.getId(), e);
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .toList();
+        List<UserProducer.Permission> permissionList = setPermission(permissions);
         UserProducer userProducer = UserProducer.toProducerPer(user, permissionList);
         eventProducer.syncPerEvent(userProducer);
         log.info("Sync permission for user successfully: {}", userProducer);
@@ -203,26 +184,7 @@ public class UserService implements IUserService {
             UserProducer userProducer = UserProducer.toProducerAgency(user, agency);
             List<PermissionDto> permissions = permissionRepository.findAllByUserId(user.getId())
                     .stream().map(permissionMapper::toDto).toList();
-            List<UserProducer.Permission> permissionList = permissions.stream()
-                    .map(permission -> {
-                        try {
-                            ResponseEntity<UserProducer.SubAccount> response = saClient.getById(permission.getSubAccountId());
-                            if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-                                log.warn("SubAccount not found for permission ID: {}", permission.getId());
-                                return null;
-                            }
-                            return UserProducer.Permission.builder()
-                                    .id(permission.getId())
-                                    .subAccount(response.getBody())
-                                    .access(permission.getAccess())
-                                    .build();
-                        } catch (Exception e) {
-                            log.error("Error fetching SubAccount for permission ID: {}", permission.getId(), e);
-                            return null;
-                        }
-                    })
-                    .filter(Objects::nonNull)
-                    .toList();
+            List<UserProducer.Permission> permissionList = setPermission(permissions);
             userProducer.setPermissions(permissionList);
             userProducers.add(userProducer);
         }
@@ -238,5 +200,24 @@ public class UserService implements IUserService {
         } else {
             return false;
         }
+    }
+
+    private List<UserProducer.Permission> setPermission(List<PermissionDto> permissions) {
+        return permissions.stream()
+                .map(permission -> {
+                    try {
+                        ResponseEntity<UserProducer.SubAccount> response = saClient.getById(permission.getSubAccountId());
+                        return UserProducer.Permission.builder()
+                                .id(permission.getId())
+                                .subAccount(response.getBody())
+                                .access(permission.getAccess())
+                                .build();
+                    } catch (Exception e) {
+                        log.warn("Error fetching SubAccount for permission ID: {}, error: {}", permission.getId(), e.getMessage());
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
     }
 }

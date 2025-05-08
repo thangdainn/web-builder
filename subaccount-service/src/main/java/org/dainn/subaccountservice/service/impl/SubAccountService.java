@@ -58,7 +58,7 @@ public class SubAccountService implements ISubAccountService {
                 .email(userDto.getEmail())
                 .subAccountId(newSA.getId())
                 .build();
-        permissionClient.create(permissionDto).getBody();
+        permissionClient.create(permissionDto);
         PipelineDto pipelineDto = PipelineDto.builder()
                 .subAccountId(newSA.getId())
                 .name("Lead Cycle")

@@ -46,7 +46,7 @@ public class TagService implements ITagService {
     @Transactional
     @Override
     public void delete(String id) {
-        if (tagRepository.existsById(id)) {
+        if (!tagRepository.existsById(id)) {
             throw new AppException(ErrorCode.TAG_NOT_EXISTED);
         }
         tagRepository.deleteById(id);

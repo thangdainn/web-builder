@@ -17,8 +17,8 @@ public interface ISAClient {
 
     Logger log = LoggerFactory.getLogger(ISAClient.class);
 
-    @CircuitBreaker(name = "subaccountService", fallbackMethod = "fallbackSA")
-    @Bulkhead(name = "subaccountService")
+//    @CircuitBreaker(name = "subaccountService", fallbackMethod = "fallbackSA")
+//    @Bulkhead(name = "subaccountService")
     @GetMapping("/{id}")
     ResponseEntity<UserProducer.SubAccount> getById(@PathVariable String id);
 
