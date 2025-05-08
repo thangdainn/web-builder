@@ -4,6 +4,7 @@ import org.dainn.pipelineservice.dto.lane.LaneOrderDto;
 import org.dainn.pipelineservice.dto.ticket.TicketDto;
 import org.dainn.pipelineservice.dto.ticket.TicketOrderDto;
 import org.dainn.pipelineservice.dto.ticket.TicketOrderList;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -12,6 +13,6 @@ public interface ITicketService {
     TicketDto findById(String id);
     TicketDto update(TicketDto dto);
     void delete(String id);
-    List<TicketDto> findByLaneId(String laneId);
+    List<TicketDto> findByLaneId(String laneId, Sort sort);
     void changeOrder(List<TicketOrderList> list);
 }

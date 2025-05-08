@@ -13,6 +13,7 @@ import org.dainn.pipelineservice.repository.ILaneRepository;
 import org.dainn.pipelineservice.repository.IPipelineRepository;
 import org.dainn.pipelineservice.service.ILaneService;
 import org.dainn.pipelineservice.service.ITicketService;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,10 +64,11 @@ public class LaneService implements ILaneService {
 
     @Override
     public List<LaneDetailDto> findByPipeline(String id) {
-        return laneRepository.findAllByPipelineId(id)
+        Sort sort = Sort.by("order").ascending();
+        return laneRepository.findAllByPipelineId(id, sort)
                 .stream().map((lane) -> {
                     LaneDetailDto detailDto = laneMapper.toDetail(lane);
-                    detailDto.setTickets(ticketService.findByLaneId(lane.getId()));
+                    detailDto.setTickets(ticketService.findByLaneId(lane.getId(), sort));
                     return detailDto;
                 }).toList();
     }
