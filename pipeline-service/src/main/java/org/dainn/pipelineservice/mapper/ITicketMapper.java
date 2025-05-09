@@ -1,6 +1,7 @@
 package org.dainn.pipelineservice.mapper;
 
 import org.dainn.pipelineservice.dto.ticket.TicketDto;
+import org.dainn.pipelineservice.dto.ticket.UpdateTicketDto;
 import org.dainn.pipelineservice.model.Ticket;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,8 +14,6 @@ public interface ITicketMapper {
 
     Ticket toEntity(TicketDto dto);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    Ticket toUpdate(@MappingTarget Ticket entity, TicketDto dto);
+    @Mapping(target = "tags", ignore = true)
+    Ticket toUpdate(@MappingTarget Ticket entity, UpdateTicketDto dto);
 }

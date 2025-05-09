@@ -2,6 +2,7 @@ package org.dainn.pipelineservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.dainn.pipelineservice.dto.pipeline.PipelineDto;
+import org.dainn.pipelineservice.dto.pipeline.UpdatePipelineDto;
 import org.dainn.pipelineservice.exception.AppException;
 import org.dainn.pipelineservice.exception.ErrorCode;
 import org.dainn.pipelineservice.mapper.IPipelineMapper;
@@ -39,6 +40,12 @@ public class PipelineService implements IPipelineService {
                 .orElseThrow(() -> new AppException(ErrorCode.PIPELINE_NOT_EXISTED));
         pipeline = pipelineMapper.toUpdate(pipeline, dto);
         return pipelineMapper.toDto(pipelineRepository.save(pipeline));
+    }
+
+    @Transactional
+    @Override
+    public void updateName(String id, UpdatePipelineDto dto) {
+        pipelineRepository.updateNameById(id, dto.getName());
     }
 
     @Transactional

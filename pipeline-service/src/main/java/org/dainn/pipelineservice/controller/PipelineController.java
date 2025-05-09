@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.dainn.pipelineservice.config.endpoint.Endpoint;
 import org.dainn.pipelineservice.dto.lane.LaneOrderDto;
 import org.dainn.pipelineservice.dto.pipeline.PipelineDto;
+import org.dainn.pipelineservice.dto.pipeline.UpdatePipelineDto;
 import org.dainn.pipelineservice.dto.ticket.TicketOrderList;
 import org.dainn.pipelineservice.service.ILaneService;
 import org.dainn.pipelineservice.service.IPipelineService;
@@ -43,6 +44,12 @@ public class PipelineController {
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody PipelineDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(pipelineService.create(dto));
+    }
+
+    @PutMapping(Endpoint.Pipeline.ID)
+    public ResponseEntity<?> updateName(@PathVariable String id, @Valid @RequestBody UpdatePipelineDto dto) {
+        pipelineService.updateName(id, dto);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping(Endpoint.Pipeline.LANE_ORDER)

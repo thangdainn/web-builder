@@ -4,6 +4,7 @@ package org.dainn.pipelineservice.controller;
 import lombok.RequiredArgsConstructor;
 import org.dainn.pipelineservice.config.endpoint.Endpoint;
 import org.dainn.pipelineservice.dto.ticket.TicketDto;
+import org.dainn.pipelineservice.dto.ticket.UpdateTicketDto;
 import org.dainn.pipelineservice.service.ITicketService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +27,8 @@ public class TicketController {
     }
 
     @PutMapping(Endpoint.Ticket.ID)
-    public ResponseEntity<?> updateOrder(@PathVariable String id, @RequestBody TicketDto dto) {
-        dto.setId(id);
-        return ResponseEntity.ok(ticketService.update(dto));
+    public ResponseEntity<?> updateOrder(@PathVariable String id, @RequestBody UpdateTicketDto dto) {
+        return ResponseEntity.ok(ticketService.update(id, dto));
     }
 
     @DeleteMapping

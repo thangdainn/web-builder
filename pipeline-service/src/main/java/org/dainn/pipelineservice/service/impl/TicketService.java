@@ -6,6 +6,7 @@ import org.dainn.pipelineservice.dto.event.TicketOrderEvent;
 import org.dainn.pipelineservice.dto.ticket.TicketDto;
 import org.dainn.pipelineservice.dto.ticket.TicketOrderDto;
 import org.dainn.pipelineservice.dto.ticket.TicketOrderList;
+import org.dainn.pipelineservice.dto.ticket.UpdateTicketDto;
 import org.dainn.pipelineservice.event.EventProducer;
 import org.dainn.pipelineservice.exception.AppException;
 import org.dainn.pipelineservice.exception.ErrorCode;
@@ -83,13 +84,17 @@ public class TicketService implements ITicketService {
 
     @Transactional
     @Override
-    public TicketDto update(TicketDto dto) {
-        Ticket ticket = ticketRepository.findById(dto.getId())
+    public TicketDto update(String id, UpdateTicketDto dto) {
+        Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.TICKET_NOT_EXISTED));
         ticket = ticketMapper.toUpdate(ticket, dto);
-        List<Tag> tags = dto.getTags().stream().map((tag) -> tagRepository.findById(tag.getId())
-                .orElseThrow(() -> new AppException(ErrorCode.LANE_NOT_EXISTED))).toList();
-        ticket.setTags(tags);
+        if (!dto.getTags().isEmpty()) {
+            List<Tag> tags = dto.getTags().stream().map((tag) -> tagRepository.findById(tag.getId())
+                    .orElseThrow(() -> new AppException(ErrorCode.TAG_NOT_EXISTED))).collect(Collectors.toList());
+            ticket.setTags(tags);
+        } else {
+            ticket.setTags(ticket.getTags());
+        }
         return ticketMapper.toDto(ticketRepository.save(ticket));
     }
 
