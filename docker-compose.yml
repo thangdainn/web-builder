@@ -704,7 +704,7 @@ services:
       - SPRING_R2DBC_URL=r2dbc:postgresql://postgres-subscription:5438/subscription_db
       - SPRING_R2DBC_USERNAME=${POSTGRES_USER}
       - SPRING_R2DBC_PASSWORD=${POSTGRES_PASSWORD}
-      - SPRING_FLYWAY_URL=jdbc:postgresql://postgres-funnel:5438/subscription_db
+      - SPRING_FLYWAY_URL=jdbc:postgresql://postgres-subscription:5438/subscription_db
       - SPRING_FLYWAY_USER=${POSTGRES_USER}
       - SPRING_FLYWAY_PASSWORD=${POSTGRES_PASSWORD}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/

@@ -90,7 +90,7 @@ public class AgencyService implements IAgencyService {
 
     @Override
     public AgencyDetailDto findByCustomerId(String id) {
-        AgencyDetailDto detail = agencyMapper.toDetail(agencyRepository.findById(id)
+        AgencyDetailDto detail = agencyMapper.toDetail(agencyRepository.findByCustomerId(id)
                 .orElseThrow(() -> new AppException(ErrorCode.AGENCY_NOT_EXISTED)));
         detail.setSubscription(subscriptionClient.getByAgencyId(id));
         return detail;
