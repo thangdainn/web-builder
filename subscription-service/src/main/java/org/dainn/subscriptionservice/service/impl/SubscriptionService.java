@@ -54,6 +54,12 @@ public class SubscriptionService implements ISubscriptionService {
                 .map(subscriptionMapper::toDto);
     }
 
+    @Override
+    public Mono<SubscriptionDto> findByAgencyIdEvent(String id) {
+        return subscriptionRepository.findByAgencyId(id)
+                .map(subscriptionMapper::toDto);
+    }
+
     @Transactional
     @Override
     public Mono<Void> delete(String id) {

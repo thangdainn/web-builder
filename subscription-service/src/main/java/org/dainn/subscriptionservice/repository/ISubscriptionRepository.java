@@ -10,6 +10,8 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface ISubscriptionRepository extends R2dbcRepository<Subscription, String> {
     Mono<Subscription> findByAgencyId(String agencyId);
+    Mono<Subscription> findByCustomerId(String customerId);
+
 
     @Modifying
     Mono<Void> deleteByAgencyId(String agencyId);

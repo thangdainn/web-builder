@@ -9,5 +9,6 @@ public interface ISubscriptionService {
     Mono<SubscriptionDto> update(SubscriptionDto dto);
     Mono<SubscriptionDto> findById(String id);
     Mono<SubscriptionDto> findByAgencyId(String id);
+    Mono<SubscriptionDto> findByAgencyIdEvent(String id);
     Mono<Void> delete(String id);
 }
