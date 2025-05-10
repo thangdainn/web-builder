@@ -169,8 +169,8 @@ public class StripeService implements IStripeService {
         SubscriptionResp existingSubscription = agency.getSubscription();
 
         try {
-            if (existingSubscription != null &&
-                    existingSubscription.getActive() &&
+            if (existingSubscription != null && existingSubscription.getActive() != null &&
+                    existingSubscription.getActive().equals(Boolean.TRUE) &&
                     existingSubscription.getSubscriptionId() != null) {
 
                 log.info("Updating subscription for customerId: {}", request.getCustomerId());
@@ -210,15 +210,18 @@ public class StripeService implements IStripeService {
             Event event = Webhook.constructEvent(payload, sigHeader, whSecretKey);
 
             if (STRIPE_WEBHOOK_EVENTS.contains(event.getType())) {
-                EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
-                StripeObject stripeObject = null;
-                if (dataObjectDeserializer.getObject().isPresent()) {
-                    stripeObject = dataObjectDeserializer.getObject().get();
-                } else {
-                    log.error("Failed to deserialize event data object.");
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                            "Failed to deserialize event data object.");
-                }
+//                EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
+//                StripeObject stripeObject = null;
+//                log.info("Received payload: {}", payload);
+//                log.info("Received sigHeader: {}", sigHeader);
+//                log.info("Received webhook event: {}", event);
+//                if (dataObjectDeserializer.getObject().isPresent()) {
+                StripeObject  stripeObject = event.getData().getObject();
+//                } else {
+//                    log.error("Failed to deserialize event data object.");
+//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//                            "Failed to deserialize event data object.");
+//                }
                 Subscription subscription = (Subscription) stripeObject;
 
                 if (subscription.getMetadata() != null &&
@@ -230,7 +233,8 @@ public class StripeService implements IStripeService {
                         case "customer.subscription.updated":
                             if ("active".equals(subscription.getStatus())) {
 //                                subscriptionCreated(subscription, subscription.getCustomer());
-                                eventProducer.sendPaymentProcessEvent(subscription, subscription.getCustomer());
+                                AgencyDto agency = agencyClient.getByCustomerId(subscription.getCustomer()).getBody();
+                                eventProducer.sendPaymentProcessEvent(subscription, subscription.getCustomer(), agency);
                                 log.info("CREATED FROM WEBHOOK {}", subscription.getId());
                             } else {
                                 log.info("SKIPPED AT CREATED FROM WEBHOOK because subscription status is not active: {}",

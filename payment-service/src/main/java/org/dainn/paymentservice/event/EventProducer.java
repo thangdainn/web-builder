@@ -5,11 +5,14 @@ import com.stripe.model.Subscription;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.paymentservice.dto.event.CustomerResponse;
+import org.dainn.paymentservice.dto.response.AgencyDto;
 import org.dainn.paymentservice.dto.response.SubscriptionResp;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -30,19 +33,21 @@ public class EventProducer {
     @Value("${kafka.topic.create-customer-failed-events}")
     private String createCustomerFailedEventsTopic;
 
-    public void sendPaymentProcessEvent(Subscription subscription, String customerId) {
+    public void sendPaymentProcessEvent(Subscription subscription, String customerId, AgencyDto agency) {
         try {
             SubscriptionResp dto = new SubscriptionResp();
             dto.setSubscriptionId(subscription.getId());
             dto.setCustomerId(customerId);
             dto.setActive(subscription.getStatus().equals("active"));
-            dto.setAgencyId(subscription.getMetadata().get("agencyId"));
+            dto.setAgencyId(agency.getId());
             LocalDate localDate = Instant.ofEpochSecond(subscription.getCurrentPeriodEnd())
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate();
             dto.setCurrentPeriodEndDate(localDate);
-            dto.setPriceId(subscription.getMetadata().get("planId"));
-            dto.setPlan(subscription.getMetadata().get("planName"));
+            String plant = subscription.getItems().getData().get(0).getPrice().getId();
+            dto.setPriceId(plant);
+            dto.setPrice(subscription.getItems().getData().get(0).getPrice().getUnitAmountDecimal().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
+            dto.setPlan(plant);
             String jsonMessage = objectMapper.writeValueAsString(dto);
             kafkaTemplate.send(paymentProcessEventsTopic, jsonMessage);
         } catch (Exception e) {
