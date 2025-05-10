@@ -3,6 +3,7 @@ package org.dainn.pipelineservice.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.pipelineservice.dto.event.TicketOrderEvent;
+import org.dainn.pipelineservice.dto.response.ContactDto;
 import org.dainn.pipelineservice.dto.ticket.TicketDto;
 import org.dainn.pipelineservice.dto.ticket.TicketOrderDto;
 import org.dainn.pipelineservice.dto.ticket.TicketOrderList;
@@ -76,8 +77,9 @@ public class TicketService implements ITicketService {
                     .getBody()).getName());
         }
         if (StringUtils.hasText(ticket.getCustomerId())) {
-            ticketDto.setCustomerName(Objects.requireNonNull(contactClient.getById(ticket.getCustomerId())
-                    .getBody()).getName());
+            ContactDto contact = Objects.requireNonNull(contactClient.getById(ticket.getCustomerId()).getBody());
+            ticketDto.setCustomerName(contact.getName());
+            ticketDto.setCustomerEmail(contact.getEmail());
         }
         return ticketDto;
     }

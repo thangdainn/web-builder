@@ -35,7 +35,7 @@ public class TicketDto extends AbstractDto {
 
     private String customerId;
     private String customerName;
-
+    private String customerEmail;
 
     @NotNull(message = "Lane is required")
     @NotBlank(message = "Lane is required")
