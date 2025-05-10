@@ -27,7 +27,7 @@ public class EventConsumer {
     public void handleEvents(@Payload String message) throws JsonProcessingException {
         SubscriptionResp event = objectMapper.readValue(message, SubscriptionResp.class);
         log.info("Received event from topic payment-processed-events: {}", event);
-        subscriptionService.findByAgencyId(event.getAgencyId())
+        subscriptionService.findByAgencyIdEvent(event.getAgencyId())
                 .flatMap(existing -> {
                     existing = subscriptionMapper.toUpdate(existing, event);
                     return subscriptionService.update(existing);
