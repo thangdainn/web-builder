@@ -19,7 +19,7 @@ public interface ISubscriptionMapper {
     Subscription updateEntity(@MappingTarget Subscription entity, SubscriptionDto dto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "price", ignore = true)
+//    @Mapping(target = "price", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     SubscriptionDto toUpdate(@MappingTarget SubscriptionDto target, SubscriptionResp dto);

@@ -3,7 +3,6 @@ package org.dainn.agencyservice.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.agencyservice.dto.*;
-import org.dainn.agencyservice.dto.response.UserDto;
 import org.dainn.agencyservice.event.EventProducer;
 import org.dainn.agencyservice.exception.AppException;
 import org.dainn.agencyservice.exception.ErrorCode;
@@ -92,7 +91,7 @@ public class AgencyService implements IAgencyService {
     public AgencyDetailDto findByCustomerId(String id) {
         AgencyDetailDto detail = agencyMapper.toDetail(agencyRepository.findByCustomerId(id)
                 .orElseThrow(() -> new AppException(ErrorCode.AGENCY_NOT_EXISTED)));
-        detail.setSubscription(subscriptionClient.getByAgencyId(id));
+        detail.setSubscription(subscriptionClient.getByAgencyId(detail.getId()));
         return detail;
     }
 

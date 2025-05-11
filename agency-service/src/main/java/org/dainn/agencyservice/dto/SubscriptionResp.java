@@ -8,7 +8,7 @@ import org.dainn.agencyservice.util.enums.Plan;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -21,7 +21,7 @@ public class SubscriptionResp {
     private String priceId;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime currentPeriodEndDate;
+    private LocalDate currentPeriodEndDate;
 
     private Boolean active;
 
