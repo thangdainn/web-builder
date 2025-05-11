@@ -21,9 +21,13 @@ public class SubscriptionService implements ISubscriptionService {
     @Transactional
     @Override
     public Mono<SubscriptionDto> create(SubscriptionDto dto) {
-        Subscription subscription = subscriptionMapper.toEntity(dto);
-        subscription.markNew();
-        return subscriptionRepository.save(subscription)
+        return subscriptionRepository.deleteByAgencyId(dto.getAgencyId())
+                .then(Mono.fromCallable(() -> {
+                    Subscription subscription = subscriptionMapper.toEntity(dto);
+                    subscription.markNew();
+                    return subscription;
+                }))
+                .flatMap(subscriptionRepository::save)
                 .map(subscriptionMapper::toDto);
     }
 

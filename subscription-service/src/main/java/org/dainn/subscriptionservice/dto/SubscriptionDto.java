@@ -10,6 +10,7 @@ import org.dainn.subscriptionservice.util.enums.Plan;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -27,7 +28,7 @@ public class SubscriptionDto extends AbstractDto {
 
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime currentPeriodEndDate;
+    private LocalDate currentPeriodEndDate;
 
     private Boolean active;
 

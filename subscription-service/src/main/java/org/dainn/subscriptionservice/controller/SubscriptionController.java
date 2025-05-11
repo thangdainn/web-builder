@@ -21,28 +21,28 @@ public class SubscriptionController {
 //        return subscriptionService.findAll();
 //    }
 
-    @GetMapping(Endpoint.Subscription.ID)
-    public ResponseEntity<?> get(@PathVariable String id) {
-        return ResponseEntity.ok(subscriptionService.findById(id));
-    }
+//    @GetMapping(Endpoint.Subscription.ID)
+//    public ResponseEntity<?> get(@PathVariable String id) {
+//        return ResponseEntity.ok(subscriptionService.findById(id));
+//    }
 
     @GetMapping(Endpoint.Subscription.AGENCY)
     public ResponseEntity<?> getByAgency(@PathVariable String id) {
         return ResponseEntity.ok(subscriptionService.findByAgencyId(id));
     }
 
-    @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody SubscriptionDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(subscriptionService.create(dto));
-    }
+//    @PostMapping
+//    public ResponseEntity<?> create(@Valid @RequestBody SubscriptionDto dto) {
+//        return ResponseEntity.status(HttpStatus.CREATED).body(subscriptionService.create(dto));
+//    }
 
-    @PutMapping
-    public ResponseEntity<?> update(@RequestBody SubscriptionDto dto) {
-        return ResponseEntity.ok(subscriptionService.update(dto));
-    }
+//    @PutMapping
+//    public ResponseEntity<?> update(@RequestBody SubscriptionDto dto) {
+//        return ResponseEntity.ok(subscriptionService.update(dto));
+//    }
 
-    @DeleteMapping
-    public ResponseEntity<?> delete(String id) {
-        return ResponseEntity.ok(subscriptionService.delete(id));
-    }
+//    @DeleteMapping
+//    public ResponseEntity<?> delete(String id) {
+//        return ResponseEntity.ok(subscriptionService.delete(id));
+//    }
 }

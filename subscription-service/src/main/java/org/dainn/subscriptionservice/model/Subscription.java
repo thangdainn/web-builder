@@ -9,6 +9,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Setter
@@ -22,7 +23,7 @@ public class Subscription extends BaseEntity {
     private String priceId;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime currentPeriodEndDate;
+    private LocalDate currentPeriodEndDate;
 
     private Boolean active;
     private String subscriptionId;

@@ -17,7 +17,6 @@ import java.math.BigDecimal;
 @Table(name = "addons")
 public class AddOns extends BaseEntity {
     private String name;
-    private BigDecimal price;
     private String priceId;
     private Boolean active;
     private String agencyId;

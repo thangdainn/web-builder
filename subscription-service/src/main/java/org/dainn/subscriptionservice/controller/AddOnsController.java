@@ -22,13 +22,13 @@ public class AddOnsController {
         return ResponseEntity.ok(addOnsService.findById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<Mono<AddOnsDto>> create(@Valid @RequestBody AddOnsDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(addOnsService.create(dto));
-    }
-
-    @DeleteMapping
-    public ResponseEntity<Mono<Void>> delete(String id) {
-        return ResponseEntity.ok(addOnsService.delete(id));
-    }
+//    @PostMapping
+//    public ResponseEntity<Mono<AddOnsDto>> create(@Valid @RequestBody AddOnsDto dto) {
+//        return ResponseEntity.status(HttpStatus.CREATED).body(addOnsService.create(dto));
+//    }
+//
+//    @DeleteMapping
+//    public ResponseEntity<Mono<Void>> delete(String id) {
+//        return ResponseEntity.ok(addOnsService.delete(id));
+//    }
 }

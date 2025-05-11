@@ -20,7 +20,7 @@ public class SubscriptionResp {
     private BigDecimal price;
     private String priceId;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate currentPeriodEndDate;
 
     private Boolean active;

@@ -18,8 +18,8 @@ public class AddOnsDto extends AbstractDto {
     @NotBlank(message = "Name is required")
     private String name;
 
-    @NotNull(message = "Price is required")
-    private BigDecimal price;
+    @NotNull(message = "Price id is required")
+    private String priceId;
 
     private Boolean active;
 
