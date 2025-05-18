@@ -251,7 +251,7 @@ services:
       resources:
         limits:
           cpus: '0.3'
-          memory: 256M
+          memory: 512M
     healthcheck:
       test: echo srvr | nc zookeeper 2181 || exit 1
       interval: 10s
@@ -288,7 +288,7 @@ services:
       resources:
         limits:
           cpus: '1.0'
-          memory: 1G
+          memory: 2G
     networks:
       - wb-network
 
@@ -319,7 +319,7 @@ services:
       resources:
         limits:
           cpus: '1.0'
-          memory: 1G
+          memory: 2G
     networks:
       - wb-network
 
@@ -340,7 +340,7 @@ services:
       resources:
         limits:
           cpus: '1.5'
-          memory: 1G
+          memory: 2G
     healthcheck:
       test: curl -s http://localhost:9200/_cluster/health | grep -q 'status":"green\|status":"yellow'
       interval: 30s
@@ -402,7 +402,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: '1.0'
           memory: 512M
     networks:
       - wb-network
@@ -476,7 +476,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 512M
+          memory: 1G
     networks:
       - wb-network
 
@@ -513,7 +513,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 256M
+          memory: 512M
     networks:
       - wb-network
 
@@ -656,7 +656,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 256M
+          memory: 512M
     networks:
       - wb-network
 
@@ -692,7 +692,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 256M
+          memory: 512M
     networks:
       - wb-network
 
