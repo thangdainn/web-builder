@@ -73,6 +73,7 @@ public class SubAccountService implements ISubAccountService {
     @Override
     public void delete(String id, String email) {
         subAccountRepository.deleteById(id);
+        eventProducer.subAccountDeletedEvent(id);
         eventProducer.changePerEvent(email);
         eventProducer.changeAgencyEvent(email);
     }
