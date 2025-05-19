@@ -251,7 +251,7 @@ services:
       resources:
         limits:
           cpus: '0.3'
-          memory: 512M
+          memory: 256M
     healthcheck:
       test: echo srvr | nc zookeeper 2181 || exit 1
       interval: 10s
@@ -476,7 +476,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 1G
+          memory: 512M
     networks:
       - wb-network
 
