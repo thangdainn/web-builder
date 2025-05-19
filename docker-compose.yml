@@ -288,7 +288,7 @@ services:
       resources:
         limits:
           cpus: '1.0'
-          memory: 2G
+          memory: 1G
     networks:
       - wb-network
 
@@ -319,7 +319,7 @@ services:
       resources:
         limits:
           cpus: '1.0'
-          memory: 2G
+          memory: 1G
     networks:
       - wb-network
 
@@ -340,7 +340,7 @@ services:
       resources:
         limits:
           cpus: '1.5'
-          memory: 2G
+          memory: 1G
     healthcheck:
       test: curl -s http://localhost:9200/_cluster/health | grep -q 'status":"green\|status":"yellow'
       interval: 30s
@@ -402,7 +402,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: '0.5'
           memory: 512M
     networks:
       - wb-network
@@ -513,7 +513,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 512M
+          memory: 256M
     networks:
       - wb-network
 
@@ -656,7 +656,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 512M
+          memory: 256M
     networks:
       - wb-network
 
@@ -692,7 +692,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 512M
+          memory: 256M
     networks:
       - wb-network
 
