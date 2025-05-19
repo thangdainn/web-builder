@@ -6,7 +6,7 @@ CREATE TABLE subscriptions
     price_id                VARCHAR(36),
     current_period_end_date TIMESTAMP,
     active                  BOOLEAN  DEFAULT FALSE,
-    agency_id               VARCHAR(36),
+    agency_id               VARCHAR(36) UNIQUE,
     subscription_id         VARCHAR(36) UNIQUE,
     customer_id             VARCHAR(36),
     created_at              TIMESTAMP,
