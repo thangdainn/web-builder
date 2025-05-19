@@ -5,9 +5,9 @@ CREATE TABLE subscriptions
     price                   DECIMAL(19, 2) NOT NULL,
     price_id                VARCHAR(36),
     current_period_end_date TIMESTAMP,
-    active                  BOOLEAN  DEFAULT TRUE,
-    agency_id               VARCHAR(36) UNIQUE,
-    subscription_id         VARCHAR(36),
+    active                  BOOLEAN  DEFAULT FALSE,
+    agency_id               VARCHAR(36),
+    subscription_id         VARCHAR(36) UNIQUE,
     customer_id             VARCHAR(36),
     created_at              TIMESTAMP,
     updated_at              TIMESTAMP
@@ -17,8 +17,8 @@ CREATE TABLE addons
 (
     id          VARCHAR(36) PRIMARY KEY,
     name        VARCHAR(255)   NOT NULL,
-    price       DECIMAL(19, 2) NOT NULL,
-    active      BOOLEAN  DEFAULT TRUE,
+    price_id    VARCHAR(36) UNIQUE ,
+    active      BOOLEAN  DEFAULT FALSE,
     agency_id   VARCHAR(36),
     created_at  TIMESTAMP,
     updated_at  TIMESTAMP
