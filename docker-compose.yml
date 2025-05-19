@@ -241,7 +241,7 @@ services:
       - wb-network
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.6.2
+    image: confluentinc/cp-zookeeper:7.6.3
     container_name: zookeeper-wb
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -251,7 +251,7 @@ services:
       resources:
         limits:
           cpus: '0.3'
-          memory: 256M
+          memory: 512M
     healthcheck:
       test: echo srvr | nc zookeeper 2181 || exit 1
       interval: 10s
@@ -262,7 +262,7 @@ services:
       - wb-network
 
   broker-1:
-    image: confluentinc/cp-kafka:7.6.2
+    image: confluentinc/cp-kafka:7.6.3
     container_name: broker-1-wb
     ports:
       - "9092:9092"
@@ -288,12 +288,12 @@ services:
       resources:
         limits:
           cpus: '1.0'
-          memory: 1G
+          memory: 2G
     networks:
       - wb-network
 
   broker-2:
-    image: confluentinc/cp-kafka:7.6.2
+    image: confluentinc/cp-kafka:7.6.3
     container_name: broker-2-wb
     ports:
       - "9093:9093"
@@ -319,7 +319,7 @@ services:
       resources:
         limits:
           cpus: '1.0'
-          memory: 1G
+          memory: 2G
     networks:
       - wb-network
 
@@ -340,7 +340,7 @@ services:
       resources:
         limits:
           cpus: '1.5'
-          memory: 1G
+          memory: 1512M
     healthcheck:
       test: curl -s http://localhost:9200/_cluster/health | grep -q 'status":"green\|status":"yellow'
       interval: 30s
