@@ -9,8 +9,6 @@ import org.dainn.funnelservice.exception.AppException;
 import org.dainn.funnelservice.exception.ErrorCode;
 import org.dainn.funnelservice.mapper.IFunnelMapper;
 import org.dainn.funnelservice.model.Funnel;
-import org.dainn.funnelservice.repository.IClassNameRepository;
-import org.dainn.funnelservice.repository.IFunnelPageRepository;
 import org.dainn.funnelservice.repository.IFunnelRepository;
 import org.dainn.funnelservice.service.IFunnelPageService;
 import org.dainn.funnelservice.service.IFunnelService;
@@ -28,8 +26,6 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class FunnelService implements IFunnelService {
     private final IFunnelRepository funnelRepository;
-    private final IFunnelPageRepository funnelPageRepository;
-    private final IClassNameRepository classNameRepository;
     private final IFunnelPageService funnelPageService;
     private final IFunnelMapper funnelMapper;
 

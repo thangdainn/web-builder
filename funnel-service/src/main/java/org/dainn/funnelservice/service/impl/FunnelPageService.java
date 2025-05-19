@@ -77,7 +77,7 @@ public class FunnelPageService implements IFunnelPageService {
 
     @Override
     public Flux<FunnelPageDto> findByFunnel(String funnelId) {
-        return funnelPageRepository.findAllByFunnelId(funnelId)
+        return funnelPageRepository.findAllByFunnelIdOrderByOrderAsc(funnelId)
                 .map(funnelPageMapper::toDto);
     }
 }
