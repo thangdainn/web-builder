@@ -2,7 +2,7 @@ version: '3.8'
 services:
   postgres-agency:
     container_name: postgres-agency
-    image: postgres
+    image: postgres:15-alpine
     environment:
       POSTGRES_DB: agency_db
       POSTGRES_USER: ${POSTGRES_USER}
@@ -32,7 +32,7 @@ services:
 
   postgres-media:
     container_name: postgres-media
-    image: postgres
+    image: postgres:15-alpine
     environment:
       POSTGRES_DB: media_db
       POSTGRES_USER: ${POSTGRES_USER}
@@ -62,7 +62,7 @@ services:
 
   postgres-notification:
     container_name: postgres-notification
-    image: postgres
+    image: postgres:15-alpine
     environment:
       POSTGRES_DB: notification_db
       POSTGRES_USER: ${POSTGRES_USER}
@@ -92,7 +92,7 @@ services:
 
   postgres-pipeline:
     container_name: postgres-pipeline
-    image: postgres
+    image: postgres:15-alpine
     environment:
       POSTGRES_DB: pipeline_db
       POSTGRES_USER: ${POSTGRES_USER}
@@ -122,7 +122,7 @@ services:
 
   postgres-subaccount:
     container_name: postgres-subaccount
-    image: postgres
+    image: postgres:15-alpine
     environment:
       POSTGRES_DB: subaccount_db
       POSTGRES_USER: ${POSTGRES_USER}
@@ -152,7 +152,7 @@ services:
 
   postgres-user:
     container_name: postgres-user
-    image: postgres
+    image: postgres:15-alpine
     environment:
       POSTGRES_DB: user_db
       POSTGRES_USER: ${POSTGRES_USER}
@@ -182,7 +182,7 @@ services:
 
   postgres-funnel:
     container_name: postgres-funnel
-    image: postgres
+    image: postgres:15-alpine
     environment:
       POSTGRES_DB: funnel_db
       POSTGRES_USER: ${POSTGRES_USER}
@@ -212,7 +212,7 @@ services:
 
   postgres-subscription:
     container_name: postgres-subscription
-    image: postgres
+    image: postgres:15-alpine
     environment:
       POSTGRES_DB: subscription_db
       POSTGRES_USER: ${POSTGRES_USER}
@@ -321,7 +321,7 @@ services:
       resources:
         limits:
           cpus: '1.0'
-          memory: 2G
+          memory: 1G
     networks:
       - wb-network
         
@@ -353,7 +353,7 @@ services:
       resources:
         limits:
           cpus: '1.0'
-          memory: 2G
+          memory: 1G
     networks:
       - wb-network
 
@@ -373,7 +373,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.5'
+          cpus: '1.0'
           memory: 1512M
     healthcheck:
       test: curl -s http://localhost:9200/_cluster/health | grep -q 'status":"green\|status":"yellow'
