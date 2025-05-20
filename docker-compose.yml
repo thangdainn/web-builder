@@ -267,7 +267,8 @@ services:
     ports:
       - "9092:9092"
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-wb:2181'
@@ -298,7 +299,8 @@ services:
     ports:
       - "9093:9093"
     depends_on:
-      - zookeeper
+        zookeeper:
+            condition: service_healthy
     environment:
       KAFKA_BROKER_ID: 2
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-wb:2181'
@@ -351,7 +353,7 @@ services:
       - wb-network
 
   discovery-server:
-    image: thanngdainn/discovery-server:4.2.0
+    image: thanngdainn/discovery-server:4.2.1
     container_name: discovery-server-wb
     pull_policy: always
     ports:
@@ -375,7 +377,7 @@ services:
       - wb-network
 
   api-gateway:
-    image: thanngdainn/api-gateway:4.2.0
+    image: thanngdainn/api-gateway:4.2.1
     container_name: api-gateway-wb
     pull_policy: always
     ports:
@@ -409,7 +411,7 @@ services:
 
   agency-service:
     container_name: agency-service-wb
-    image: thanngdainn/agency-service:4.2.0
+    image: thanngdainn/agency-service:4.2.1
     pull_policy: always
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-agency:5431/agency_db
@@ -445,7 +447,7 @@ services:
 
   funnel-service:
     container_name: funnel-service-wb
-    image: thanngdainn/funnel-service:4.2.0
+    image: thanngdainn/funnel-service:4.2.1
     pull_policy: always
     environment:
       - SPRING_R2DBC_URL=r2dbc:postgresql://postgres-funnel:5437/funnel_db
@@ -482,7 +484,7 @@ services:
 
   media-service:
     container_name: media-service-wb
-    image: thanngdainn/media-service:4.2.0
+    image: thanngdainn/media-service:4.2.1
     pull_policy: always
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-media:5432/media_db
@@ -519,7 +521,7 @@ services:
 
   notification-service:
     container_name: notification-service-wb
-    image: thanngdainn/notification-service:4.2.0
+    image: thanngdainn/notification-service:4.2.1
     pull_policy: always
     environment:
       - SPRING_R2DBC_URL=r2dbc:postgresql://postgres-notification:5433/notification_db
@@ -560,7 +562,7 @@ services:
 
   payment-service:
     container_name: payment-service-wb
-    image: thanngdainn/payment-service:4.2.0
+    image: thanngdainn/payment-service:4.2.1
     pull_policy: always
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
@@ -594,7 +596,7 @@ services:
 
   pipeline-service:
     container_name: pipeline-service-wb
-    image: thanngdainn/pipeline-service:4.2.0
+    image: thanngdainn/pipeline-service:4.2.1
     pull_policy: always
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-pipeline:5434/pipeline_db
@@ -628,7 +630,7 @@ services:
 
   search-service:
     container_name: search-service-wb
-    image: thanngdainn/search-service:4.2.0
+    image: thanngdainn/search-service:4.2.1
     pull_policy: always
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
@@ -662,7 +664,7 @@ services:
 
   subaccount-service:
     container_name: subaccount-service-wb
-    image: thanngdainn/subaccount-service:4.2.0
+    image: thanngdainn/subaccount-service:4.2.1
     pull_policy: always
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-subaccount:5435/subaccount_db
@@ -692,13 +694,13 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 256M
+          memory: 512M
     networks:
       - wb-network
 
   subscription-service:
     container_name: subscription-service-wb
-    image: thanngdainn/subscription-service:4.2.0
+    image: thanngdainn/subscription-service:4.2.1
     pull_policy: always
     environment:
       - SPRING_R2DBC_URL=r2dbc:postgresql://postgres-subscription:5438/subscription_db
@@ -731,13 +733,13 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 256M
+          memory: 512M
     networks:
       - wb-network
 
   user-service:
     container_name: user-service-wb
-    image: thanngdainn/user-service:4.2.0
+    image: thanngdainn/user-service:4.2.1
     pull_policy: always
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-user:5436/user_db
