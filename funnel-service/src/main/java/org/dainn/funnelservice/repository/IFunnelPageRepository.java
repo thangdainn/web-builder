@@ -1,7 +1,6 @@
 package org.dainn.funnelservice.repository;
 
 import org.dainn.funnelservice.model.FunnelPage;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
@@ -12,6 +11,7 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface IFunnelPageRepository extends R2dbcRepository<FunnelPage, String> {
     Flux<FunnelPage> findAllByFunnelIdOrderByOrderAsc(String funnelId);
+    Flux<FunnelPage> findALlByFunnelId(String funnelId);
 
     @Modifying
     @Query("""
@@ -28,4 +28,12 @@ public interface IFunnelPageRepository extends R2dbcRepository<FunnelPage, Strin
                     WHERE id = :id
             """)
     Mono<Integer> updateContent(String id, String content);
+
+    @Modifying
+    @Query("""
+                    UPDATE funnel_pages
+                    SET visits = :visits
+                    WHERE id = :id
+            """)
+    Mono<Integer> updateVisits(String id, Integer visits);
 }

@@ -4,18 +4,24 @@ package org.dainn.funnelservice.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.dainn.funnelservice.config.endpoint.Endpoint;
+import org.dainn.funnelservice.dto.FPOrderDto;
 import org.dainn.funnelservice.dto.funnel.FunnelDto;
 import org.dainn.funnelservice.dto.funnel.FunnelReq;
+import org.dainn.funnelservice.service.IFunnelPageService;
 import org.dainn.funnelservice.service.IFunnelService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(Endpoint.Funnel.BASE)
 @RequiredArgsConstructor
 public class FunnelController {
     private final IFunnelService funnelService;
+    private final IFunnelPageService funnelPageService;
+
 
     @GetMapping(Endpoint.Funnel.SUB_ACCOUNT)
     public ResponseEntity<?> findAll(@PathVariable String id, @ModelAttribute FunnelReq request) {
@@ -52,6 +58,11 @@ public class FunnelController {
     public ResponseEntity<?> updateProducts(@PathVariable String id, @RequestBody FunnelDto dto) {
         dto.setId(id);
         return ResponseEntity.ok(funnelService.updateLiveProducts(dto));
+    }
+
+    @PutMapping(Endpoint.Funnel.FUNNEL_PAGE_ORDER)
+    public ResponseEntity<?> updateFunnelPageOrder(@PathVariable String id, @RequestBody List<FPOrderDto> list) {
+        return ResponseEntity.ok(funnelPageService.changeOrderWithKafka(id, list));
     }
 
     @DeleteMapping

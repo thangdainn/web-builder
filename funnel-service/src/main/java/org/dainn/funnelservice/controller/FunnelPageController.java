@@ -43,6 +43,12 @@ public class FunnelPageController {
         return ResponseEntity.ok(funnelPageService.updateContent(dto));
     }
 
+    @PutMapping(Endpoint.FunnelPage.VISITS)
+    public ResponseEntity<?> getVisits(@PathVariable String id, @RequestBody FunnelPageDto dto) {
+        dto.setId(id);
+        return ResponseEntity.ok(funnelPageService.updateVisits(dto));
+    }
+
     @DeleteMapping
     public ResponseEntity<?> delete(String id) {
         return ResponseEntity.ok(funnelPageService.delete(id));

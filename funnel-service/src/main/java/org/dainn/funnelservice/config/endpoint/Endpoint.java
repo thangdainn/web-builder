@@ -10,6 +10,7 @@ public class Endpoint {
         public static final String SUB_ACCOUNT = "/sub-accounts/{id}";
         public static final String PRODUCTS = "/{id}/products";
         public static final String DOMAIN = "/domain/{domain}";
+        public static final String FUNNEL_PAGE_ORDER = "/{id}/funnel-page-order";
     }
 
     public static final class FunnelPage {
@@ -17,6 +18,7 @@ public class Endpoint {
         public static final String ID = "/{id}";
         public static final String CONTENT = "/{id}/content";
         public static final String NAME = "/{id}/name";
+        public static final String VISITS = "/{id}/visits";
     }
 
     public static final class ClassName {
