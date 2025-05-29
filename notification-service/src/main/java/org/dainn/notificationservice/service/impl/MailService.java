@@ -30,7 +30,10 @@ public class MailService implements IMailService {
     public void sendEmail(MailData mailData) {
         try {
             Context context = new Context();
-            context.setVariable("inviterName", mailData.getInviterName());
+            context.setVariable("from", mailData.getFrom());
+            context.setVariable("senderName", mailData.getSenderName());
+            context.setVariable("agencyName", mailData.getAgencyName());
+            context.setVariable("recipientName", mailData.getRecipientName());
             context.setVariable("invitationLink", mailData.getInvitationLink());
             String htmlContent = templateEngine.process("invitation-email", context);
 
