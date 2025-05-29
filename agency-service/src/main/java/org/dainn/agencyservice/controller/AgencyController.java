@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.dainn.agencyservice.config.endpoint.Endpoint;
 import org.dainn.agencyservice.dto.AgencyDto;
 import org.dainn.agencyservice.dto.CreateAgencyDto;
+import org.dainn.agencyservice.dto.UpdateConnectAccDto;
 import org.dainn.agencyservice.dto.UpdateGoalDto;
 import org.dainn.agencyservice.service.IAgencyService;
 import org.springframework.http.HttpStatus;
@@ -48,8 +49,8 @@ public class AgencyController {
     }
 
     @PutMapping(Endpoint.Agency.CONNECT_ACC_ID)
-    public ResponseEntity<?> updateConnectAccId(@PathVariable String id, @RequestBody String connectAccId) {
-        agencyService.updateConnectAccId(id, connectAccId);
+    public ResponseEntity<?> updateConnectAccId(@PathVariable String id, @RequestBody UpdateConnectAccDto dto) {
+        agencyService.updateConnectAccId(id, dto.getConnectAccountId());
         return ResponseEntity.ok().build();
     }
 
