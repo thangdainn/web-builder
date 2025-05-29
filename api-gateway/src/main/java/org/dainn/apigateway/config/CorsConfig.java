@@ -18,11 +18,13 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList(
+        config.setAllowedOriginPatterns(Arrays.asList(
+                "http://*.localhost:3000",
                 "http://localhost:3000",
                 "http://localhost:8080",
                 "http://localhost",
-                "http://host.docker.internal"
+                "http://host.docker.internal",
+                "https://taskiums.vercel.app"
         ));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
