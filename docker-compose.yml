@@ -250,7 +250,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.3'
+          cpus: '0.5'
           memory: 512M
     healthcheck:
       test: echo srvr | nc zookeeper 2181 || exit 1
@@ -372,7 +372,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 256M
+          memory: 512M
     networks:
       - wb-network
 
