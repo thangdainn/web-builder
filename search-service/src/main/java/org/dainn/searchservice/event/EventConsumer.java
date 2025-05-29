@@ -20,7 +20,7 @@ public class EventConsumer {
     private final IUserService userService;
     private final ObjectMapper objectMapper;
 
-    @KafkaListener(topics = "user-created-events", groupId = "spring.kafka.consumer.group-id")
+    @KafkaListener(topics = "user-created-events", groupId = "${spring.kafka.consumer.group-id}")
     public void userCreatedEvent(@Payload String message) {
         try {
             log.info("User created event consumed: {}", message);
@@ -31,7 +31,7 @@ public class EventConsumer {
         }
     }
 
-    @KafkaListener(topics = "user-deleted-events", groupId = "spring.kafka.consumer.group-id")
+    @KafkaListener(topics = "user-deleted-events", groupId = "${spring.kafka.consumer.group-id}")
     public void userDeletedEvent(@Payload String message) {
         try {
             log.info("User deleted event consumed: {}", message);

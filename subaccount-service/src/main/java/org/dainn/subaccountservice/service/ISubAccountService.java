@@ -1,6 +1,7 @@
 package org.dainn.subaccountservice.service;
 
 
+import org.dainn.subaccountservice.dto.event.DeleteAgencyConsumer;
 import org.dainn.subaccountservice.dto.subaccount.*;
 import org.springframework.data.domain.Page;
 
@@ -10,7 +11,7 @@ public interface ISubAccountService {
     SubAccountDetailDto create(CreateSubAccount dto);
     SubAccountDetailDto update(String id, UpdateSubAccount dto);
     void delete(String id, String email);
-    void deleteByAgency(String agencyId);
+    void deleteByAgency(DeleteAgencyConsumer dto);
     SubAccountDto findById(String id);
     SubAccountDetailDto findDetailById(String id);
 

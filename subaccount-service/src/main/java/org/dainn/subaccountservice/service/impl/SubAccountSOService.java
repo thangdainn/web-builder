@@ -88,12 +88,6 @@ public class SubAccountSOService implements ISubAccountSOService {
                         .build(),
 
                 SubAccountSODto.builder()
-                        .name("Automations")
-                        .icon(Icon.chip)
-                        .link("/subaccount/" + subAccountId + "/automations")
-                        .build(),
-
-                SubAccountSODto.builder()
                         .name("Pipelines")
                         .icon(Icon.flag)
                         .link("/subaccount/" + subAccountId + "/pipelines")

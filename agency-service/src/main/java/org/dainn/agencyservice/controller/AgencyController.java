@@ -3,10 +3,7 @@ package org.dainn.agencyservice.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.dainn.agencyservice.config.endpoint.Endpoint;
-import org.dainn.agencyservice.dto.AgencyDto;
-import org.dainn.agencyservice.dto.CreateAgencyDto;
-import org.dainn.agencyservice.dto.UpdateConnectAccDto;
-import org.dainn.agencyservice.dto.UpdateGoalDto;
+import org.dainn.agencyservice.dto.*;
 import org.dainn.agencyservice.service.IAgencyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,8 +52,8 @@ public class AgencyController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> delete(String id) {
-        agencyService.delete(id);
+    public ResponseEntity<?> delete(@RequestBody DeleteAgencyDto dto) {
+        agencyService.delete(dto);
         return ResponseEntity.ok().build();
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.agencyservice.dto.CreateCustomer;
+import org.dainn.agencyservice.dto.DeleteAgencyDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -42,9 +43,9 @@ public class EventProducer {
         }
     }
 
-    public void agencyDeletedEvent(String agencyId) {
+    public void agencyDeletedEvent(DeleteAgencyDto dto) {
         try {
-            String jsonMessage = objectMapper.writeValueAsString(agencyId);
+            String jsonMessage = objectMapper.writeValueAsString(dto);
             kafkaTemplate.send(agencyDeletedEventsTopic, jsonMessage);
         } catch (Exception e) {
             log.error("Failed to serialize user to JSON", e);

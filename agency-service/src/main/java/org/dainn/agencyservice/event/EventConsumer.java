@@ -3,8 +3,8 @@ package org.dainn.agencyservice.event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dainn.agencyservice.dto.DeleteAgencyDto;
 import org.dainn.agencyservice.dto.event.CustomerResponse;
-import org.dainn.agencyservice.repository.IAgencyRepository;
 import org.dainn.agencyservice.service.IAgencyService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -47,9 +47,9 @@ public class EventConsumer {
     public void handleOwnerDeletedEvent(@Payload String message) {
         try {
             log.info("Owner deleted event consumed: {}", message);
-            String agencyId = objectMapper.readValue(message, String.class);
-            agencyService.delete(agencyId);
-            log.info("Invite deleted by agency id {} successfully", agencyId);
+            DeleteAgencyDto dto = objectMapper.readValue(message, DeleteAgencyDto.class);
+            agencyService.delete(dto);
+            log.info("Invite deleted by agency id {} successfully", dto.getAgencyId());
         } catch (Exception e) {
             log.error("Failed to process create customer event", e);
         }

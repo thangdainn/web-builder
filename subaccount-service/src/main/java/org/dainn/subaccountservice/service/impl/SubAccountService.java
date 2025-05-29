@@ -2,6 +2,7 @@ package org.dainn.subaccountservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dainn.subaccountservice.dto.event.DeleteAgencyConsumer;
 import org.dainn.subaccountservice.dto.response.PermissionDto;
 import org.dainn.subaccountservice.dto.response.PipelineDto;
 import org.dainn.subaccountservice.dto.response.TagDto;
@@ -80,9 +81,16 @@ public class SubAccountService implements ISubAccountService {
 
     @Transactional
     @Override
-    public void deleteByAgency(String agencyId) {
-        subAccountRepository.deleteByAgencyId(agencyId);
-        log.info("Deleted all sub-accounts for agency ID: {}", agencyId);
+    public void deleteByAgency(DeleteAgencyConsumer dto) {
+        List<SubAccount> subAccounts = subAccountRepository.findAllByAgencyId(dto.getAgencyId());
+        subAccounts.forEach(subAccount -> {
+            eventProducer.subAccountDeletedEvent(subAccount.getId());
+        });
+        subAccountRepository.deleteAll(subAccounts);
+//        subAccountRepository.deleteByAgencyId(dto.getAgencyId());
+//        eventProducer.changeAgencyEvent(dto.getEmail());
+//        eventProducer.changePerEvent(dto.getEmail());
+        log.info("Deleted all sub-accounts for agency ID: {}", dto.getAgencyId());
     }
 
     @Transactional

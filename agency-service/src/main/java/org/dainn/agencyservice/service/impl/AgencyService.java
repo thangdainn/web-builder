@@ -97,7 +97,7 @@ public class AgencyService implements IAgencyService {
 
     @Transactional
     @Override
-    public void delete(String id) {
+    public void delete(DeleteAgencyDto dto) {
 //        String userId = "ssssssss";
 //        if (Boolean.FALSE.equals(userClient.isOwner(UserDto.builder()
 //                .agencyId(id)
@@ -105,10 +105,10 @@ public class AgencyService implements IAgencyService {
 //                .build()).getBody())) {
 //            throw new AppException(ErrorCode.USER_NOT_PERMISSION);
 //        }
-        agencySORepository.deleteAllByAgencyId(id);
-        agencyRepository.deleteById(id);
-        eventProducer.agencyDeletedEvent(id);
-        log.info("Deleted agency with ID: {}", id);
+        agencySORepository.deleteAllByAgencyId(dto.getAgencyId());
+        agencyRepository.deleteById(dto.getAgencyId());
+        eventProducer.agencyDeletedEvent(dto);
+        log.info("Deleted agency with ID: {}", dto.getAgencyId());
     }
 
     @Transactional

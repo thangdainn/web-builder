@@ -28,7 +28,7 @@ public interface IUserClient {
     ResponseEntity<Boolean> isOwner(@RequestBody UserDto dto);
 
 
-    default ResponseEntity<Void> fallbackUser(String email, UserOwnerDto dto, Throwable t) {
+    default ResponseEntity<Void> fallbackUser(String email, UserDto dto, Throwable t) {
         log.warn("Fallback triggered for user service. Email: {}, Error: {}", email, t.getMessage());
         return ResponseEntity.ok().build();
     }
