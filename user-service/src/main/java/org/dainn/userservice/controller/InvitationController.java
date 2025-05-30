@@ -55,7 +55,7 @@ public class InvitationController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(Endpoint.User.ID)
+    @DeleteMapping(Endpoint.Invitation.AGENCY)
     public ResponseEntity<Void> deleteByAgency(@PathVariable String id) {
         invitationService.deleteByAgencyId(id);
         return ResponseEntity.ok().build();

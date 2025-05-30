@@ -2,6 +2,7 @@ package org.dainn.userservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dainn.userservice.dto.event.UserProducer;
 import org.dainn.userservice.dto.invitation.InvitationDto;
 import org.dainn.userservice.dto.invitation.InvitationReq;
 import org.dainn.userservice.dto.invitation.UserInfo;
@@ -10,6 +11,7 @@ import org.dainn.userservice.dto.user.UserDto;
 import org.dainn.userservice.event.EventProducer;
 import org.dainn.userservice.exception.AppException;
 import org.dainn.userservice.exception.ErrorCode;
+import org.dainn.userservice.feignclient.IAgencyClient;
 import org.dainn.userservice.mapper.IInvitationMapper;
 import org.dainn.userservice.mapper.IUserMapper;
 import org.dainn.userservice.model.Invitation;
@@ -38,6 +40,7 @@ public class InvitationService implements IInvitationService {
     private final IUserRepository userRepository;
     private final IUserMapper userMapper;
     private final EventProducer eventProducer;
+    private final IAgencyClient agencyClient;
 
     @Value("${app.domain}")
     private String domain;
@@ -45,29 +48,32 @@ public class InvitationService implements IInvitationService {
     @Transactional
     @Override
     public InvitationDto create(InvitationDto dto) {
-        invitationRepository.findByEmail(dto.getEmail())
-                .ifPresent(invitation -> {
-                    throw new AppException(ErrorCode.INVITATION_EXISTED);
-                });
+        Optional<Invitation> optional = invitationRepository.findByEmail(dto.getEmail());
+        if (optional.isPresent()) {
+            throw new AppException(ErrorCode.INVITATION_EXISTED);
+        }
         userRepository.findByEmail(dto.getEmail())
                 .ifPresent(user -> {
                     throw new AppException(ErrorCode.EMAIL_EXISTED);
                 });
+        UserDto userDto = userService.findOwnerByAgency(dto.getAgencyId());
         Invitation entity = invitationMapper.toEntity(dto);
         entity = invitationRepository.save(entity);
         UserDto user = userService.findOwnerByAgency(dto.getAgencyId());
+        UserProducer.Agency agency = agencyClient.getById(dto.getAgencyId()).getBody();
+        assert agency != null;
         MailData mailData = MailData.builder()
                 .inviteId(entity.getId())
                 .from(user.getEmail())
                 .to(dto.getEmail())
                 .subject("Your Invitation to Join Web builder")
-                .inviterName(user.getName())
+                .senderName(userDto.getName())
+                .recipientName(user.getName())
+                .agencyName(agency.getName())
                 .invitationLink(domain + "/sign-in")
                 .build();
         eventProducer.sendInviteEvent(mailData);
         return invitationMapper.toDto(invitationRepository.save(entity));
-
-
     }
 
     @Transactional
@@ -102,6 +108,11 @@ public class InvitationService implements IInvitationService {
     @Override
     public void delete(String email) {
         invitationRepository.deleteByEmail(email);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        invitationRepository.deleteById(id);
     }
 
     @Override

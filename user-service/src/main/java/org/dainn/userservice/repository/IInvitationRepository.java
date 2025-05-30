@@ -34,5 +34,9 @@ public interface IInvitationRepository extends JpaRepository<Invitation, String>
     void deleteByEmail(String email);
 
     @Modifying
+    @Query("""
+                DELETE FROM Invitation i
+                    WHERE i.agencyId = :agencyId
+            """)
     void deleteAllByAgencyId(String agencyId);
 }

@@ -2,6 +2,7 @@ package org.dainn.userservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dainn.userservice.dto.event.DeleteAgencyEvent;
 import org.dainn.userservice.dto.event.UserProducer;
 import org.dainn.userservice.dto.permission.PermissionDto;
 import org.dainn.userservice.dto.user.UserDetailDto;
@@ -20,6 +21,7 @@ import org.dainn.userservice.repository.IUserRepository;
 import org.dainn.userservice.service.IUserService;
 import org.dainn.userservice.util.Paging;
 import org.dainn.userservice.util.enums.Role;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,8 +66,13 @@ public class UserService implements IUserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         if (user.getRole() == Role.AGENCY_OWNER) {
             userRepository.deleteById(id);
-            eventProducer.sendDeleteUserOwner(user.getAgencyId());
-            log.info("Deleted user with ID: {}", id);
+
+            eventProducer.sendDeleteUserOwner(DeleteAgencyEvent.builder()
+                    .agencyId(user.getAgencyId())
+                    .email(user.getEmail())
+                    .build());
+            log.info("Deleted owner with ID: {}", id);
+            eventProducer.sendDeleteUser(id);
             return;
         }
         userRepository.deleteById(id);
@@ -76,6 +83,7 @@ public class UserService implements IUserService {
     @Override
     public void deleteByAgency(String agencyId) {
         List<User> users = userRepository.findAllByAgencyId(agencyId);
+        log.info("Users : {}", users);
         users.forEach(user -> eventProducer.sendDeleteUser(user.getId()));
         userRepository.deleteAll(users);
         log.info("Deleted all users by agency ID: {}", agencyId);
@@ -94,6 +102,7 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Cacheable(value = "users", key = "#id")
     public UserDetailDto findDetailById(String id) {
         UserDetailDto detail = userMapper.toDetail(userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
@@ -104,7 +113,9 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Cacheable(value = "users", key = "#id")
     public UserDto findById(String id) {
+        log.info("Find user by ID: {}", id);
         return userMapper.toDto(userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
@@ -165,9 +176,11 @@ public class UserService implements IUserService {
     public void syncAgency(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        UserProducer.Agency agency = agencyClient.getById(user.getAgencyId()).getBody();
+        UserProducer.Agency agency = agencyClient.getDetailById(user.getAgencyId()).getBody();
         assert agency != null;
-        agency.setSubAccounts(saClient.getAllByAgency(agency.getId()).getBody());
+        List<UserProducer.SubAccount> subAccounts = saClient.getAllByAgency(agency.getId()).getBody();
+        log.info("Sync user for user successfully: {}", subAccounts);
+        agency.setSubAccounts(subAccounts);
         UserProducer userProducer = UserProducer.toProducerAgency(user, agency);
         eventProducer.syncAgencyEvent(userProducer);
         log.info("Sync agency for user successfully: {}", userProducer);
@@ -178,9 +191,11 @@ public class UserService implements IUserService {
         List<UserProducer> userProducers = new ArrayList<>();
         List<User> users = userRepository.findAll();
         for (User user : users) {
-            UserProducer.Agency agency = agencyClient.getById(user.getAgencyId()).getBody();
+            UserProducer.Agency agency = agencyClient.getDetailById(user.getAgencyId()).getBody();
             assert agency != null;
-            agency.setSubAccounts(saClient.getAllByAgency(agency.getId()).getBody());
+            List<UserProducer.SubAccount> subAccounts = saClient.getAllByAgency(agency.getId()).getBody();
+            log.info("Sync user for user successfully: {}", subAccounts);
+            agency.setSubAccounts(subAccounts);
             UserProducer userProducer = UserProducer.toProducerAgency(user, agency);
             List<PermissionDto> permissions = permissionRepository.findAllByUserId(user.getId())
                     .stream().map(permissionMapper::toDto).toList();
@@ -205,17 +220,16 @@ public class UserService implements IUserService {
     private List<UserProducer.Permission> setPermission(List<PermissionDto> permissions) {
         return permissions.stream()
                 .map(permission -> {
-                    try {
-                        ResponseEntity<UserProducer.SubAccount> response = saClient.getById(permission.getSubAccountId());
-                        return UserProducer.Permission.builder()
-                                .id(permission.getId())
-                                .subAccount(response.getBody())
-                                .access(permission.getAccess())
-                                .build();
-                    } catch (Exception e) {
-                        log.warn("Error fetching SubAccount for permission ID: {}, error: {}", permission.getId(), e.getMessage());
+                    ResponseEntity<UserProducer.SubAccount> response = saClient.getById(permission.getSubAccountId());
+                    if (response.getStatusCode() == HttpStatus.CONFLICT) {
+                        log.warn("Failed to fetch SubAccount for permission ID: {}, status code: {}", permission.getId(), response.getStatusCode());
                         return null;
                     }
+                    return UserProducer.Permission.builder()
+                            .id(permission.getId())
+                            .subAccount(response.getBody())
+                            .access(permission.getAccess())
+                            .build();
                 })
                 .filter(Objects::nonNull)
                 .toList();

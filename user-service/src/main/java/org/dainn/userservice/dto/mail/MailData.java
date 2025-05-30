@@ -10,6 +10,8 @@ public class MailData {
     private String from;
     private String to;
     private String subject;
-    private String inviterName;
+    private String senderName;
+    private String recipientName;
+    private String agencyName;
     private String invitationLink;
 }

@@ -3,7 +3,9 @@ package org.dainn.userservice.event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dainn.userservice.dto.event.DeleteAgencyEvent;
 import org.dainn.userservice.repository.IInvitationRepository;
+import org.dainn.userservice.service.IInvitationService;
 import org.dainn.userservice.service.IPermissionService;
 import org.dainn.userservice.service.IUserService;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class EventConsumer {
     private final ObjectMapper objectMapper;
-    private final IInvitationRepository invitationRepository;
+    private final IInvitationService invitationService;
     private final IUserService userService;
 
     @KafkaListener(topics = "send-email-failed-events", groupId = "${spring.kafka.consumer.group-id}")
@@ -23,7 +25,7 @@ public class EventConsumer {
         log.info("Invite email failed event consumed: {}", message);
         try {
             String inviteId = objectMapper.readValue(message, String.class);
-            invitationRepository.deleteById(inviteId);
+            invitationService.deleteById(inviteId);
             log.info("Deleted invitation with ID: {} success", inviteId);
         } catch (Exception e) {
             log.error("Failed to process create customer event", e);
@@ -72,10 +74,10 @@ public class EventConsumer {
     @KafkaListener(topics = "agency-deleted-events", groupId = "${spring.kafka.consumer.group-id}")
     public void deleteAgency(@Payload String message) {
         try {
-            String agencyId = objectMapper.readValue(message, String.class);
-            invitationRepository.deleteAllByAgencyId(agencyId);
-            userService.deleteByAgency(agencyId);
-            log.info("Invite deleted by agency id {} successfully", agencyId);
+            DeleteAgencyEvent dto = objectMapper.readValue(message, DeleteAgencyEvent.class);
+            invitationService.deleteByAgencyId(dto.getAgencyId());
+            userService.deleteByAgency(dto.getAgencyId());
+            log.info("Invite deleted by agency id {} successfully", dto.getAgencyId());
         } catch (Exception e) {
             log.error("Failed to delete invite: {}", e.getMessage());
         }

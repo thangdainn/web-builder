@@ -16,6 +16,7 @@ public interface IInvitationService {
     InvitationDto findById(String id);
     InvitationDto findByEmailPending(String email);
     void delete(String email);
+    void deleteById(String id);
     List<InvitationDto> findAllByAgency(String id);
     Page<InvitationDto> findAll(InvitationReq request);
     void deleteByAgencyId(String agencyId);

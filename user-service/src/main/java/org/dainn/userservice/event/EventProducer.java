@@ -3,6 +3,7 @@ package org.dainn.userservice.event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dainn.userservice.dto.event.DeleteAgencyEvent;
 import org.dainn.userservice.dto.event.UserProducer;
 import org.dainn.userservice.dto.mail.MailData;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,8 +67,8 @@ public class EventProducer {
         sendWithRetry(list, key, syncUserTopic, 3, 1000);
     }
 
-    public void sendDeleteUserOwner(String agencyId) {
-        sendWithRetry(agencyId, agencyId, deleteUserOwnerTopic, 3, 1000);
+    public void sendDeleteUserOwner(DeleteAgencyEvent dto) {
+        sendWithRetry(dto, dto.getAgencyId(), deleteUserOwnerTopic, 3, 1000);
     }
 
     public void sendDeleteUser(String id) {
