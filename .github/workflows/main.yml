@@ -51,9 +51,7 @@ jobs:
 
       # Build và push Docker images với Jib
       - name: Build and push Docker images with Jib
-        run: mvn clean compile jib:build \
-          -Djib.to.auth.username=${{ secrets.DOCKERHUB_USERNAME }} \
-          -Djib.to.auth.password=${{ secrets.DOCKERHUB_TOKEN }}
+        run: mvn clean compile jib:build -Djib.to.auth.username=${{ secrets.DOCKERHUB_USERNAME }} -Djib.to.auth.password=${{ secrets.DOCKERHUB_TOKEN }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -79,8 +77,8 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             # Đường dẫn tới thư mục dự án trên VPS
             cd ~/web-builder
-            # Pull Docker images mới
-            docker-compose pull
+            # Cập nhật mã nguồn từ GitHub
+            git pull
             # Cập nhật Docker Compose
             docker-compose up -d
             # Dọn dẹp images cũ
