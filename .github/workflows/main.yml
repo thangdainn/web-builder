@@ -65,6 +65,7 @@ jobs:
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          name: id_vps
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 
       # Deploy lên VPS
