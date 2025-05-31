@@ -20,4 +20,5 @@ public interface IInvitationService {
     List<InvitationDto> findAllByAgency(String id);
     Page<InvitationDto> findAll(InvitationReq request);
     void deleteByAgencyId(String agencyId);
+    int countTeamMembers(String agencyId);
 }

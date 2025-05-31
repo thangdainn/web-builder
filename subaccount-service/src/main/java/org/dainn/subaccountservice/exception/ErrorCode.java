@@ -11,7 +11,8 @@ public enum ErrorCode {
     EMAIL_EXISTED("Email existed", HttpStatus.BAD_REQUEST),
     CONTACT_NOT_EXISTED("Contact not existed", HttpStatus.NOT_FOUND),
 
-    USER_NOT_AGENCY_OWNER("User is not owner or not exists agency", HttpStatus.FORBIDDEN),;
+    USER_NOT_AGENCY_OWNER("User is not owner or not exists agency", HttpStatus.FORBIDDEN),
+    SA_LIMIT("Tier just create maximum 3 subaccount", HttpStatus.CONFLICT),;
 
 
     ErrorCode(String message, HttpStatusCode statusCode) {

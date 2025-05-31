@@ -7,11 +7,13 @@ import org.dainn.userservice.dto.invitation.InvitationDto;
 import org.dainn.userservice.dto.invitation.InvitationReq;
 import org.dainn.userservice.dto.invitation.UserInfo;
 import org.dainn.userservice.dto.mail.MailData;
+import org.dainn.userservice.dto.response.SubscriptionDto;
 import org.dainn.userservice.dto.user.UserDto;
 import org.dainn.userservice.event.EventProducer;
 import org.dainn.userservice.exception.AppException;
 import org.dainn.userservice.exception.ErrorCode;
 import org.dainn.userservice.feignclient.IAgencyClient;
+import org.dainn.userservice.feignclient.ISubscriptionClient;
 import org.dainn.userservice.mapper.IInvitationMapper;
 import org.dainn.userservice.mapper.IUserMapper;
 import org.dainn.userservice.model.Invitation;
@@ -41,6 +43,7 @@ public class InvitationService implements IInvitationService {
     private final IUserMapper userMapper;
     private final EventProducer eventProducer;
     private final IAgencyClient agencyClient;
+    private final ISubscriptionClient subscriptionClient;
 
     @Value("${app.domain}")
     private String domain;
@@ -48,6 +51,12 @@ public class InvitationService implements IInvitationService {
     @Transactional
     @Override
     public InvitationDto create(InvitationDto dto) {
+        SubscriptionDto subscriptionDto = subscriptionClient.getByAgencyId(dto.getAgencyId()).getBody();
+        if (subscriptionDto == null || !subscriptionDto.getActive()) {
+            if (countTeamMembers(dto.getAgencyId()) >= 2) {
+                throw new AppException(ErrorCode.TEAM_MEMBER_LIMIT);
+            }
+        }
         Optional<Invitation> optional = invitationRepository.findByEmail(dto.getEmail());
         if (optional.isPresent()) {
             throw new AppException(ErrorCode.INVITATION_EXISTED);
@@ -151,5 +160,10 @@ public class InvitationService implements IInvitationService {
     @Override
     public void deleteByAgencyId(String agencyId) {
         invitationRepository.deleteAllByAgencyId(agencyId);
+    }
+
+    @Override
+    public int countTeamMembers(String agencyId) {
+        return invitationRepository.countByAgencyId(agencyId) + userRepository.countByAgencyId(agencyId) - 1;
     }
 }

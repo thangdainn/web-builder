@@ -3,18 +3,12 @@ package org.dainn.subaccountservice.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.subaccountservice.dto.event.DeleteAgencyConsumer;
-import org.dainn.subaccountservice.dto.response.PermissionDto;
-import org.dainn.subaccountservice.dto.response.PipelineDto;
-import org.dainn.subaccountservice.dto.response.TagDto;
-import org.dainn.subaccountservice.dto.response.UserDto;
+import org.dainn.subaccountservice.dto.response.*;
 import org.dainn.subaccountservice.dto.subaccount.*;
 import org.dainn.subaccountservice.event.EventProducer;
 import org.dainn.subaccountservice.exception.AppException;
 import org.dainn.subaccountservice.exception.ErrorCode;
-import org.dainn.subaccountservice.feignclient.IPermissionClient;
-import org.dainn.subaccountservice.feignclient.IPipelineClient;
-import org.dainn.subaccountservice.feignclient.ITagClient;
-import org.dainn.subaccountservice.feignclient.IUserClient;
+import org.dainn.subaccountservice.feignclient.*;
 import org.dainn.subaccountservice.mapper.ISubAccountMapper;
 import org.dainn.subaccountservice.model.SubAccount;
 import org.dainn.subaccountservice.repository.ISubAccountRepository;
@@ -41,6 +35,7 @@ public class SubAccountService implements ISubAccountService {
     private final IUserClient userClient;
     private final IPipelineClient pipelineClient;
     private final EventProducer eventProducer;
+    private final ISubscriptionClient subscriptionClient;
 
     @Transactional
     @Override
@@ -50,6 +45,13 @@ public class SubAccountService implements ISubAccountService {
         if (!userDto.getRole().equals("AGENCY_OWNER") || !userDto.getAgencyId().equals(dto.getAgencyId())) {
             throw new AppException(ErrorCode.USER_NOT_AGENCY_OWNER);
         }
+        SubscriptionDto subscriptionDto = subscriptionClient.getByAgencyId(dto.getAgencyId()).getBody();
+        if (subscriptionDto == null || !subscriptionDto.getActive() ) {
+            if (subAccountRepository.countByAgencyId(dto.getAgencyId()) >= 3) {
+                throw new AppException(ErrorCode.SA_LIMIT);
+            }
+        }
+
         SubAccount entity = subAccountMapper.toEntity(dto);
         entity = subAccountRepository.save(entity);
         SubAccountDetailDto newSA = subAccountMapper.toDetailDto(entity);

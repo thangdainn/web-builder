@@ -26,4 +26,6 @@ public interface ISubAccountRepository extends JpaRepository<SubAccount, String>
 
     @Modifying
     void deleteByAgencyId(String agencyId);
+
+    int countByAgencyId(String agencyId);
 }

@@ -31,4 +31,5 @@ public interface IUserRepository extends JpaRepository<User, String> {
 
     @Modifying
     void deleteAllByAgencyId(String agencyId);
+    int countByAgencyId(String agencyId);
 }

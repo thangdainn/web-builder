@@ -17,7 +17,8 @@ public enum ErrorCode {
     PERMISSION_EXISTED("Permission existed", HttpStatus.BAD_REQUEST),
     PERMISSION_NOT_EXISTED("Permission not existed", HttpStatus.NOT_FOUND),
     SEND_MAIL_FAIL("Fail send email", HttpStatus.EXPECTATION_FAILED),
-    INTERNAL_SERVER_ERROR("Error server", HttpStatus.INTERNAL_SERVER_ERROR),;
+    INTERNAL_SERVER_ERROR("Error server", HttpStatus.INTERNAL_SERVER_ERROR),
+    TEAM_MEMBER_LIMIT("Tier just create maximum 2 team member", HttpStatus.CONFLICT),;
 
     ErrorCode(String message, HttpStatusCode statusCode) {
         this.message = message;

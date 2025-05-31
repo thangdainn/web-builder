@@ -39,4 +39,6 @@ public interface IInvitationRepository extends JpaRepository<Invitation, String>
                     WHERE i.agencyId = :agencyId
             """)
     void deleteAllByAgencyId(String agencyId);
+
+    int countByAgencyId(String agencyId);
 }
