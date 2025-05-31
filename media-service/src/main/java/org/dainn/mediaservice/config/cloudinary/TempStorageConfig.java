@@ -1,4 +1,4 @@
-package org.dainn.mediaservice.config.firebase;
+package org.dainn.mediaservice.config.cloudinary;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

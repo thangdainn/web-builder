@@ -1,5 +1,6 @@
 package org.dainn.mediaservice.service.impl;
 
+import com.cloudinary.Cloudinary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.mediaservice.dto.FirebaseResponse;
@@ -14,7 +15,6 @@ import org.dainn.mediaservice.model.Media;
 import org.dainn.mediaservice.repository.IMediaRepository;
 import org.dainn.mediaservice.service.IMediaService;
 import org.dainn.mediaservice.util.Paging;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -36,9 +36,7 @@ public class MediaService implements IMediaService {
     private final IMediaMapper mediaMapper;
     private final EventProducer eventProducer;
     private final Path tempDirectory;
-
-    @Value("${image.base.url}")
-    private String imageBaseUrl;
+    private final Cloudinary cloudinary;
 
     @Transactional
     @Override
@@ -95,11 +93,17 @@ public class MediaService implements IMediaService {
         );
 
         eventProducer.sendUploadEvent(message);
-        String imageUrl = imageBaseUrl + uniqueFileName + "?alt=media";
+        String imageUrl = generateFutureImageUrl(uniqueFileName);
         return FirebaseResponse.builder()
                 .url(imageUrl)
                 .success(true)
                 .build();
+    }
+
+    public String generateFutureImageUrl(String publicId) {
+        return cloudinary.url()
+                .publicId(publicId)
+                .generate();
     }
 
     private String generateUniqueFileName(String originalFilename) {
@@ -107,6 +111,6 @@ public class MediaService implements IMediaService {
         if (originalFilename != null && originalFilename.contains(".")) {
             extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         }
-        return UUID.randomUUID().toString() + extension;
+        return UUID.randomUUID() + extension;
     }
 }
