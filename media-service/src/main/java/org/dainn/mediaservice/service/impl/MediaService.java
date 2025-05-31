@@ -80,7 +80,7 @@ public class MediaService implements IMediaService {
 
     @Override
     public FirebaseResponse upload(MultipartFile file) throws IOException {
-        String uniqueFileName = generateUniqueFileName(file.getOriginalFilename());
+        String uniqueFileName = UUID.randomUUID().toString();
 
         Path tempFilePath = tempDirectory.resolve(uniqueFileName);
         Files.copy(file.getInputStream(), tempFilePath, StandardCopyOption.REPLACE_EXISTING);
@@ -100,17 +100,9 @@ public class MediaService implements IMediaService {
                 .build();
     }
 
-    public String generateFutureImageUrl(String publicId) {
+    private String generateFutureImageUrl(String publicId) {
         return cloudinary.url()
                 .publicId(publicId)
                 .generate();
-    }
-
-    private String generateUniqueFileName(String originalFilename) {
-        String extension = "";
-        if (originalFilename != null && originalFilename.contains(".")) {
-            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        }
-        return UUID.randomUUID() + extension;
     }
 }
