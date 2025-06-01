@@ -12,25 +12,23 @@ import org.dainn.userservice.event.EventProducer;
 import org.dainn.userservice.exception.AppException;
 import org.dainn.userservice.exception.ErrorCode;
 import org.dainn.userservice.feignclient.IAgencyClient;
-import org.dainn.userservice.feignclient.ISAClient;
 import org.dainn.userservice.mapper.IPermissionMapper;
+import org.dainn.userservice.mapper.ISubAccountMapper;
 import org.dainn.userservice.mapper.IUserMapper;
 import org.dainn.userservice.model.User;
 import org.dainn.userservice.repository.IPermissionRepository;
 import org.dainn.userservice.repository.IUserRepository;
+import org.dainn.userservice.service.ISubAccountService;
 import org.dainn.userservice.service.IUserService;
 import org.dainn.userservice.util.Paging;
 import org.dainn.userservice.util.enums.Role;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -40,10 +38,11 @@ public class UserService implements IUserService {
     private final IUserRepository userRepository;
     private final IPermissionRepository permissionRepository;
     private final IUserMapper userMapper;
+    private final ISubAccountMapper saMapper;
     private final IPermissionMapper permissionMapper;
     private final EventProducer eventProducer;
-    private final ISAClient saClient;
     private final IAgencyClient agencyClient;
+    private final ISubAccountService subAccountService;
 
     @Transactional
     @Override
@@ -164,9 +163,10 @@ public class UserService implements IUserService {
     public void syncPermission(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        List<PermissionDto> permissions = permissionRepository.findAllByUserId(user.getId())
-                .stream().map(permissionMapper::toDto).toList();
-        List<UserProducer.Permission> permissionList = setPermission(permissions);
+//        List<PermissionDto> permissions = permissionRepository.findAllByUserId(user.getId())
+//                .stream().map(permissionMapper::toDto).toList();
+        List<UserProducer.Permission> permissionList = permissionRepository.findAllByUserId(user.getId())
+                .stream().map(permissionMapper::toProducer).toList();
         UserProducer userProducer = UserProducer.toProducerPer(user, permissionList);
         eventProducer.syncPerEvent(userProducer);
         log.info("Sync permission for user successfully: {}", userProducer);
@@ -178,7 +178,10 @@ public class UserService implements IUserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         UserProducer.Agency agency = agencyClient.getDetailById(user.getAgencyId()).getBody();
         assert agency != null;
-        List<UserProducer.SubAccount> subAccounts = saClient.getAllByAgency(agency.getId()).getBody();
+//        List<UserProducer.SubAccount> subAccounts = saClient.getAllByAgency(agency.getId()).getBody();
+        List<UserProducer.SubAccount> subAccounts = subAccountService.findByAgencyId(agency.getId())
+                .stream().map(saMapper::toProducer).toList();
+
         log.info("Sync user for user successfully: {}", subAccounts);
         agency.setSubAccounts(subAccounts);
         UserProducer userProducer = UserProducer.toProducerAgency(user, agency);
@@ -193,13 +196,15 @@ public class UserService implements IUserService {
         for (User user : users) {
             UserProducer.Agency agency = agencyClient.getDetailById(user.getAgencyId()).getBody();
             assert agency != null;
-            List<UserProducer.SubAccount> subAccounts = saClient.getAllByAgency(agency.getId()).getBody();
+            List<UserProducer.SubAccount> subAccounts = subAccountService.findByAgencyId(agency.getId())
+                    .stream().map(saMapper::toProducer).toList();
             log.info("Sync user for user successfully: {}", subAccounts);
             agency.setSubAccounts(subAccounts);
             UserProducer userProducer = UserProducer.toProducerAgency(user, agency);
-            List<PermissionDto> permissions = permissionRepository.findAllByUserId(user.getId())
-                    .stream().map(permissionMapper::toDto).toList();
-            List<UserProducer.Permission> permissionList = setPermission(permissions);
+//            List<PermissionDto> permissions = permissionRepository.findAllByUserId(user.getId())
+//                    .stream().map(permissionMapper::toDto).toList();
+            List<UserProducer.Permission> permissionList = permissionRepository.findAllByUserId(user.getId())
+                    .stream().map(permissionMapper::toProducer).toList();
             userProducer.setPermissions(permissionList);
             userProducers.add(userProducer);
         }
@@ -217,21 +222,22 @@ public class UserService implements IUserService {
         }
     }
 
-    private List<UserProducer.Permission> setPermission(List<PermissionDto> permissions) {
-        return permissions.stream()
-                .map(permission -> {
-                    ResponseEntity<UserProducer.SubAccount> response = saClient.getById(permission.getSubAccountId());
-                    if (response.getStatusCode() == HttpStatus.CONFLICT) {
-                        log.warn("Failed to fetch SubAccount for permission ID: {}, status code: {}", permission.getId(), response.getStatusCode());
-                        return null;
-                    }
-                    return UserProducer.Permission.builder()
-                            .id(permission.getId())
-                            .subAccount(response.getBody())
-                            .access(permission.getAccess())
-                            .build();
-                })
-                .filter(Objects::nonNull)
-                .toList();
-    }
+//    private List<UserProducer.Permission> setPermission(List<PermissionDto> permissions) {
+//        return permissions.stream()
+//                .map(permission -> {
+//
+//                    ResponseEntity<UserProducer.SubAccount> response = saClient.getById(permission.getSubAccountId());
+//                    if (response.getStatusCode() == HttpStatus.CONFLICT) {
+//                        log.warn("Failed to fetch SubAccount for permission ID: {}, status code: {}", permission.getId(), response.getStatusCode());
+//                        return null;
+//                    }
+//                    return UserProducer.Permission.builder()
+//                            .id(permission.getId())
+//                            .subAccount(response.getBody())
+//                            .access(permission.getAccess())
+//                            .build();
+//                })
+//                .filter(Objects::nonNull)
+//                .toList();
+//    }
 }

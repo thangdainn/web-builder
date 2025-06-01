@@ -140,41 +140,6 @@ services:
     networks:
       - wb-network
 
-  postgres-subaccount:
-    container_name: postgres-subaccount
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_DB: subaccount_db
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      PGDATA: /data/postgres
-    volumes:
-      - ./postgres-subaccount:/data/postgres
-    expose:
-      - "5435"
-    ports:
-      - "5435:5435"
-    command: -p 5435
-    restart: unless-stopped
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d subaccount_db -p 5435" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    networks:
-      - wb-network
-
   postgres-user:
     container_name: postgres-user
     image: postgres:15-alpine
@@ -750,47 +715,6 @@ services:
     restart: on-failure
     healthcheck:
       test: curl -f http://localhost:8080/search-service/actuator/health || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    networks:
-      - wb-network
-
-  subaccount-service:
-    container_name: subaccount-service-wb
-    image: thanngdainn/subaccount-service:4.2.1
-    pull_policy: always
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-subaccount:5435/subaccount_db
-      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
-      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093
-      - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
-      - BETTERSTACK_HOST=${BETTER_STACK_HOST}
-    depends_on:
-      postgres-subaccount:
-        condition: service_healthy
-      discovery-server:
-        condition: service_healthy
-      api-gateway:
-        condition: service_healthy
-      broker-1:
-        condition: service_healthy
-    restart: on-failure
-    healthcheck:
-      test: curl -f http://localhost:8080/subaccount-service/actuator/health || exit 1
       interval: 30s
       timeout: 10s
       retries: 5

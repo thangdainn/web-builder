@@ -1,25 +1,24 @@
 package org.dainn.userservice.model;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.dainn.userservice.util.enums.Icon;
 
 @Entity
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "contacts")
-public class Contact extends BaseEntity{
-
-    @Column(nullable = false)
-    private String email;
-
-    @Column(nullable = false)
+@Table(name = "sub_account_sos")
+public class SubAccountSidebarOption extends BaseEntity {
     private String name;
+    private String link;
+
+    @Enumerated(EnumType.STRING)
+    private Icon icon;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_account_id")

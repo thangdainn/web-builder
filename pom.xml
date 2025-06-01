@@ -23,7 +23,6 @@
         <module>pipeline-service</module>
         <module>funnel-service</module>
         <module>notification-service</module>
-        <module>subaccount-service</module>
         <module>media-service</module>
         <module>search-service</module>
         <module>payment-service</module>

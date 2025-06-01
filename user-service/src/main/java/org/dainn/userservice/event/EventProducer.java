@@ -44,8 +44,15 @@ public class EventProducer {
     @Value("${kafka.topic.invite-events}")
     private String inviteEventsTopic;
 
-    public void changePerEvent(String userId) {
-        sendWithRetry(userId, userId, changePermissionTopic, 3, 1000);
+    @Value("${kafka.topic.subaccount-deleted-events}")
+    private String subAccountDeletedTopic;
+
+    public void subAccountDeletedEvent(String subAccountId) {
+        sendWithRetry(subAccountId, subAccountId, subAccountDeletedTopic, 3, 1000);
+    }
+
+    public void changePerEvent(String email) {
+        sendWithRetry(email, email, changePermissionTopic, 3, 1000);
     }
 
     public void changeAgencyEvent(String email) {

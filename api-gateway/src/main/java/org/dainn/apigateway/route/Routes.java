@@ -19,7 +19,7 @@ public class Routes {
 
                 // User Service Route
                 .route("user-service", r -> r
-                        .path("/api/users/**", "/api/permissions/**", "/api/invitations/**")
+                        .path("/api/users/**", "/api/permissions/**", "/api/invitations/**", "/api/sub-accounts/**", "/api/contacts/**")
                         .filters(f -> f
                                 .circuitBreaker(config -> config.setName("userService")))
                         .uri("lb://user-service"))
@@ -61,12 +61,6 @@ public class Routes {
                                 .removeRequestHeader("Origin")
                                 .circuitBreaker(config -> config.setName("notificationService")))
                         .uri("lb://notification-service"))
-
-                // SubAccount Service Route
-                .route("subaccount-service", r -> r
-                        .path("/api/sub-accounts/**", "/api/contacts/**")
-                        .filters(f -> f.circuitBreaker(config -> config.setName("subaccountService")))
-                        .uri("lb://subaccount-service"))
 
                 // Search Service Route
                 .route("search-service", r -> r
@@ -115,11 +109,6 @@ public class Routes {
                         .path("/media-service/v3/api-docs/**")
                         .filters(f -> f.rewritePath("/media-service(?<segment>/?.*)","${segment}"))
                         .uri("lb://media-service"))
-
-                .route("subaccount-service-api-docs", r -> r
-                        .path("/subaccount-service/v3/api-docs/**")
-                        .filters(f -> f.rewritePath("/subaccount-service(?<segment>/?.*)","${segment}"))
-                        .uri("lb://subaccount-service"))
 
                 .route("search-service-api-docs", r -> r
                         .path("/search-service/v3/api-docs/**")

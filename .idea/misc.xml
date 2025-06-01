@@ -11,6 +11,7 @@
       <set>
         <option value="$PROJECT_DIR$/auth-service/pom.xml" />
         <option value="$PROJECT_DIR$/logging-common/pom.xml" />
+        <option value="$PROJECT_DIR$/subaccount-service/pom.xml" />
       </set>
     </option>
   </component>

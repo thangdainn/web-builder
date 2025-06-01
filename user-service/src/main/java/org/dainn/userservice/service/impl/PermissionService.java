@@ -9,8 +9,10 @@ import org.dainn.userservice.exception.ErrorCode;
 import org.dainn.userservice.mapper.IPermissionMapper;
 import org.dainn.userservice.mapper.IUserMapper;
 import org.dainn.userservice.model.Permission;
+import org.dainn.userservice.model.SubAccount;
 import org.dainn.userservice.model.User;
 import org.dainn.userservice.repository.IPermissionRepository;
+import org.dainn.userservice.repository.ISubAccountRepository;
 import org.dainn.userservice.repository.IUserRepository;
 import org.dainn.userservice.service.IPermissionService;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ import java.util.Optional;
 public class PermissionService implements IPermissionService {
     private final IUserRepository userRepository;
     private final IPermissionRepository permissionRepository;
-    private final IUserMapper userMapper;
+    private final ISubAccountRepository subAccountRepository;
     private final IPermissionMapper permissionMapper;
     private final EventProducer eventProducer;
 
@@ -34,6 +36,8 @@ public class PermissionService implements IPermissionService {
     public PermissionDto create(PermissionDto dto) {
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        SubAccount subAccount = subAccountRepository.findById(dto.getSubAccountId())
+                .orElseThrow(() -> new AppException(ErrorCode.SA_NOT_EXISTED));
         Optional<Permission> optional = permissionRepository.findByUserIdAndSubAccountId(user.getId(), dto.getSubAccountId());
         Permission permission;
         if (optional.isPresent()) {
@@ -42,6 +46,7 @@ public class PermissionService implements IPermissionService {
         } else {
             permission = permissionMapper.toEntity(dto);
             permission.setUser(user);
+            permission.setSubAccount(subAccount);
         }
         permission = permissionRepository.save(permission);
         eventProducer.changePerEvent(user.getEmail());

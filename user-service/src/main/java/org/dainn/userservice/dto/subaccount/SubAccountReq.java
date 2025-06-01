@@ -1,4 +1,4 @@
-package org.dainn.userservice.dto.contact;
+package org.dainn.userservice.dto.subaccount;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +10,7 @@ import org.dainn.userservice.dto.PageRequest;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContactReq extends PageRequest {
+public class SubAccountReq extends PageRequest {
     private String keyword;
+    private String agencyId;
 }

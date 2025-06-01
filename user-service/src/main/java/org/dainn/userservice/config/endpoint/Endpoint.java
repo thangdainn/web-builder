@@ -26,4 +26,18 @@ public class Endpoint {
         public static final String PENDING = "/pending/{email}";
         public static final String VERIFY = "/verify";
     }
+
+    public static final class SubAccount {
+        public static final String BASE = API_PREFIX + "/sub-accounts";
+        public static final String ID = "/{id}";
+        public static final String DETAIL = "/{id}/detail";
+        public static final String CONNECT_ACC_ID = "/{id}/connect-acc-id";
+        public static final String AGENCY = "/agency/{id}";
+    }
+
+    public static final class Contact {
+        public static final String BASE = API_PREFIX + "/contacts";
+        public static final String ID = "/{id}";
+        public static final String SUB_ACCOUNT = "/sub-accounts/{id}";
+    }
 }

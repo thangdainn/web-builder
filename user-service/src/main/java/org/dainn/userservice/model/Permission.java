@@ -20,8 +20,9 @@ public class Permission {
     @Column(nullable = false)
     private Boolean access;
 
-    @Column(nullable = false)
-    private String subAccountId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "sub_account_id", nullable = false)
+    private SubAccount subAccount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
