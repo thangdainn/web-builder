@@ -75,7 +75,7 @@ public class SubAccountService implements ISubAccountService {
         permissionService.create(permissionDto);
 
         eventProducer.changeAgencyEvent(user.getEmail());
-        eventProducer.changePerEvent(user.getEmail());
+//        eventProducer.changePerEvent(user.getEmail());
         PipelineDto pipelineDto = PipelineDto.builder()
                 .subAccountId(newSA.getId())
                 .name("Lead Cycle")
