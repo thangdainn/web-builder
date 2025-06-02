@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.userservice.dto.event.DeleteAgencyEvent;
+import org.dainn.userservice.dto.event.SyncUser;
 import org.dainn.userservice.dto.event.UserProducer;
 import org.dainn.userservice.dto.mail.MailData;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +29,9 @@ public class EventProducer {
 
     @Value("${kafka.topic.sync-user-events}")
     private String syncUserTopic;
+
+    @Value("${kafka.topic.sync-users-events}")
+    private String syncUsersTopic;
 
     @Value("${kafka.topic.change-permission-events}")
     private String changePermissionTopic;
@@ -59,17 +63,22 @@ public class EventProducer {
         sendWithRetry(email, email, changeAgencyTopic, 3, 1000);
     }
 
-    public void syncPerEvent(UserProducer dto) {
-        String key = dto.getId();
-        sendWithRetry(dto, key, syncPermissionTopic, 3, 1000);
+//    public void syncPerEvent(UserProducer dto) {
+//        String key = dto.getId();
+//        sendWithRetry(dto, key, syncPermissionTopic, 3, 1000);
+//    }
+//
+//    public void syncAgencyEvent(UserProducer dto) {
+//        String key = dto.getId();
+//        sendWithRetry(dto, key, syncAgencyTopic, 3, 1000);
+//    }
+
+    public void syncUserEvent(SyncUser dto) {
+        String key = dto.getUser().getId();
+        sendWithRetry(dto, key, syncUserTopic, 3, 1000);
     }
 
-    public void syncAgencyEvent(UserProducer dto) {
-        String key = dto.getId();
-        sendWithRetry(dto, key, syncAgencyTopic, 3, 1000);
-    }
-
-    public void syncUserEvent(List<UserProducer> list) {
+    public void syncUsersEvent(List<UserProducer> list) {
         String key = list.get(0).getId();
         sendWithRetry(list, key, syncUserTopic, 3, 1000);
     }

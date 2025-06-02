@@ -26,7 +26,7 @@ public class UserService implements IUserService {
         userRepository.save(user);
     }
 
-    @Transactional
+//    @Transactional
     @Override
     public void syncPermission(User request) {
         User user = findById(request.getId());
@@ -35,7 +35,6 @@ public class UserService implements IUserService {
         log.info("Sync permissions for user: {}", user.getId());
     }
 
-    @Transactional
     @Override
     public void syncAgency(User request) {
         Optional<User> optional = userRepository.findById(request.getId());
@@ -48,6 +47,16 @@ public class UserService implements IUserService {
         }
         userRepository.saveAll(users);
         log.info("Sync agency for user: {}", request.getId());
+    }
+
+    @Transactional
+    @Override
+    public void syncUser(User user, boolean updatePer) {
+        if (updatePer) {
+            syncPermission(user);
+        } else {
+            syncAgency(user);
+        }
     }
 
     @Transactional

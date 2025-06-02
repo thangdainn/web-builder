@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.searchservice.document.User;
+import org.dainn.searchservice.dto.SyncUser;
 import org.dainn.searchservice.service.IUserService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -42,30 +43,41 @@ public class EventConsumer {
         }
     }
 
-    @KafkaListener(topics = "sync-permission-events", groupId = "${spring.kafka.consumer.group-id}")
-    public void handleUserSyncPermission(@Payload String message) {
-        log.info("User sync permission event consumed: {}", message);
-        try {
-            User user = objectMapper.readValue(message, User.class);
-            userService.syncPermission(user);
-        } catch (Exception e) {
-            log.error("Failed to process user sync permission event", e);
-        }
-    }
+//    @KafkaListener(topics = "sync-permission-events", groupId = "${spring.kafka.consumer.group-id}")
+//    public void handleUserSyncPermission(@Payload String message) {
+//        log.info("User sync permission event consumed: {}", message);
+//        try {
+//            User user = objectMapper.readValue(message, User.class);
+//            userService.syncPermission(user);
+//        } catch (Exception e) {
+//            log.error("Failed to process user sync permission event", e);
+//        }
+//    }
+//
+//    @KafkaListener(topics = "sync-agency-events", groupId = "${spring.kafka.consumer.group-id}")
+//    public void handleUserSyncAgency(@Payload String message) {
+//        log.info("User sync agency event consumed: {}", message);
+//        try {
+//            User user = objectMapper.readValue(message, User.class);
+//            userService.syncAgency(user);
+//        } catch (Exception e) {
+//            log.error("Failed to process user sync agency event", e);
+//        }
+//    }
 
-    @KafkaListener(topics = "sync-agency-events", groupId = "${spring.kafka.consumer.group-id}")
-    public void handleUserSyncAgency(@Payload String message) {
+    @KafkaListener(topics = "sync-user-events", groupId = "${spring.kafka.consumer.group-id}")
+    public void handleUserSync(@Payload String message) {
         log.info("User sync agency event consumed: {}", message);
         try {
-            User user = objectMapper.readValue(message, User.class);
-            userService.syncAgency(user);
+            SyncUser syncUser = objectMapper.readValue(message, SyncUser.class);
+            userService.syncUser(syncUser.getUser(), syncUser.isUpdatePer());
         } catch (Exception e) {
             log.error("Failed to process user sync agency event", e);
         }
     }
 
-    @KafkaListener(topics = "sync-user-events", groupId = "${spring.kafka.consumer.group-id}")
-    public void handleUserSync(@Payload String message) {
+    @KafkaListener(topics = "sync-users-events", groupId = "${spring.kafka.consumer.group-id}")
+    public void handleUsersSync(@Payload String message) {
         log.info("User sync agency event consumed: {}", message);
         try {
             List<User> users = objectMapper.readValue(message, new TypeReference<>() {});

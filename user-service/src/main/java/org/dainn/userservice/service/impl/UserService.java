@@ -3,6 +3,7 @@ package org.dainn.userservice.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.userservice.dto.event.DeleteAgencyEvent;
+import org.dainn.userservice.dto.event.SyncUser;
 import org.dainn.userservice.dto.event.UserProducer;
 import org.dainn.userservice.dto.permission.PermissionDto;
 import org.dainn.userservice.dto.user.UserDetailDto;
@@ -180,7 +181,11 @@ public class UserService implements IUserService {
         List<UserProducer.Permission> permissionList = permissionRepository.findAllByUserId(user.getId())
                 .stream().map(permissionMapper::toProducer).toList();
         UserProducer userProducer = UserProducer.toProducerPer(user, permissionList);
-        eventProducer.syncPerEvent(userProducer);
+        SyncUser syncUser = SyncUser.builder()
+                .user(userProducer)
+                .updatePer(true)
+                .build();
+        eventProducer.syncUserEvent(syncUser);
         log.info("Sync permission for user successfully: {}", userProducer);
     }
 
@@ -197,7 +202,11 @@ public class UserService implements IUserService {
         log.info("Sync user for user successfully: {}", subAccounts);
         agency.setSubAccounts(subAccounts);
         UserProducer userProducer = UserProducer.toProducerAgency(user, agency);
-        eventProducer.syncAgencyEvent(userProducer);
+        SyncUser syncUser = SyncUser.builder()
+                .user(userProducer)
+                .updatePer(false)
+                .build();
+        eventProducer.syncUserEvent(syncUser);
         log.info("Sync agency for user successfully: {}", userProducer);
     }
 
@@ -220,7 +229,7 @@ public class UserService implements IUserService {
             userProducer.setPermissions(permissionList);
             userProducers.add(userProducer);
         }
-        eventProducer.syncUserEvent(userProducers);
+        eventProducer.syncUsersEvent(userProducers);
         log.info("Sync user successfully");
     }
 
