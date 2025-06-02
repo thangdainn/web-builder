@@ -72,7 +72,7 @@ public class EventConsumer {
             SyncUser syncUser = objectMapper.readValue(message, SyncUser.class);
             userService.syncUser(syncUser.getUser(), syncUser.isUpdatePer());
         } catch (Exception e) {
-            log.error("Failed to process user sync agency event", e);
+            log.error("Failed to process user sync event", e);
         }
     }
 
@@ -83,7 +83,7 @@ public class EventConsumer {
             List<User> users = objectMapper.readValue(message, new TypeReference<>() {});
             userService.sync(users);
         } catch (Exception e) {
-            log.error("Failed to process user sync agency event", e);
+            log.error("Failed to process users sync event", e);
         }
     }
 }

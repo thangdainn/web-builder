@@ -80,7 +80,7 @@ public class EventProducer {
 
     public void syncUsersEvent(List<UserProducer> list) {
         String key = list.get(0).getId();
-        sendWithRetry(list, key, syncUserTopic, 3, 1000);
+        sendWithRetry(list, key, syncUsersTopic, 3, 1000);
     }
 
     public void sendDeleteUserOwner(DeleteAgencyEvent dto) {
