@@ -102,8 +102,8 @@ public class SubAccountService implements ISubAccountService {
         });
         subAccountRepository.deleteAll(subAccounts);
 //        subAccountRepository.deleteByAgencyId(dto.getAgencyId());
-//        eventProducer.changeAgencyEvent(dto.getEmail());
-//        eventProducer.changePerEvent(dto.getEmail());
+        eventProducer.changeAgencyEvent(dto.getEmail());
+        eventProducer.changePerEvent(dto.getEmail());
         log.info("Deleted all sub-accounts for agency ID: {}", dto.getAgencyId());
     }
 

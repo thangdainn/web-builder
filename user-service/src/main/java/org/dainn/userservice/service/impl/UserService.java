@@ -90,6 +90,7 @@ public class UserService implements IUserService {
 
     @Transactional
     @Override
+//    @Cacheable(value = "users", key = "#dto.getEmail()")
     public UserDto update(UserDto dto) {
         User old = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -101,7 +102,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    @Cacheable(value = "users", key = "#id")
+//    @Cacheable(value = "users", key = "#id")
     public UserDetailDto findDetailById(String id) {
         UserDetailDto detail = userMapper.toDetail(userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
@@ -112,7 +113,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    @Cacheable(value = "users", key = "#id")
+//    @Cacheable(value = "users", key = "#id")
     public UserDto findById(String id) {
         log.info("Find user by ID: {}", id);
         return userMapper.toDto(userRepository.findById(id)

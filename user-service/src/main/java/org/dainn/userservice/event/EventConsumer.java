@@ -4,9 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.userservice.dto.event.DeleteAgencyEvent;
-import org.dainn.userservice.repository.IInvitationRepository;
 import org.dainn.userservice.service.IInvitationService;
-import org.dainn.userservice.service.IPermissionService;
+import org.dainn.userservice.service.ISubAccountService;
 import org.dainn.userservice.service.IUserService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -19,6 +18,7 @@ public class EventConsumer {
     private final ObjectMapper objectMapper;
     private final IInvitationService invitationService;
     private final IUserService userService;
+    private final ISubAccountService subAccountService;
 
     @KafkaListener(topics = "send-email-failed-events", groupId = "${spring.kafka.consumer.group-id}")
     public void handleSendMailFailed(@Payload String message) {
@@ -36,7 +36,6 @@ public class EventConsumer {
     public void changePermission(@Payload String message) {
         log.info("User sync permission event consumed: {}", message);
         try {
-//            Thread.sleep(500);
             String email = objectMapper.readValue(message, String.class);
             userService.syncPermission(email);
 
@@ -50,7 +49,6 @@ public class EventConsumer {
     public void changeAgency(@Payload String message) {
         log.info("User sync agency event consumed: {}", message);
         try {
-//            Thread.sleep(500);
             String email = objectMapper.readValue(message, String.class);
             userService.syncAgency(email);
 
@@ -60,23 +58,13 @@ public class EventConsumer {
         }
     }
 
-//    @KafkaListener(topics = "subaccount-deleted-events", groupId = "${spring.kafka.consumer.group-id}")
-//    public void deleteSubAccount(@Payload String message) {
-//        try {
-//            String subAccountId = objectMapper.readValue(message, String.class);
-//            permissionService.deleteBySA(subAccountId);
-//            log.info("Sub-account {} deleted successfully", subAccountId);
-//        } catch (Exception e) {
-//            log.error("Failed to delete permission: {}", e.getMessage());
-//        }
-//    }
-
     @KafkaListener(topics = "agency-deleted-events", groupId = "${spring.kafka.consumer.group-id}")
     public void deleteAgency(@Payload String message) {
         try {
             DeleteAgencyEvent dto = objectMapper.readValue(message, DeleteAgencyEvent.class);
             invitationService.deleteByAgencyId(dto.getAgencyId());
             userService.deleteByAgency(dto.getAgencyId());
+            subAccountService.deleteByAgency(dto);
             log.info("Invite deleted by agency id {} successfully", dto.getAgencyId());
         } catch (Exception e) {
             log.error("Failed to delete invite: {}", e.getMessage());
