@@ -15,11 +15,7 @@ import org.dainn.userservice.util.enums.Role;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "invitations")
-public class Invitation {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
+public class Invitation extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String email;
 
