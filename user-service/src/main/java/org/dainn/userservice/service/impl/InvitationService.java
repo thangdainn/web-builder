@@ -28,6 +28,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 import java.util.Optional;
@@ -109,8 +111,18 @@ public class InvitationService implements IInvitationService {
         dto = userService.create(dto);
         invitationRepository.deleteById(invitation.getId());
         log.info("Invitation verified");
-        eventProducer.changeAgencyEvent(dto.getEmail());
+        afterCommitEvent(dto.getEmail());
         return invitation.getAgencyId();
+    }
+
+    void afterCommitEvent(String email) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                eventProducer.changeAgencyEvent(email);
+                eventProducer.changePerEvent(email);
+            }
+        });
     }
 
     @Transactional
