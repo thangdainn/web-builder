@@ -16,6 +16,8 @@ import org.dainn.agencyservice.service.IAgencySOService;
 import org.dainn.agencyservice.service.IAgencyService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Slf4j
 @Service
@@ -49,7 +51,13 @@ public class AgencyService implements IAgencyService {
                 .country(dto.getCountry())
                 .agencyId(newAgency.getId())
                 .build());
-        eventProducer.changeAgencyEvent(dto.getUser().getEmail());
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                eventProducer.changeAgencyEvent(dto.getUser().getEmail());
+            }
+        });
+
         return newAgency;
     }
 

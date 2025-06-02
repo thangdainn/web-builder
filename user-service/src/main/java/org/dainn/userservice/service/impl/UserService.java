@@ -22,10 +22,11 @@ import org.dainn.userservice.service.ISubAccountService;
 import org.dainn.userservice.service.IUserService;
 import org.dainn.userservice.util.Paging;
 import org.dainn.userservice.util.enums.Role;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,8 +98,18 @@ public class UserService implements IUserService {
         old = userMapper.toUpdate(old, dto);
         old = userRepository.save(old);
         log.info("Updated user: {}", old);
-        eventProducer.changePerEvent(old.getId());
+//        eventProducer.changePerEvent(old.getId());
+        afterCommitEvent(old.getEmail());
         return userMapper.toDto(old);
+    }
+
+    void afterCommitEvent(String email) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                eventProducer.changePerEvent(email);
+            }
+        });
     }
 
     @Override

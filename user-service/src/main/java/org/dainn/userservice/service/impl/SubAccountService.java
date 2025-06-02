@@ -8,7 +8,6 @@ import org.dainn.userservice.dto.response.PipelineDto;
 import org.dainn.userservice.dto.response.SubscriptionDto;
 import org.dainn.userservice.dto.response.TagDto;
 import org.dainn.userservice.dto.subaccount.*;
-import org.dainn.userservice.dto.user.UserDto;
 import org.dainn.userservice.event.EventProducer;
 import org.dainn.userservice.exception.AppException;
 import org.dainn.userservice.exception.ErrorCode;
@@ -23,13 +22,14 @@ import org.dainn.userservice.repository.IUserRepository;
 import org.dainn.userservice.service.IPermissionService;
 import org.dainn.userservice.service.ISubAccountSOService;
 import org.dainn.userservice.service.ISubAccountService;
-import org.dainn.userservice.service.IUserService;
 import org.dainn.userservice.util.Paging;
 import org.dainn.userservice.util.enums.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -73,9 +73,17 @@ public class SubAccountService implements ISubAccountService {
                 .subAccountId(newSA.getId())
                 .build();
         permissionService.create(permissionDto);
+//        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+//            @Override
+//            public void afterCommit() {
+//                eventProducer.changeAgencyEvent(user.getEmail());
+//                eventProducer.changePerEvent(user.getEmail());
+//            }
+//        });
+        afterCommitEvent(user.getEmail());
 
-        eventProducer.changeAgencyEvent(user.getEmail());
-        eventProducer.changePerEvent(user.getEmail());
+//        eventProducer.changeAgencyEvent(user.getEmail());
+//        eventProducer.changePerEvent(user.getEmail());
         PipelineDto pipelineDto = PipelineDto.builder()
                 .subAccountId(newSA.getId())
                 .name("Lead Cycle")
@@ -89,8 +97,9 @@ public class SubAccountService implements ISubAccountService {
     public void delete(String id, String email) {
         subAccountRepository.deleteById(id);
         eventProducer.subAccountDeletedEvent(id);
-        eventProducer.changePerEvent(email);
-        eventProducer.changeAgencyEvent(email);
+//        eventProducer.changePerEvent(email);
+//        eventProducer.changeAgencyEvent(email);
+        afterCommitEvent(email);
     }
 
     @Transactional
@@ -102,8 +111,15 @@ public class SubAccountService implements ISubAccountService {
         });
         subAccountRepository.deleteAll(subAccounts);
 //        subAccountRepository.deleteByAgencyId(dto.getAgencyId());
-        eventProducer.changeAgencyEvent(dto.getEmail());
-        eventProducer.changePerEvent(dto.getEmail());
+//        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+//            @Override
+//            public void afterCommit() {
+//                eventProducer.changeAgencyEvent(dto.getEmail());
+//                eventProducer.changePerEvent(dto.getEmail());
+//            }
+//        });
+        afterCommitEvent(dto.getEmail());
+
         log.info("Deleted all sub-accounts for agency ID: {}", dto.getAgencyId());
     }
 
@@ -116,8 +132,9 @@ public class SubAccountService implements ISubAccountService {
         entity = subAccountRepository.save(entity);
         SubAccountDetailDto updatedSA = subAccountMapper.toDetailDto(entity);
         updatedSA.setOptions(subAccountSOService.findBySA(entity.getId()));
-        eventProducer.changeAgencyEvent(dto.getUserEmail());
-        eventProducer.changePerEvent(dto.getUserEmail());
+//        eventProducer.changeAgencyEvent(dto.getUserEmail());
+//        eventProducer.changePerEvent(dto.getUserEmail());
+        afterCommitEvent(dto.getUserEmail());
         return updatedSA;
     }
 
@@ -165,5 +182,15 @@ public class SubAccountService implements ISubAccountService {
                     return detail;
                 })
                 .toList();
+    }
+
+    void afterCommitEvent(String email) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                eventProducer.changeAgencyEvent(email);
+                eventProducer.changePerEvent(email);
+            }
+        });
     }
 }
