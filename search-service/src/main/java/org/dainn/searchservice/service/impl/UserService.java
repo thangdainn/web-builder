@@ -8,6 +8,7 @@ import org.dainn.searchservice.exception.ErrorCode;
 import org.dainn.searchservice.repository.IUserRepository;
 import org.dainn.searchservice.service.IUserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,19 +19,23 @@ import java.util.Optional;
 public class UserService implements IUserService {
     private final IUserRepository userRepository;
 
+    @Transactional
     @Override
     public void create(User user) {
         log.info("Creating user: {}", user.getId());
         userRepository.save(user);
     }
 
+    @Transactional
     @Override
     public void syncPermission(User request) {
         User user = findById(request.getId());
         user.setPermissions(request.getPermissions());
         userRepository.save(user);
+        log.info("Sync permissions for user: {}", user.getId());
     }
 
+    @Transactional
     @Override
     public void syncAgency(User request) {
         Optional<User> optional = userRepository.findById(request.getId());
@@ -42,8 +47,10 @@ public class UserService implements IUserService {
             user.setAgency(request.getAgency());
         }
         userRepository.saveAll(users);
+        log.info("Sync agency for user: {}", request.getId());
     }
 
+    @Transactional
     @Override
     public void sync(List<User> users) {
         userRepository.deleteAll();
@@ -65,6 +72,7 @@ public class UserService implements IUserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
     }
 
+    @Transactional
     @Override
     public void delete(String id) {
         log.info("Deleting user: {}", id);
