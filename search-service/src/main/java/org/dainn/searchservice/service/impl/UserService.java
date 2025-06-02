@@ -30,6 +30,9 @@ public class UserService implements IUserService {
     @Override
     public void syncPermission(User request) {
         User user = findById(request.getId());
+        user.setName(request.getName());
+        user.setAvatarUrl(request.getAvatarUrl());
+        user.setRole(request.getRole());
         user.setPermissions(request.getPermissions());
         userRepository.save(user);
         log.info("Sync permissions for user: {}", user.getId());
