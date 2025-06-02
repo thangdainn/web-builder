@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.dainn.userservice.config.endpoint.Endpoint;
 import org.dainn.userservice.dto.permission.PermissionDto;
+import org.dainn.userservice.event.EventProducer;
 import org.dainn.userservice.service.IPermissionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PermissionController {
     private final IPermissionService permissionService;
+    private final EventProducer eventProducer;
 
     @GetMapping(Endpoint.Permission.USER)
     public ResponseEntity<?> getById(@PathVariable String id) {
@@ -23,7 +25,9 @@ public class PermissionController {
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody PermissionDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(permissionService.create(dto));
+        dto = permissionService.create(dto);
+        eventProducer.changePerEvent(dto.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
     @PutMapping(Endpoint.Permission.ACCESS)

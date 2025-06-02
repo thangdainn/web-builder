@@ -49,8 +49,10 @@ public class PermissionService implements IPermissionService {
             permission.setSubAccount(subAccount);
         }
         permission = permissionRepository.save(permission);
-        eventProducer.changePerEvent(user.getEmail());
-        return permissionMapper.toDto(permission);
+        dto = permissionMapper.toDto(permission);
+        dto.setEmail(user.getEmail());
+//        eventProducer.changePerEvent(user.getEmail());
+        return dto;
     }
 
     @Transactional
