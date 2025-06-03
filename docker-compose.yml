@@ -421,6 +421,7 @@ services:
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=${CLERK_ISSUE_URI}
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=${CLERK_JWK_SET_URI}
+      - LOGGING_LEVEL_ROOT=WARN
     depends_on:
       discovery-server:
         condition: service_healthy
@@ -456,6 +457,7 @@ services:
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
+      - LOGGING_LEVEL_ROOT=WARN
     depends_on:
       postgres-agency:
         condition: service_healthy
@@ -500,6 +502,7 @@ services:
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
+      - LOGGING_LEVEL_ROOT=WARN
     depends_on:
       postgres-funnel:
         condition: service_healthy
@@ -542,6 +545,7 @@ services:
       - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
+      - LOGGING_LEVEL_ROOT=WARN
     depends_on:
       postgres-media:
         condition: service_healthy
@@ -586,6 +590,7 @@ services:
       - RESEND_API_MAIL=${RESEND_API_MAIL}
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
+      - LOGGING_LEVEL_ROOT=WARN
     depends_on:
       postgres-notification:
         condition: service_healthy
@@ -627,6 +632,7 @@ services:
       - WEB_HOOK_SECRET_KEY=${WEBHOOK_SECRET_KEY}
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
+      - LOGGING_LEVEL_ROOT=WARN
     depends_on:
       discovery-server:
         condition: service_healthy
@@ -666,6 +672,7 @@ services:
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
+      - LOGGING_LEVEL_ROOT=WARN
     depends_on:
       postgres-pipeline:
         condition: service_healthy
@@ -703,6 +710,7 @@ services:
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
+      - LOGGING_LEVEL_ROOT=WARN
     depends_on:
       discovery-server:
         condition: service_healthy
@@ -747,6 +755,7 @@ services:
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker-1-wb:29092,broker-2-wb:29093
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
+      - LOGGING_LEVEL_ROOT=WARN
     depends_on:
       postgres-subscription:
         condition: service_healthy
@@ -790,6 +799,7 @@ services:
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
       - APP_DOMAIN=${APP_DOMAIN}
       - SPRING_DATA_REDIS_URL=${REDIS_URL}
+      - LOGGING_LEVEL_ROOT=WARN
     depends_on:
       postgres-user:
         condition: service_healthy

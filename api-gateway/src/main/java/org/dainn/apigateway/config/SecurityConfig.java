@@ -39,7 +39,7 @@ public class SecurityConfig {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                                .pathMatchers("/eureka/**", "/swagger-ui/**", "/v3/api-docs/**", "/api/users/sync", "/api/payments/**").permitAll()
+                                .pathMatchers("/eureka/**", "/**", "/v3/api-docs/**", "/api/users/sync", "/api/payments/**").permitAll()
                                 .pathMatchers(apiDocsPatterns).permitAll()
 
                                 // User Service Endpoints
