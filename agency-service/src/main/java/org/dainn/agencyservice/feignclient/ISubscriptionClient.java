@@ -21,8 +21,8 @@ public interface ISubscriptionClient {
     @GetMapping("/agency/{id}")
     ResponseEntity<SubscriptionResp> getByAgencyId(@PathVariable String id);
 
-    default SubscriptionResp fallbackSubscription(String id, Throwable t) {
+    default ResponseEntity<SubscriptionResp> fallbackSubscription(String id, Throwable t) {
         log.warn("Fallback triggered for subscription service. Agency ID: {}, Error: {}", id, t.getMessage());
-        return new SubscriptionResp();
+        return ResponseEntity.ok(new SubscriptionResp());
     }
 }
