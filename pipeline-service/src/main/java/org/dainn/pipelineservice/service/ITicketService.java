@@ -16,4 +16,5 @@ public interface ITicketService {
     List<TicketDto> findByLaneId(String laneId, Sort sort);
     void changeOrder(TicketOrderEvent data);
     void changeOrderWithKafka(List<TicketOrderList> list);
+    boolean contactIsAssigned(String contactId);
 }

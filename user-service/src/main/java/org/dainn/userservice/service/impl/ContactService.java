@@ -5,6 +5,7 @@ import org.dainn.userservice.dto.contact.ContactDto;
 import org.dainn.userservice.dto.contact.ContactReq;
 import org.dainn.userservice.exception.AppException;
 import org.dainn.userservice.exception.ErrorCode;
+import org.dainn.userservice.feignclient.ITicketClient;
 import org.dainn.userservice.mapper.IContactMapper;
 import org.dainn.userservice.model.Contact;
 import org.dainn.userservice.repository.IContactRepository;
@@ -23,6 +24,7 @@ public class ContactService implements IContactService {
     private final ISubAccountRepository subAccountRepository;
     private final IContactRepository contactRepository;
     private final IContactMapper contactMapper;
+    private final ITicketClient ticketClient;
 
     @Transactional
     @Override
@@ -58,6 +60,12 @@ public class ContactService implements IContactService {
         } else {
             result = contactRepository.findBySubAccountId(subAccountId, pageable);
         }
-        return result.map(contactMapper::toDto);
+        return result.map(item -> {
+                    ContactDto dto = contactMapper.toDto(item);
+                    boolean isActive = Boolean.TRUE.equals(ticketClient.isAssigned(dto.getId()).getBody());
+                    dto.setActive(isActive);
+                    return dto;
+                }
+        );
     }
 }

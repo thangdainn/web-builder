@@ -26,6 +26,11 @@ public class TicketController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ticketService.create(dto));
     }
 
+    @PostMapping(Endpoint.Ticket.CONTACT)
+    public ResponseEntity<?> createWithContact(@PathVariable String id) {
+        return ResponseEntity.ok(ticketService.contactIsAssigned(id));
+    }
+
     @PutMapping(Endpoint.Ticket.ID)
     public ResponseEntity<?> updateOrder(@PathVariable String id, @RequestBody UpdateTicketDto dto) {
         return ResponseEntity.ok(ticketService.update(id, dto));

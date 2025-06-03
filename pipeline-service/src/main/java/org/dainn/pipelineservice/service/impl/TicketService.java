@@ -133,6 +133,11 @@ public class TicketService implements ITicketService {
         eventProducer.changeTicketOrderEvent(data);
     }
 
+    @Override
+    public boolean contactIsAssigned(String contactId) {
+        return ticketRepository.countByCustomerId(contactId) > 0;
+    }
+
     private List<Ticket> updateTicketOrderInLane(TicketOrderList ticketOrderList) {
         String lainId = ticketOrderList.getLaneId();
         Lane lane = laneRepository.findById(lainId)

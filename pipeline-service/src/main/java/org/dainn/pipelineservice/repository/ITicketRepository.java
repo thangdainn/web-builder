@@ -13,4 +13,5 @@ public interface ITicketRepository extends JpaRepository<Ticket, String> {
     List<Ticket> findAllByLaneId(String laneId, Sort sort);
 
     int countByLaneId(String id);
+    int countByCustomerId(String customerId);
 }

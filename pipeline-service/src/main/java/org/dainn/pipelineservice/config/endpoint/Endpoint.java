@@ -20,6 +20,7 @@ public class Endpoint {
     public static final class Ticket {
         public static final String BASE = API_PREFIX + "/tickets";
         public static final String ID = "/{id}";
+        public static final String CONTACT = "/contacts/{id}/isAssigned";
     }
 
     public static final class Tag {

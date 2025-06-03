@@ -26,4 +26,6 @@ public class ContactDto extends AbstractDto {
     @NotNull(message = "SubAccount number is required")
     @NotBlank(message = "SubAccount number is required")
     private String subAccountId;
+
+    private boolean active;
 }

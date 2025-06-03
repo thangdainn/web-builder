@@ -10,7 +10,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@FeignClient(name = "pipeline-service", path = "/api/pipelines")
+@FeignClient(name = "pipeline-service", path = "/api/pipelines", contextId = "pipelineClient")
 public interface IPipelineClient {
 
     Logger log = LoggerFactory.getLogger(IPipelineClient.class);
