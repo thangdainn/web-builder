@@ -95,7 +95,7 @@ public class AgencyService implements IAgencyService {
         AgencyDetailDto detail = agencyMapper.toDetail(agencyRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.AGENCY_NOT_EXISTED)));
         detail.setOptions(agencySOService.findByAgency(id));
-        detail.setSubscription(subscriptionClient.getByAgencyId(id).getBody());
+        detail.setSubscription(subscriptionClient.getByAgencyId(id));
         return detail;
     }
 
@@ -103,7 +103,7 @@ public class AgencyService implements IAgencyService {
     public AgencyDetailDto findByCustomerId(String id) {
         AgencyDetailDto detail = agencyMapper.toDetail(agencyRepository.findByCustomerId(id)
                 .orElseThrow(() -> new AppException(ErrorCode.AGENCY_NOT_EXISTED)));
-        detail.setSubscription(subscriptionClient.getByAgencyId(detail.getId()).getBody());
+        detail.setSubscription(subscriptionClient.getByAgencyId(detail.getId()));
         return detail;
     }
 

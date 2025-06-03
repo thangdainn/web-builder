@@ -6,7 +6,6 @@ import org.dainn.agencyservice.dto.SubscriptionResp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -19,10 +18,10 @@ public interface ISubscriptionClient {
     @Bulkhead(name = "subscriptionService")
     @CircuitBreaker(name = "subscriptionService", fallbackMethod = "fallbackSubscription")
     @GetMapping("/agency/{id}")
-    ResponseEntity<SubscriptionResp> getByAgencyId(@PathVariable String id);
+    SubscriptionResp getByAgencyId(@PathVariable String id);
 
-    default ResponseEntity<SubscriptionResp> fallbackSubscription(String id, Throwable t) {
+    default SubscriptionResp fallbackSubscription(String id, Throwable t) {
         log.warn("Fallback triggered for subscription service. Agency ID: {}, Error: {}", id, t.getMessage());
-        return ResponseEntity.ok(new SubscriptionResp());
+        return new SubscriptionResp();
     }
 }
