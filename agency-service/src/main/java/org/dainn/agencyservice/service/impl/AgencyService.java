@@ -14,6 +14,10 @@ import org.dainn.agencyservice.repository.IAgencyRepository;
 import org.dainn.agencyservice.repository.IAgencySORepository;
 import org.dainn.agencyservice.service.IAgencySOService;
 import org.dainn.agencyservice.service.IAgencyService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -91,7 +95,7 @@ public class AgencyService implements IAgencyService {
         AgencyDetailDto detail = agencyMapper.toDetail(agencyRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.AGENCY_NOT_EXISTED)));
         detail.setOptions(agencySOService.findByAgency(id));
-        detail.setSubscription(subscriptionClient.getByAgencyId(id));
+        detail.setSubscription(subscriptionClient.getByAgencyId(id).getBody());
         return detail;
     }
 
@@ -99,20 +103,13 @@ public class AgencyService implements IAgencyService {
     public AgencyDetailDto findByCustomerId(String id) {
         AgencyDetailDto detail = agencyMapper.toDetail(agencyRepository.findByCustomerId(id)
                 .orElseThrow(() -> new AppException(ErrorCode.AGENCY_NOT_EXISTED)));
-        detail.setSubscription(subscriptionClient.getByAgencyId(detail.getId()));
+        detail.setSubscription(subscriptionClient.getByAgencyId(detail.getId()).getBody());
         return detail;
     }
 
     @Transactional
     @Override
     public void delete(DeleteAgencyDto dto) {
-//        String userId = "ssssssss";
-//        if (Boolean.FALSE.equals(userClient.isOwner(UserDto.builder()
-//                .agencyId(id)
-//                .id(userId)
-//                .build()).getBody())) {
-//            throw new AppException(ErrorCode.USER_NOT_PERMISSION);
-//        }
         agencySORepository.deleteAllByAgencyId(dto.getAgencyId());
         agencyRepository.deleteById(dto.getAgencyId());
         eventProducer.agencyDeletedEvent(dto);
