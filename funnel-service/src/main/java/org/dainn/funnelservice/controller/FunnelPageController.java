@@ -4,6 +4,7 @@ package org.dainn.funnelservice.controller;
 import lombok.RequiredArgsConstructor;
 import org.dainn.funnelservice.config.endpoint.Endpoint;
 import org.dainn.funnelservice.dto.FunnelPageDto;
+import org.dainn.funnelservice.dto.UpdateFPDto;
 import org.dainn.funnelservice.service.IFunnelPageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class FunnelPageController {
     }
 
     @PutMapping(Endpoint.FunnelPage.ID)
-    public ResponseEntity<?> update(@PathVariable String id, @RequestBody FunnelPageDto dto) {
+    public ResponseEntity<?> update(@PathVariable String id, @RequestBody UpdateFPDto dto) {
         dto.setId(id);
         return ResponseEntity.ok(funnelPageService.update(dto));
     }

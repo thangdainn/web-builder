@@ -3,6 +3,7 @@ package org.dainn.funnelservice.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.dainn.funnelservice.dto.FPOrderDto;
 import org.dainn.funnelservice.dto.FunnelPageDto;
+import org.dainn.funnelservice.dto.UpdateFPDto;
 import org.dainn.funnelservice.dto.event.FPOrderEvent;
 import org.dainn.funnelservice.event.EventProducer;
 import org.dainn.funnelservice.exception.AppException;
@@ -37,7 +38,7 @@ public class FunnelPageService implements IFunnelPageService {
 
     @Transactional
     @Override
-    public Mono<FunnelPageDto> update(FunnelPageDto dto) {
+    public Mono<FunnelPageDto> update(UpdateFPDto dto) {
         return funnelPageRepository.findById(dto.getId())
                 .switchIfEmpty(Mono.error(new AppException(ErrorCode.FUNNEL_PAGE_NOT_EXISTED)))
                 .flatMap(funnel -> {

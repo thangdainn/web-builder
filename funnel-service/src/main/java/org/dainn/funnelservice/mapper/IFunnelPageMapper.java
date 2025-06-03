@@ -1,6 +1,7 @@
 package org.dainn.funnelservice.mapper;
 
 import org.dainn.funnelservice.dto.FunnelPageDto;
+import org.dainn.funnelservice.dto.UpdateFPDto;
 import org.dainn.funnelservice.model.FunnelPage;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,8 +14,5 @@ public interface IFunnelPageMapper {
     FunnelPage toEntity(FunnelPageDto dto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "funnelId", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    FunnelPage toUpdate(@MappingTarget FunnelPage entity, FunnelPageDto dto);
+    FunnelPage toUpdate(@MappingTarget FunnelPage entity, UpdateFPDto dto);
 }
