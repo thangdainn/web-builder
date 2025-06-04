@@ -1,5 +1,6 @@
 package org.dainn.userservice.service;
 
+import org.dainn.userservice.dto.PageResponse;
 import org.dainn.userservice.dto.invitation.InvitationDto;
 import org.dainn.userservice.dto.invitation.InvitationReq;
 import org.dainn.userservice.dto.invitation.UserInfo;
@@ -18,7 +19,7 @@ public interface IInvitationService {
     void delete(String email);
     void deleteById(String id);
     List<InvitationDto> findAllByAgency(String id);
-    Page<InvitationDto> findAll(InvitationReq request);
+    PageResponse<InvitationDto> findAll(InvitationReq request);
     void deleteByAgencyId(String agencyId);
     int countTeamMembers(String agencyId);
 }

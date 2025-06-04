@@ -9,6 +9,10 @@ import org.dainn.pipelineservice.mapper.IPipelineMapper;
 import org.dainn.pipelineservice.model.Pipeline;
 import org.dainn.pipelineservice.repository.IPipelineRepository;
 import org.dainn.pipelineservice.service.IPipelineService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,12 +26,17 @@ public class PipelineService implements IPipelineService {
 
     @Transactional
     @Override
+    @Caching(
+            put = {@CachePut(value = "pipelines", key = "#result.id")},
+            evict = {@CacheEvict(value = "pipelines-by-sa", key = "#dto.subAccountId")}
+    )
     public PipelineDto create(PipelineDto dto) {
         Pipeline pipeline = pipelineMapper.toEntity(dto);
         return pipelineMapper.toDto(pipelineRepository.save(pipeline));
     }
 
     @Override
+    @Cacheable(value = "pipelines", key = "#id")
     public PipelineDto findById(String id) {
         return pipelineMapper.toDto(pipelineRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PIPELINE_NOT_EXISTED)));
@@ -35,6 +44,10 @@ public class PipelineService implements IPipelineService {
 
     @Transactional
     @Override
+    @Caching(
+            put = {@CachePut(value = "pipelines", key = "#result.id")},
+            evict = {@CacheEvict(value = "pipelines-by-sa", key = "#dto.subAccountId")}
+    )
     public PipelineDto update(PipelineDto dto) {
         Pipeline pipeline = pipelineRepository.findById(dto.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.PIPELINE_NOT_EXISTED));
@@ -44,17 +57,28 @@ public class PipelineService implements IPipelineService {
 
     @Transactional
     @Override
+    @Caching(
+            put = {@CachePut(value = "pipelines", key = "#id")},
+            evict = {@CacheEvict(value = "pipelines-by-sa", allEntries = true)}
+    )
     public void updateName(String id, UpdatePipelineDto dto) {
         pipelineRepository.updateNameById(id, dto.getName());
     }
 
     @Transactional
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "pipelines", key = "#id"),
+                    @CacheEvict(value = "pipelines-by-sa", allEntries = true)
+            }
+    )
     public void delete(String id) {
         pipelineRepository.deleteById(id);
     }
 
     @Override
+    @Cacheable(value = "pipelines-by-sa", key = "#id")
     public List<PipelineDto> findBySA(String id) {
         return pipelineRepository.findAllBySubAccountId(id)
                 .stream().map(pipelineMapper::toDto).toList();
@@ -62,6 +86,7 @@ public class PipelineService implements IPipelineService {
 
     @Transactional
     @Override
+    @CacheEvict(value = {"pipelines", "pipelines-by-sa"}, allEntries = true)
     public void deleteBySA(String subAccountId) {
         pipelineRepository.deleteAllBySubAccountId(subAccountId);
     }

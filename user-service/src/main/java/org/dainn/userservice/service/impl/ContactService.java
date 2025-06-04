@@ -1,6 +1,7 @@
 package org.dainn.userservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.dainn.userservice.dto.PageResponse;
 import org.dainn.userservice.dto.contact.ContactDto;
 import org.dainn.userservice.dto.contact.ContactReq;
 import org.dainn.userservice.exception.AppException;
@@ -52,20 +53,26 @@ public class ContactService implements IContactService {
     }
 
     @Override
-    public Page<ContactDto> findBySA(String subAccountId, ContactReq request) {
+    public PageResponse<ContactDto> findBySA(String subAccountId, ContactReq request) {
         Pageable pageable = Paging.getPageable(request);
-        Page<Contact> result;
+        Page<Contact> page;
         if (StringUtils.hasText(request.getKeyword())) {
-            result = contactRepository.findBySubAccountIdAndEmailContainingIgnoreCase(subAccountId, request.getKeyword(), pageable);
+            page = contactRepository.findBySubAccountIdAndEmailContainingIgnoreCase(subAccountId, request.getKeyword(), pageable);
         } else {
-            result = contactRepository.findBySubAccountId(subAccountId, pageable);
+            page = contactRepository.findBySubAccountId(subAccountId, pageable);
         }
-        return result.map(item -> {
+        Page<ContactDto> result = page.map(item -> {
                     ContactDto dto = contactMapper.toDto(item);
                     boolean isActive = Boolean.TRUE.equals(ticketClient.isAssigned(dto.getId()).getBody());
                     dto.setActive(isActive);
                     return dto;
                 }
         );
+        return PageResponse.<ContactDto>builder()
+                .page(result.getNumber())
+                .size(result.getSize())
+                .totalElements(result.getTotalElements())
+                .content(result.getContent())
+                .build();
     }
 }

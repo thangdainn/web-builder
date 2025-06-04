@@ -2,6 +2,7 @@ package org.dainn.userservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dainn.userservice.dto.PageResponse;
 import org.dainn.userservice.dto.event.UserProducer;
 import org.dainn.userservice.dto.invitation.InvitationDto;
 import org.dainn.userservice.dto.invitation.InvitationReq;
@@ -163,9 +164,15 @@ public class InvitationService implements IInvitationService {
     }
 
     @Override
-    public Page<InvitationDto> findAll(InvitationReq request) {
-        return invitationRepository.findAll(Paging.getPageable(request))
+    public PageResponse<InvitationDto> findAll(InvitationReq request) {
+        Page<InvitationDto> result = invitationRepository.findAll(Paging.getPageable(request))
                 .map(invitationMapper::toDto);
+        return PageResponse.<InvitationDto>builder()
+                .page(result.getNumber())
+                .size(result.getSize())
+                .totalElements(result.getTotalElements())
+                .content(result.getContent())
+                .build();
     }
 
     @Transactional

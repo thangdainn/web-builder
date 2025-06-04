@@ -14,5 +14,5 @@ public class PageResponse<T> {
     private Integer page;
     private Integer size;
     private long totalElements;
-    private List<T> data = new ArrayList<>();
+    private List<T> content = new ArrayList<>();
 }

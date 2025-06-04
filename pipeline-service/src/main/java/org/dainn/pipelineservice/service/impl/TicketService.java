@@ -22,6 +22,10 @@ import org.dainn.pipelineservice.repository.ILaneRepository;
 import org.dainn.pipelineservice.repository.ITagRepository;
 import org.dainn.pipelineservice.repository.ITicketRepository;
 import org.dainn.pipelineservice.service.ITicketService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +52,10 @@ public class TicketService implements ITicketService {
 
     @Transactional
     @Override
+    @Caching(
+            put = {@CachePut(value = "tickets", key = "#result.id")},
+            evict = {@CacheEvict(value = "tickets-by-lane", key = "#dto.laneId")}
+    )
     public TicketDto create(TicketDto dto) {
         Lane lane = laneRepository.findById(dto.getLaneId())
                 .orElseThrow(() -> new AppException(ErrorCode.LANE_NOT_EXISTED));
@@ -62,6 +70,7 @@ public class TicketService implements ITicketService {
     }
 
     @Override
+    @Cacheable(value = "tickets", key = "#id")
     public TicketDto findById(String id) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.TICKET_NOT_EXISTED));
@@ -86,6 +95,10 @@ public class TicketService implements ITicketService {
 
     @Transactional
     @Override
+    @Caching(
+            put = {@CachePut(value = "tickets", key = "#id")},
+            evict = {@CacheEvict(value = "tickets-by-lane", allEntries = true)}
+    )
     public TicketDto update(String id, UpdateTicketDto dto) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.TICKET_NOT_EXISTED));
@@ -102,11 +115,18 @@ public class TicketService implements ITicketService {
 
     @Transactional
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "tickets", key = "#id"),
+                    @CacheEvict(value = "tickets-by-lane", allEntries = true)
+            }
+    )
     public void delete(String id) {
         ticketRepository.deleteById(id);
     }
 
     @Override
+    @Cacheable(value = "tickets-by-lane", key = "#laneId + '-' + #sort")
     public List<TicketDto> findByLaneId(String laneId, Sort sort) {
         List<Ticket> tickets = ticketRepository.findAllByLaneId(laneId, sort);
         return tickets.stream().map(this::mapToTicketDto).toList();
@@ -114,6 +134,7 @@ public class TicketService implements ITicketService {
 
     @Transactional
     @Override
+    @CacheEvict(value = {"tickets", "tickets-by-lane"}, allEntries = true)
     public void changeOrder(TicketOrderEvent data) {
         if (data.getList().isEmpty()) {
             throw new IllegalArgumentException("TicketOrderList cannot be empty");

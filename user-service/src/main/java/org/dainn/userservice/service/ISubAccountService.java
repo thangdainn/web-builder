@@ -1,5 +1,6 @@
 package org.dainn.userservice.service;
 
+import org.dainn.userservice.dto.PageResponse;
 import org.dainn.userservice.dto.event.DeleteAgencyEvent;
 import org.dainn.userservice.dto.subaccount.*;
 import org.springframework.data.domain.Page;
@@ -14,7 +15,7 @@ public interface ISubAccountService {
     SubAccountDto findById(String id);
     SubAccountDetailDto findDetailById(String id);
 
-    Page<SubAccountDetailDto> findAll(SubAccountReq request);
+    PageResponse<SubAccountDetailDto> findAll(SubAccountReq request);
     void updateConnectAccId(String id, String connectAccId);
 
     List<SubAccountDetailDto> findByAgencyId(String id);

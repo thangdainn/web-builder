@@ -2,10 +2,12 @@ package org.dainn.userservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dainn.userservice.dto.PageResponse;
 import org.dainn.userservice.dto.event.DeleteAgencyEvent;
 import org.dainn.userservice.dto.event.SyncUser;
 import org.dainn.userservice.dto.event.UserProducer;
 import org.dainn.userservice.dto.permission.PermissionDto;
+import org.dainn.userservice.dto.subaccount.SubAccountDetailDto;
 import org.dainn.userservice.dto.user.UserDetailDto;
 import org.dainn.userservice.dto.user.UserDto;
 import org.dainn.userservice.dto.user.UserReq;
@@ -23,6 +25,10 @@ import org.dainn.userservice.service.ISubAccountService;
 import org.dainn.userservice.service.IUserService;
 import org.dainn.userservice.util.Paging;
 import org.dainn.userservice.util.enums.Role;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +54,8 @@ public class UserService implements IUserService {
 
     @Transactional
     @Override
+    @CachePut(value = "users", key = "#result.id")
+    @CacheEvict(value = "users-detail", key = "#result.id")
     public UserDto create(UserDto dto) {
         userRepository.findByEmail(dto.getEmail())
                 .ifPresent(user -> {
@@ -62,6 +70,7 @@ public class UserService implements IUserService {
 
     @Transactional
     @Override
+    @CacheEvict(value = {"users", "users-detail"}, key = "#id")
     public void delete(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -82,6 +91,7 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @CacheEvict(value = {"users", "users-detail"}, allEntries = true)
     public void deleteByAgency(String agencyId) {
         List<User> users = userRepository.findAllByAgencyId(agencyId);
         log.info("Users : {}", users);
@@ -92,7 +102,8 @@ public class UserService implements IUserService {
 
     @Transactional
     @Override
-//    @Cacheable(value = "users", key = "#dto.getEmail()")
+    @CachePut(value = "users", key = "#result.id")
+    @CacheEvict(value = "users-detail", key = "#result.id")
     public UserDto update(UserDto dto) {
         User old = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -114,7 +125,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-//    @Cacheable(value = "users", key = "#id")
+    @Cacheable(value = "users-detail", key = "#id")
     public UserDetailDto findDetailById(String id) {
         UserDetailDto detail = userMapper.toDetail(userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
@@ -125,23 +136,30 @@ public class UserService implements IUserService {
     }
 
     @Override
-//    @Cacheable(value = "users", key = "#id")
+    @Cacheable(value = "users", key = "#id")
     public UserDto findById(String id) {
         log.info("Find user by ID: {}", id);
         return userMapper.toDto(userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
-    @Override
-    public UserDto findByEmail(String email) {
-        return userMapper.toDto(userRepository.findByEmail(email)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
-    }
+//    @Override
+//    @Cacheable(value = "users", key = "#email")
+//    public UserDto findByEmail(String email) {
+//        return userMapper.toDto(userRepository.findByEmail(email)
+//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+//    }
 
     @Override
-    public Page<UserDto> findAll(UserReq req) {
-        return userRepository.findByFilters(req.getEmail(), req.getRole(), req.getAgencyId(), Paging.getPageable(req))
+    public PageResponse<UserDto> findAll(UserReq req) {
+        Page<UserDto> result = userRepository.findByFilters(req.getEmail(), req.getRole(), req.getAgencyId(), Paging.getPageable(req))
                 .map(userMapper::toDto);
+        return PageResponse.<UserDto>builder()
+                .page(result.getNumber())
+                .size(result.getSize())
+                .totalElements(result.getTotalElements())
+                .content(result.getContent())
+                .build();
     }
 
     @Override
@@ -157,10 +175,15 @@ public class UserService implements IUserService {
 
     @Transactional
     @Override
-    public void setOwner(UserDto dto) {
+    @CachePut(value = "users", key = "#result.id")
+    @CacheEvict(value = "users-detail", key = "#result.id")
+    public UserDto setOwner(UserDto dto) {
         Optional<User> optional = userRepository.findByEmail(dto.getEmail());
         User user;
         if (optional.isPresent()) {
+            if (optional.get().getRole().equals(Role.AGENCY_OWNER)) {
+                throw new AppException(ErrorCode.USER_WAS_OWNED);
+            }
             user = optional.get();
             user = userMapper.toUpdate(user, dto);
         } else {
@@ -169,15 +192,13 @@ public class UserService implements IUserService {
         user.setRole(Role.AGENCY_OWNER);
         user.setAgencyId(dto.getAgencyId());
         log.info("Set owner for user: {}", user);
-        userRepository.save(user);
+        return userMapper.toDto(userRepository.save(user));
     }
 
     @Override
     public void syncPermission(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-//        List<PermissionDto> permissions = permissionRepository.findAllByUserId(user.getId())
-//                .stream().map(permissionMapper::toDto).toList();
         List<UserProducer.Permission> permissionList = permissionRepository.findAllByUserId(user.getId())
                 .stream().map(permissionMapper::toProducer).toList();
         UserProducer userProducer = UserProducer.toProducerPer(user, permissionList);
@@ -195,7 +216,6 @@ public class UserService implements IUserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         UserProducer.Agency agency = agencyClient.getDetailById(user.getAgencyId()).getBody();
         assert agency != null;
-//        List<UserProducer.SubAccount> subAccounts = saClient.getAllByAgency(agency.getId()).getBody();
         List<UserProducer.SubAccount> subAccounts = subAccountService.findByAgencyId(agency.getId())
                 .stream().map(saMapper::toProducer).toList();
 
@@ -222,8 +242,6 @@ public class UserService implements IUserService {
             log.info("Sync user for user successfully: {}", subAccounts);
             agency.setSubAccounts(subAccounts);
             UserProducer userProducer = UserProducer.toProducerAgency(user, agency);
-//            List<PermissionDto> permissions = permissionRepository.findAllByUserId(user.getId())
-//                    .stream().map(permissionMapper::toDto).toList();
             List<UserProducer.Permission> permissionList = permissionRepository.findAllByUserId(user.getId())
                     .stream().map(permissionMapper::toProducer).toList();
             userProducer.setPermissions(permissionList);
@@ -242,23 +260,4 @@ public class UserService implements IUserService {
             return false;
         }
     }
-
-//    private List<UserProducer.Permission> setPermission(List<PermissionDto> permissions) {
-//        return permissions.stream()
-//                .map(permission -> {
-//
-//                    ResponseEntity<UserProducer.SubAccount> response = saClient.getById(permission.getSubAccountId());
-//                    if (response.getStatusCode() == HttpStatus.CONFLICT) {
-//                        log.warn("Failed to fetch SubAccount for permission ID: {}, status code: {}", permission.getId(), response.getStatusCode());
-//                        return null;
-//                    }
-//                    return UserProducer.Permission.builder()
-//                            .id(permission.getId())
-//                            .subAccount(response.getBody())
-//                            .access(permission.getAccess())
-//                            .build();
-//                })
-//                .filter(Objects::nonNull)
-//                .toList();
-//    }
 }

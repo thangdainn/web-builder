@@ -7,7 +7,8 @@ import org.springframework.http.HttpStatusCode;
 @Getter
 public enum ErrorCode {
     AGENCY_NOT_EXISTED("Agency not existed", HttpStatus.NOT_FOUND),
-    USER_NOT_PERMISSION("User not permission", HttpStatus.FORBIDDEN);
+    USER_NOT_PERMISSION("User not permission", HttpStatus.FORBIDDEN),
+    USER_WAS_OWNED("User was owned by another agency", HttpStatus.BAD_REQUEST),;
 
     ErrorCode(String message, HttpStatusCode statusCode) {
         this.message = message;

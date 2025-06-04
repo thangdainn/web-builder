@@ -15,6 +15,10 @@ import org.dainn.pipelineservice.repository.ILaneRepository;
 import org.dainn.pipelineservice.repository.IPipelineRepository;
 import org.dainn.pipelineservice.service.ILaneService;
 import org.dainn.pipelineservice.service.ITicketService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +38,7 @@ public class LaneService implements ILaneService {
 
     @Transactional
     @Override
+    @CachePut(value = "lanes", key = "#result.id")
     public LaneDto create(LaneDto dto) {
         Pipeline pipeline = pipelineRepository.findById(dto.getPipelineId())
                 .orElseThrow(() -> new AppException(ErrorCode.PIPELINE_NOT_EXISTED));
@@ -45,6 +50,7 @@ public class LaneService implements ILaneService {
     }
 
     @Override
+    @Cacheable(value = "lanes", key = "#id")
     public LaneDto findById(String id) {
         return laneMapper.toDto(laneRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.LANE_NOT_EXISTED)));
@@ -52,6 +58,7 @@ public class LaneService implements ILaneService {
 
     @Transactional
     @Override
+    @CachePut(value = "lanes", key = "#result.id")
     public LaneDto update(LaneDto dto) {
         Lane old = laneRepository.findById(dto.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.LANE_NOT_EXISTED));
@@ -61,6 +68,7 @@ public class LaneService implements ILaneService {
 
     @Transactional
     @Override
+    @CacheEvict(value = "lanes", key = "#id")
     public void delete(String id) {
         laneRepository.deleteById(id);
     }
@@ -87,6 +95,7 @@ public class LaneService implements ILaneService {
 
     @Transactional
     @Override
+    @CacheEvict(value = "lanes", allEntries = true)
     public void changeOrder(LaneOrderEvent data) {
         List<Lane> lanes = laneRepository.findAllByPipelineId(data.getPipelineId());
         Map<String, Lane> laneMap = lanes.stream().collect(Collectors.toMap(Lane::getId, l -> l));

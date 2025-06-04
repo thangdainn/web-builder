@@ -9,7 +9,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
-//@EnableCaching
+@EnableCaching
 public class UserServiceApplication {
 
     public static void main(String[] args) {

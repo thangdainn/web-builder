@@ -1,4 +1,4 @@
-version: '3.8'
+#version: '3.8'
 services:
   postgres-agency:
     container_name: postgres-agency
@@ -245,6 +245,38 @@ services:
     networks:
       - wb-network
 
+  redis:
+    container_name: redis-wb
+    image: redis:7.2-alpine
+    command: --requirepass ${REDIS_PASSWORD}
+    expose:
+      - "6379"
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis-data:/data
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - wb-network
+
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.3
     container_name: zookeeper-wb
@@ -378,7 +410,7 @@ services:
       - wb-network
 
   discovery-server:
-    image: thanngdainn/discovery-server:4.2.1
+    image: thanngdainn/discovery-server:${SERVICE_VERSION}
     container_name: discovery-server-wb
     pull_policy: always
     ports:
@@ -407,7 +439,7 @@ services:
       - wb-network
 
   api-gateway:
-    image: thanngdainn/api-gateway:4.2.1
+    image: thanngdainn/api-gateway:${SERVICE_VERSION}
     container_name: api-gateway-wb
     pull_policy: always
     ports:
@@ -447,7 +479,7 @@ services:
 
   agency-service:
     container_name: agency-service-wb
-    image: thanngdainn/agency-service:4.2.1
+    image: thanngdainn/agency-service:${SERVICE_VERSION}
     pull_policy: always
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-agency:5431/agency_db
@@ -458,6 +490,7 @@ services:
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
       - LOGGING_LEVEL_ROOT=WARN
+      - SPRING_DATA_REDIS_PASSWORD=${REDIS_PASSWORD}
     depends_on:
       postgres-agency:
         condition: service_healthy
@@ -466,6 +499,8 @@ services:
       api-gateway:
         condition: service_healthy
       broker-1:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     restart: on-failure
     healthcheck:
@@ -489,7 +524,7 @@ services:
 
   funnel-service:
     container_name: funnel-service-wb
-    image: thanngdainn/funnel-service:4.2.1
+    image: thanngdainn/funnel-service:${SERVICE_VERSION}
     pull_policy: always
     environment:
       - SPRING_R2DBC_URL=r2dbc:postgresql://postgres-funnel:5437/funnel_db
@@ -509,6 +544,8 @@ services:
       discovery-server:
         condition: service_healthy
       api-gateway:
+        condition: service_healthy
+      broker-1:
         condition: service_healthy
     restart: on-failure
     healthcheck:
@@ -532,7 +569,7 @@ services:
 
   media-service:
     container_name: media-service-wb
-    image: thanngdainn/media-service:4.2.1
+    image: thanngdainn/media-service:${SERVICE_VERSION}
     pull_policy: always
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-media:5432/media_db
@@ -552,6 +589,8 @@ services:
       discovery-server:
         condition: service_healthy
       api-gateway:
+        condition: service_healthy
+      broker-1:
         condition: service_healthy
     restart: on-failure
     healthcheck:
@@ -575,7 +614,7 @@ services:
 
   notification-service:
     container_name: notification-service-wb
-    image: thanngdainn/notification-service:4.2.1
+    image: thanngdainn/notification-service:${SERVICE_VERSION}
     pull_policy: always
     environment:
       - SPRING_R2DBC_URL=r2dbc:postgresql://postgres-notification:5433/notification_db
@@ -622,7 +661,7 @@ services:
 
   payment-service:
     container_name: payment-service-wb
-    image: thanngdainn/payment-service:4.2.1
+    image: thanngdainn/payment-service:${SERVICE_VERSION}
     pull_policy: always
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
@@ -662,7 +701,7 @@ services:
 
   pipeline-service:
     container_name: pipeline-service-wb
-    image: thanngdainn/pipeline-service:4.2.1
+    image: thanngdainn/pipeline-service:${SERVICE_VERSION}
     pull_policy: always
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-pipeline:5434/pipeline_db
@@ -673,12 +712,17 @@ services:
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
       - LOGGING_LEVEL_ROOT=WARN
+      - SPRING_DATA_REDIS_PASSWORD=${REDIS_PASSWORD}
     depends_on:
       postgres-pipeline:
         condition: service_healthy
       discovery-server:
         condition: service_healthy
       api-gateway:
+        condition: service_healthy
+      broker-1:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     restart: on-failure
     healthcheck:
@@ -702,7 +746,7 @@ services:
 
   search-service:
     container_name: search-service-wb
-    image: thanngdainn/search-service:4.2.1
+    image: thanngdainn/search-service:${SERVICE_VERSION}
     pull_policy: always
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server-wb:8761/eureka/
@@ -742,7 +786,7 @@ services:
 
   subscription-service:
     container_name: subscription-service-wb
-    image: thanngdainn/subscription-service:4.2.1
+    image: thanngdainn/subscription-service:${SERVICE_VERSION}
     pull_policy: always
     environment:
       - SPRING_R2DBC_URL=r2dbc:postgresql://postgres-subscription:5438/subscription_db
@@ -787,7 +831,7 @@ services:
 
   user-service:
     container_name: user-service-wb
-    image: thanngdainn/user-service:4.2.1
+    image: thanngdainn/user-service:${SERVICE_VERSION}
     pull_policy: always
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-user:5436/user_db
@@ -798,7 +842,7 @@ services:
       - BETTERSTACK_SOURCE_TOKEN=${BETTER_STACK_TOKEN}
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
       - APP_DOMAIN=${APP_DOMAIN}
-      - SPRING_DATA_REDIS_URL=${REDIS_URL}
+      - SPRING_DATA_REDIS_PASSWORD=${REDIS_PASSWORD}
       - LOGGING_LEVEL_ROOT=WARN
     depends_on:
       postgres-user:
@@ -808,6 +852,8 @@ services:
       api-gateway:
         condition: service_healthy
       broker-1:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     restart: on-failure
     healthcheck:

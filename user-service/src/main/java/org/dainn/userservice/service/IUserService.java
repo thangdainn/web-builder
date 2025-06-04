@@ -1,5 +1,6 @@
 package org.dainn.userservice.service;
 
+import org.dainn.userservice.dto.PageResponse;
 import org.dainn.userservice.dto.user.UserDetailDto;
 import org.dainn.userservice.dto.user.UserDto;
 import org.dainn.userservice.dto.user.UserReq;
@@ -12,11 +13,11 @@ public interface IUserService {
     UserDto update(UserDto dto);
     UserDetailDto findDetailById(String id);
     UserDto findById(String id);
-    UserDto findByEmail(String email);
-    Page<UserDto> findAll(UserReq req);
+//    UserDto findByEmail(String email);
+    PageResponse<UserDto> findAll(UserReq req);
     boolean isOwner(String id);
     UserDto findOwnerByAgency(String id);
-    void setOwner(UserDto dto);
+    UserDto setOwner(UserDto dto);
     void syncPermission(String email);
     void syncAgency(String email);
     void syncUser();

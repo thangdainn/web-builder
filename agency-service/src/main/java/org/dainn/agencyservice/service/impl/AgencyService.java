@@ -3,6 +3,7 @@ package org.dainn.agencyservice.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.agencyservice.dto.*;
+import org.dainn.agencyservice.dto.response.UserDto;
 import org.dainn.agencyservice.event.EventProducer;
 import org.dainn.agencyservice.exception.AppException;
 import org.dainn.agencyservice.exception.ErrorCode;
@@ -17,7 +18,6 @@ import org.dainn.agencyservice.service.IAgencyService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -37,13 +37,17 @@ public class AgencyService implements IAgencyService {
 
     @Transactional
     @Override
+    @CachePut(value = "agencies", key = "#result.id")
     public AgencyDto create(CreateAgencyDto dto) {
         Agency agency = agencyMapper.toEntity(dto);
         agency = agencyRepository.save(agency);
         AgencyDto newAgency = agencyMapper.toDto(agency);
         newAgency.setOptions(agencySOService.create(agency));
         dto.getUser().setAgencyId(agency.getId());
-        userClient.setOwner(dto.getUser().getEmail(), dto.getUser());
+        UserDto userDto = userClient.setOwner(dto.getUser().getEmail(), dto.getUser()).getBody();
+        if (userDto == null) {
+            throw new AppException(ErrorCode.USER_WAS_OWNED);
+        }
         eventProducer.sendCreateCustomerEvent(CreateCustomer.builder()
                 .email(dto.getCompanyEmail())
                 .name(dto.getName())
@@ -67,6 +71,7 @@ public class AgencyService implements IAgencyService {
 
     @Transactional
     @Override
+    @CachePut(value = "agencies", key = "#result.id")
     public AgencyDto update(AgencyDto dto) {
         Agency old = agencyRepository.findById(dto.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.AGENCY_NOT_EXISTED));
@@ -78,6 +83,7 @@ public class AgencyService implements IAgencyService {
 
     @Transactional
     @Override
+    @CachePut(value = "agencies", key = "#id")
     public AgencyDto updateGoal(String id, UpdateGoalDto dto) {
         agencyRepository.updateGoal(id, dto.getGoal());
         return agencyMapper.toDto(agencyRepository.findById(id)
@@ -85,6 +91,7 @@ public class AgencyService implements IAgencyService {
     }
 
     @Override
+    @Cacheable(value = "agencies", key = "#id")
     public AgencyDto findById(String id) {
         return agencyMapper.toDto(agencyRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.AGENCY_NOT_EXISTED)));
@@ -109,6 +116,7 @@ public class AgencyService implements IAgencyService {
 
     @Transactional
     @Override
+    @CacheEvict(value = "agencies", key = "#dto.agencyId")
     public void delete(DeleteAgencyDto dto) {
         agencySORepository.deleteAllByAgencyId(dto.getAgencyId());
         agencyRepository.deleteById(dto.getAgencyId());
@@ -118,12 +126,14 @@ public class AgencyService implements IAgencyService {
 
     @Transactional
     @Override
+    @CacheEvict(value = "agencies", key = "#id")
     public void updateConnectAccId(String id, String connectAccId) {
         agencyRepository.updateConnectAccId(id, connectAccId);
     }
 
     @Transactional
     @Override
+    @CacheEvict(value = "agencies", key = "#id")
     public void updateCustomerId(String id, String customerId) {
         agencyRepository.updateCustomerId(id, customerId);
     }
