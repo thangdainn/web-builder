@@ -26,6 +26,7 @@ import org.dainn.userservice.service.IUserService;
 import org.dainn.userservice.util.Paging;
 import org.dainn.userservice.util.enums.InvitationStatus;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,6 +91,7 @@ public class InvitationService implements IInvitationService {
 
     @Transactional
     @Override
+    @CacheEvict(value = {"users", "users-detail"}, allEntries = true)
     public String verify(UserInfo userInfo) {
         Optional<Invitation> invitationOptional = invitationRepository.findByEmailAndStatus(userInfo.getEmail(), InvitationStatus.PENDING);
         if (invitationOptional.isEmpty()) {
