@@ -38,10 +38,10 @@ public class UserController {
         return ResponseEntity.ok(userService.findById(id));
     }
 
-//    @GetMapping(Endpoint.User.EMAIL)
-//    public ResponseEntity<UserDto> getByEmail(@PathVariable String email) {
-//        return ResponseEntity.ok(userService.findByEmail(email));
-//    }
+    @GetMapping(Endpoint.User.EMAIL)
+    public ResponseEntity<UserDto> getByEmail(@PathVariable String email) {
+        return ResponseEntity.ok(userService.findByEmail(email));
+    }
 
     @GetMapping(Endpoint.User.IS_OWNER)
     public ResponseEntity<Boolean> isOwner(@PathVariable String id) {

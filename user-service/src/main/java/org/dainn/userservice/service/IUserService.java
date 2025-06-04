@@ -13,7 +13,7 @@ public interface IUserService {
     UserDto update(UserDto dto);
     UserDetailDto findDetailById(String id);
     UserDto findById(String id);
-//    UserDto findByEmail(String email);
+    UserDto findByEmail(String email);
     PageResponse<UserDto> findAll(UserReq req);
     boolean isOwner(String id);
     UserDto findOwnerByAgency(String id);

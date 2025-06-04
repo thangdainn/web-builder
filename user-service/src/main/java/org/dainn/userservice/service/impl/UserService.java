@@ -143,12 +143,12 @@ public class UserService implements IUserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
-//    @Override
+    @Override
 //    @Cacheable(value = "users", key = "#email")
-//    public UserDto findByEmail(String email) {
-//        return userMapper.toDto(userRepository.findByEmail(email)
-//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
-//    }
+    public UserDto findByEmail(String email) {
+        return userMapper.toDto(userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+    }
 
     @Override
     public PageResponse<UserDto> findAll(UserReq req) {
