@@ -22,12 +22,11 @@ public class CacheConfig {
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-//        objectMapper.activateDefaultTyping(
-//                objectMapper.getPolymorphicTypeValidator(),
-//                ObjectMapper.DefaultTyping.NON_FINAL,
-//                JsonTypeInfo.As.PROPERTY
-//        );
-        objectMapper.findAndRegisterModules();
+        objectMapper.activateDefaultTyping(
+                objectMapper.getPolymorphicTypeValidator(),
+                ObjectMapper.DefaultTyping.NON_FINAL,
+                JsonTypeInfo.As.PROPERTY
+        );
         GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
 
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()

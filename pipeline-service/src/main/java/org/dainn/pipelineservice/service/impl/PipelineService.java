@@ -26,10 +26,7 @@ public class PipelineService implements IPipelineService {
 
     @Transactional
     @Override
-    @Caching(
-            put = {@CachePut(value = "pipelines", key = "#result.id")},
-            evict = {@CacheEvict(value = "pipelines-by-sa", key = "#dto.subAccountId")}
-    )
+    @CachePut(value = "pipelines", key = "#result.id")
     public PipelineDto create(PipelineDto dto) {
         Pipeline pipeline = pipelineMapper.toEntity(dto);
         return pipelineMapper.toDto(pipelineRepository.save(pipeline));
@@ -44,10 +41,7 @@ public class PipelineService implements IPipelineService {
 
     @Transactional
     @Override
-    @Caching(
-            put = {@CachePut(value = "pipelines", key = "#result.id")},
-            evict = {@CacheEvict(value = "pipelines-by-sa", key = "#dto.subAccountId")}
-    )
+    @CachePut(value = "pipelines", key = "#result.id")
     public PipelineDto update(PipelineDto dto) {
         Pipeline pipeline = pipelineRepository.findById(dto.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.PIPELINE_NOT_EXISTED));
@@ -57,28 +51,19 @@ public class PipelineService implements IPipelineService {
 
     @Transactional
     @Override
-    @Caching(
-            put = {@CachePut(value = "pipelines", key = "#id")},
-            evict = {@CacheEvict(value = "pipelines-by-sa", allEntries = true)}
-    )
+    @CachePut(value = "pipelines", key = "#id")
     public void updateName(String id, UpdatePipelineDto dto) {
         pipelineRepository.updateNameById(id, dto.getName());
     }
 
     @Transactional
     @Override
-    @Caching(
-            evict = {
-                    @CacheEvict(value = "pipelines", key = "#id"),
-                    @CacheEvict(value = "pipelines-by-sa", allEntries = true)
-            }
-    )
+    @CacheEvict(value = "pipelines", key = "#id")
     public void delete(String id) {
         pipelineRepository.deleteById(id);
     }
 
     @Override
-    @Cacheable(value = "pipelines-by-sa", key = "#id")
     public List<PipelineDto> findBySA(String id) {
         return pipelineRepository.findAllBySubAccountId(id)
                 .stream().map(pipelineMapper::toDto).toList();
@@ -86,7 +71,7 @@ public class PipelineService implements IPipelineService {
 
     @Transactional
     @Override
-    @CacheEvict(value = {"pipelines", "pipelines-by-sa"}, allEntries = true)
+    @CacheEvict(value = "pipelines", allEntries = true)
     public void deleteBySA(String subAccountId) {
         pipelineRepository.deleteAllBySubAccountId(subAccountId);
     }
