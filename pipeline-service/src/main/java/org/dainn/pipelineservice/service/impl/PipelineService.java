@@ -27,8 +27,8 @@ public class PipelineService implements IPipelineService {
     @Transactional
     @Override
     @Caching(
-            put = {@CachePut(value = "pipelines", key = "#result.id")}
-//            evict = {@CacheEvict(value = "pipelines-by-sa", key = "#dto.subAccountId")}
+            put = {@CachePut(value = "pipelines", key = "#result.id")},
+            evict = {@CacheEvict(value = "pipelines-by-sa", key = "#dto.subAccountId")}
     )
     public PipelineDto create(PipelineDto dto) {
         Pipeline pipeline = pipelineMapper.toEntity(dto);
@@ -45,8 +45,8 @@ public class PipelineService implements IPipelineService {
     @Transactional
     @Override
     @Caching(
-            put = {@CachePut(value = "pipelines", key = "#result.id")}
-//            evict = {@CacheEvict(value = "pipelines-by-sa", key = "#dto.subAccountId")}
+            put = {@CachePut(value = "pipelines", key = "#result.id")},
+            evict = {@CacheEvict(value = "pipelines-by-sa", key = "#dto.subAccountId")}
     )
     public PipelineDto update(PipelineDto dto) {
         Pipeline pipeline = pipelineRepository.findById(dto.getId())
@@ -58,8 +58,8 @@ public class PipelineService implements IPipelineService {
     @Transactional
     @Override
     @Caching(
-            put = {@CachePut(value = "pipelines", key = "#id")}
-//            evict = {@CacheEvict(value = "pipelines-by-sa", allEntries = true)}
+            put = {@CachePut(value = "pipelines", key = "#id")},
+            evict = {@CacheEvict(value = "pipelines-by-sa", allEntries = true)}
     )
     public void updateName(String id, UpdatePipelineDto dto) {
         pipelineRepository.updateNameById(id, dto.getName());
@@ -70,7 +70,7 @@ public class PipelineService implements IPipelineService {
     @Caching(
             evict = {
                     @CacheEvict(value = "pipelines", key = "#id"),
-//                    @CacheEvict(value = "pipelines-by-sa", allEntries = true)
+                    @CacheEvict(value = "pipelines-by-sa", allEntries = true)
             }
     )
     public void delete(String id) {
@@ -86,7 +86,7 @@ public class PipelineService implements IPipelineService {
 
     @Transactional
     @Override
-    @CacheEvict(value = {"pipelines"}, allEntries = true)
+    @CacheEvict(value = {"pipelines", "pipelines-by-sa"}, allEntries = true)
     public void deleteBySA(String subAccountId) {
         pipelineRepository.deleteAllBySubAccountId(subAccountId);
     }
