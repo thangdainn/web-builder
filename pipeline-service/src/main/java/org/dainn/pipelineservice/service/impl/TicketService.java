@@ -53,8 +53,8 @@ public class TicketService implements ITicketService {
     @Transactional
     @Override
     @Caching(
-            put = {@CachePut(value = "tickets", key = "#result.id")},
-            evict = {@CacheEvict(value = "tickets-by-lane", key = "#dto.laneId")}
+            put = {@CachePut(value = "tickets", key = "#result.id")}
+//            evict = {@CacheEvict(value = "tickets-by-lane", key = "#dto.laneId")}
     )
     public TicketDto create(TicketDto dto) {
         Lane lane = laneRepository.findById(dto.getLaneId())
@@ -96,8 +96,8 @@ public class TicketService implements ITicketService {
     @Transactional
     @Override
     @Caching(
-            put = {@CachePut(value = "tickets", key = "#id")},
-            evict = {@CacheEvict(value = "tickets-by-lane", allEntries = true)}
+            put = {@CachePut(value = "tickets", key = "#id")}
+//            evict = {@CacheEvict(value = "tickets-by-lane", allEntries = true)}
     )
     public TicketDto update(String id, UpdateTicketDto dto) {
         Ticket ticket = ticketRepository.findById(id)
@@ -117,8 +117,8 @@ public class TicketService implements ITicketService {
     @Override
     @Caching(
             evict = {
-                    @CacheEvict(value = "tickets", key = "#id"),
-                    @CacheEvict(value = "tickets-by-lane", allEntries = true)
+                    @CacheEvict(value = "tickets", key = "#id")
+//                    @CacheEvict(value = "tickets-by-lane", allEntries = true)
             }
     )
     public void delete(String id) {
@@ -126,7 +126,7 @@ public class TicketService implements ITicketService {
     }
 
     @Override
-    @Cacheable(value = "tickets-by-lane", key = "#laneId + '-' + #sort")
+//    @Cacheable(value = "tickets-by-lane", key = "#laneId + '-' + #sort")
     public List<TicketDto> findByLaneId(String laneId, Sort sort) {
         List<Ticket> tickets = ticketRepository.findAllByLaneId(laneId, sort);
         return tickets.stream().map(this::mapToTicketDto).toList();
@@ -134,7 +134,7 @@ public class TicketService implements ITicketService {
 
     @Transactional
     @Override
-    @CacheEvict(value = {"tickets", "tickets-by-lane"}, allEntries = true)
+    @CacheEvict(value = {"tickets"}, allEntries = true)
     public void changeOrder(TicketOrderEvent data) {
         if (data.getList().isEmpty()) {
             throw new IllegalArgumentException("TicketOrderList cannot be empty");
