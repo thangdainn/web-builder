@@ -20,11 +20,14 @@ public class CorsConfig {
         config.setAllowCredentials(true);
         config.setAllowedOriginPatterns(Arrays.asList(
                 "http://*.localhost:3000",
+                "https://*.taskiums.vercel.app",
+                "https://*.taskium.me",
                 "http://localhost:3000",
                 "http://localhost:8080",
                 "http://localhost",
                 "http://host.docker.internal",
-                "https://taskiums.vercel.app"
+                "https://taskiums.vercel.app",
+                "https://www.taskium.me"
         ));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
