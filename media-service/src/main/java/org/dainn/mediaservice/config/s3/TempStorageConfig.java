@@ -1,4 +1,4 @@
-package org.dainn.mediaservice.config.cloudinary;
+package org.dainn.mediaservice.config.s3;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

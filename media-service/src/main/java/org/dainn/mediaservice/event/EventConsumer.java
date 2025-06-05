@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.dainn.mediaservice.service.IMediaService;
-import org.dainn.mediaservice.service.impl.FirebaseService;
+import org.dainn.mediaservice.service.impl.S3Service;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ import java.nio.file.Paths;
 @RequiredArgsConstructor
 @Slf4j
 public class EventConsumer {
-    private final FirebaseService firebaseService;
+    private final S3Service s3Service;
     private final IMediaService mediaService;
     private final ObjectMapper objectMapper;
 
@@ -51,7 +51,7 @@ public class EventConsumer {
                         message.getContentType()
                 );
 
-                firebaseService.upload(multipartFile, message.getFileName());
+                s3Service.upload(multipartFile, message.getFileName());
 
                 Files.deleteIfExists(tempFilePath);
 
