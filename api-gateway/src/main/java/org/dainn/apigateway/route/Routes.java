@@ -26,7 +26,7 @@ public class Routes {
 
                 // Agency Service Route
                 .route("agency-service", r -> r
-                        .path("/api/agencies/**")
+                        .path("/api/agencies/**", "/api/agency-sos/**", "/api/templates/**")
                         .filters(f -> f.circuitBreaker(config -> config.setName("agencyService")))
                         .uri("lb://agency-service"))
 

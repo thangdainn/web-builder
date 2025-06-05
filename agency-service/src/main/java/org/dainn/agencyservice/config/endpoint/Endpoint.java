@@ -16,4 +16,8 @@ public class Endpoint {
         public static final String BASE = API_PREFIX + "/agency-sos";
         public static final String ID = "/{id}";
     }
+
+    public static final class Template {
+        public static final String BASE = API_PREFIX + "/templates";
+    }
 }
