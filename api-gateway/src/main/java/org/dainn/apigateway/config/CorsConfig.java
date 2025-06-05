@@ -21,7 +21,7 @@ public class CorsConfig {
         config.setAllowedOriginPatterns(Arrays.asList(
                 "http://*.localhost:3000",
                 "https://*.taskiums.vercel.app",
-                "https://*.taskium.me",
+                "https://*.www.taskium.me",
                 "http://localhost:3000",
                 "http://localhost:8080",
                 "http://localhost",
