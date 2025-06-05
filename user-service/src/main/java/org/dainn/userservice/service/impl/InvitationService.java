@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,6 +59,10 @@ public class InvitationService implements IInvitationService {
         SubscriptionDto subscriptionDto = subscriptionClient.getByAgencyId(dto.getAgencyId()).getBody();
         if (subscriptionDto == null || !subscriptionDto.getActive()) {
             if (countTeamMembers(dto.getAgencyId()) >= 2) {
+                throw new AppException(ErrorCode.TEAM_MEMBER_LIMIT);
+            }
+        } else if (subscriptionDto.getPrice().equals(BigDecimal.valueOf(49.00))) {
+            if (countTeamMembers(dto.getAgencyId()) >= 10) {
                 throw new AppException(ErrorCode.TEAM_MEMBER_LIMIT);
             }
         }

@@ -37,6 +37,7 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Slf4j
@@ -73,6 +74,10 @@ public class SubAccountService implements ISubAccountService {
         SubscriptionDto subscriptionDto = subscriptionClient.getByAgencyId(dto.getAgencyId()).getBody();
         if (subscriptionDto == null || !subscriptionDto.getActive() ) {
             if (subAccountRepository.countByAgencyId(dto.getAgencyId()) >= 3) {
+                throw new AppException(ErrorCode.SA_LIMIT);
+            }
+        } else if (subscriptionDto.getPrice().equals(BigDecimal.valueOf(49.00))) {
+            if (subAccountRepository.countByAgencyId(dto.getAgencyId()) >= 15) {
                 throw new AppException(ErrorCode.SA_LIMIT);
             }
         }

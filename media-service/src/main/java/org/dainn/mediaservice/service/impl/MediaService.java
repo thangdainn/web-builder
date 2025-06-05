@@ -1,6 +1,8 @@
 package org.dainn.mediaservice.service.impl;
 
-import com.cloudinary.Cloudinary;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+//import com.cloudinary.Cloudinary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dainn.mediaservice.dto.FirebaseResponse;
@@ -13,8 +15,10 @@ import org.dainn.mediaservice.exception.ErrorCode;
 import org.dainn.mediaservice.mapper.IMediaMapper;
 import org.dainn.mediaservice.model.Media;
 import org.dainn.mediaservice.repository.IMediaRepository;
+import org.dainn.mediaservice.service.IFirebaseService;
 import org.dainn.mediaservice.service.IMediaService;
 import org.dainn.mediaservice.util.Paging;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -36,7 +40,11 @@ public class MediaService implements IMediaService {
     private final IMediaMapper mediaMapper;
     private final EventProducer eventProducer;
     private final Path tempDirectory;
-    private final Cloudinary cloudinary;
+//    private final Cloudinary cloudinary;
+    private final AmazonS3 s3Client;
+
+    @Value("${aws.s3.bucket.name}")
+    private String bucketName;
 
     @Transactional
     @Override
@@ -80,7 +88,8 @@ public class MediaService implements IMediaService {
 
     @Override
     public FirebaseResponse upload(MultipartFile file) throws IOException {
-        String uniqueFileName = UUID.randomUUID().toString();
+        String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
+        String uniqueFileName = UUID.randomUUID() + "." + extension;
 
         Path tempFilePath = tempDirectory.resolve(uniqueFileName);
         Files.copy(file.getInputStream(), tempFilePath, StandardCopyOption.REPLACE_EXISTING);
@@ -93,16 +102,22 @@ public class MediaService implements IMediaService {
         );
 
         eventProducer.sendUploadEvent(message);
-        String imageUrl = generateFutureImageUrl(uniqueFileName);
+//        String imageUrl = generateFutureImageUrl(uniqueFileName);
+        String imageUrl = getPublicUrl(uniqueFileName);
+
         return FirebaseResponse.builder()
                 .url(imageUrl)
                 .success(true)
                 .build();
     }
 
-    private String generateFutureImageUrl(String publicId) {
-        return cloudinary.url()
-                .publicId(publicId)
-                .generate();
+//    private String generateFutureImageUrl(String publicId) {
+//        return cloudinary.url()
+//                .publicId(publicId)
+//                .generate();
+//    }
+
+    public String getPublicUrl(String key) {
+        return s3Client.getUrl(bucketName, key).toString();
     }
 }
