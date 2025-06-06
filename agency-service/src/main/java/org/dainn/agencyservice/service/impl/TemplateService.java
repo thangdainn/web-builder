@@ -24,14 +24,14 @@ public class TemplateService implements ITemplateService {
 
     @Transactional
     @Override
-    @CacheEvict(value = "templates", allEntries = true)
+//    @CacheEvict(value = "templates", allEntries = true)
     public TemplateDto create(TemplateDto dto) {
         Template template = templateMapper.toEntity(dto);
         return templateMapper.toDto(templateRepository.save(template));
     }
 
     @Override
-    @Cacheable(value = "templates", key = "'all'")
+//    @Cacheable(value = "templates", key = "'all'")
     public List<TemplateDto> findAll() {
         return templateRepository.findAll()
                 .stream()
