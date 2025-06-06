@@ -4,10 +4,7 @@ package org.dainn.userservice.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.dainn.userservice.config.endpoint.Endpoint;
-import org.dainn.userservice.dto.subaccount.CreateSubAccount;
-import org.dainn.userservice.dto.subaccount.DeleteSubAccount;
-import org.dainn.userservice.dto.subaccount.SubAccountReq;
-import org.dainn.userservice.dto.subaccount.UpdateSubAccount;
+import org.dainn.userservice.dto.subaccount.*;
 import org.dainn.userservice.service.ISubAccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,8 +47,8 @@ public class SubAccountController {
     }
 
     @PutMapping(Endpoint.SubAccount.CONNECT_ACC_ID)
-    public ResponseEntity<?> update(@PathVariable String id, @RequestBody String connectAccId) {
-        subAccountService.updateConnectAccId(id, connectAccId);
+    public ResponseEntity<?> update(@PathVariable String id, @RequestBody UpdateConnectAccDto dto) {
+        subAccountService.updateConnectAccId(id, dto.getConnectAccountId());
         return ResponseEntity.ok().build();
     }
 
