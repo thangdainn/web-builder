@@ -192,7 +192,7 @@ public class SubAccountService implements ISubAccountService {
 
     @Transactional
     @Override
-
+    @CacheEvict(value = {"subaccounts", "subaccounts-detail", "subaccounts-page", "subaccounts-by-agency"}, allEntries = true)
     public void updateConnectAccId(String id, String connectAccId) {
         subAccountRepository.updateConnectAccId(id, connectAccId);
     }
