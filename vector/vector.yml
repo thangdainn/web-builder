@@ -11,7 +11,6 @@ sources:
             - payment-service-wb
             - pipeline-service-wb
             - search-service-wb
-            - subaccount-service-wb
             - subscription-service-wb
             - user-service-wb
 
@@ -28,7 +27,7 @@ transforms:
                 .message = match.content
                 .timestamp = match.timestamp
             } else {
-                .level = "UNKNOWN"
+                .level = "INFO"
             }
             del(.source)
 

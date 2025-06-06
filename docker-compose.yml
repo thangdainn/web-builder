@@ -844,7 +844,7 @@ services:
       - BETTERSTACK_HOST=${BETTER_STACK_HOST}
       - APP_DOMAIN=${APP_DOMAIN}
       - SPRING_DATA_REDIS_PASSWORD=${REDIS_PASSWORD}
-      - LOGGING_LEVEL_ROOT=WARN
+#      - LOGGING_LEVEL_ROOT=WARN
     depends_on:
       postgres-user:
         condition: service_healthy
